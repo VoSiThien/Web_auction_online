@@ -11,7 +11,8 @@ const env = {
 	APP_SCOPE: process.env.APP_SCOPE || '',
 	APP_REDIRECT_URI: process.env.APP_REDIRECT_URI || 'localhost:3000',
 	mailConfig: {
-		user: process.env.MAIL_USER || 'vosithien1212@gmail.com',
+		user: process.env.MAIL_USER || 'AuctionOnline099@gmail.com',
+		pass: 'auctiononline'
 	},
 	CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME || 'gvlt-qlqtpm',
 	CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || '999328783638897',

@@ -13,7 +13,7 @@ const errorCode = 1
 router.post('/bid-product',validator.bidProduct ,async (req, res) => {
 	const { priceBid, prodId } = req.body
     //const accId = req.account['accId']
-    const accId = 1
+    const accId = 2
     let present = moment().format('YYYY-MM-DD HH:mm:ss')
 
     let regexPattern = /^\d+$/
@@ -26,8 +26,8 @@ router.post('/bid-product',validator.bidProduct ,async (req, res) => {
 		})
 	}
 
-	const product = await knex('tbl_product').where("prod_id", prodId)
-    const account = await knex('tbl_account').where("acc_id", accId)
+	var product = await knex('tbl_product').join('tbl_account', 'acc_id', 'prod_seller_id').where("prod_id", prodId)
+    var account = await knex('tbl_account').where("acc_id", accId)
 
     if(product.length === 0){
         return res.status(400).json({
@@ -42,7 +42,7 @@ router.post('/bid-product',validator.bidProduct ,async (req, res) => {
     if((account[0].acc_like_bidder === null) || (account[0].acc_dis_like_bidder === null)){
         await knex('tbl_product_history').insert({
             his_product_id: prodId,
-            hist_account_id: accId,
+            his_account_id: accId,
             his_price: priceBid,
             his_status: 2,
             his_created_date: present
@@ -62,7 +62,7 @@ router.post('/bid-product',validator.bidProduct ,async (req, res) => {
     }
     
     //-------================ bidding
-    const resultBid = await bidProduct.bidding(priceBid, product, prodId, accId)
+    const resultBid = await bidProduct.bidding(priceBid, product, prodId, account)
     
     if(resultBid.statusCode === 0){
         await knex('tbl_product_history').where("his_status", 1).update({his_status: 0})
@@ -137,6 +137,70 @@ router.post('/history-product',validator.historyProduct ,async (req, res) => {
 		watchList: listHistory,
 		statusCode: successCode
 	})
+})
+
+//0 ra giá thất bại, 1 ra giá thành công, 2 chờ xác nhận ra giá, 3 ra giá bị từ chối
+
+router.post('/cancel-bid/:id', async (req, res) => {
+	const { id } = req.params
+
+    const hisProduct = await knex('tbl_product_history').where("his_id", id).andWhere("his_status", 2)
+
+    if(hisProduct.length === 0){
+        return res.status(400).json({
+            message: "History does not exist or status is not confirmed",
+            statusCode: errorCode
+        })
+    }
+
+    await knex('tbl_product_history').where("his_id", id).update({his_status: 3})
+
+    const product = await knex('tbl_product').join('tbl_account', 'acc_id', 'prod_seller_id').where("prod_id", hisProduct[0].his_product_id)
+    const account = await knex('tbl_account').where("acc_id", hisProduct[0].his_account_id)
+
+    const checkmailCancel = await mailService.sendMailTran(mailOptions.notifyCancelToBidder(account, product, hisProduct[0].his_price))
+
+    if (checkmailCancel === false) {
+        return {
+            message: "send email failed",
+            statusCode: 2
+        }
+    }
+
+	return res.status(200).json({
+		statusCode: successCode
+	})
+})
+
+router.post('/confirm-bid/:id', async (req, res) => {
+	const { id } = req.params
+
+    const hisProduct = await knex('tbl_product_history').where("his_id", id).andWhere("his_status", 2)
+
+    if(hisProduct.length === 0){
+        return res.status(400).json({
+            message: "History does not exist or status is not confirmed",
+            statusCode: errorCode
+        })
+    }
+
+    await knex('tbl_product_history').where("his_id", id).update({his_status: 0})
+
+    const product = await knex('tbl_product').join('tbl_account', 'acc_id', 'prod_seller_id').where("prod_id", hisProduct[0].his_product_id)
+    const account = await knex('tbl_account').where("acc_id", hisProduct[0].his_account_id)
+
+    const resultBid = await bidProduct.bidding(hisProduct[0].his_price, product, product[0].prod_id, account)
+
+    if(resultBid.statusCode === 0 || resultBid.statusCode === 1){
+        return res.status(200).json({
+            statusCode: successCode
+        })
+    }
+    
+    return res.status(400).json({
+        message: resultBid.message,
+        statusCode: errorCode
+    })
 })
 
 module.exports = router
