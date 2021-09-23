@@ -197,6 +197,7 @@ CREATE TABLE public.tbl_product (
     prod_price_highest character varying(100),
     prod_price_step character varying(100),
     prod_price_holder integer,
+    prod_seller_id integer,
     prod_description text,
     prod_status integer DEFAULT 0,
     prod_created_date character varying(100),
@@ -329,7 +330,8 @@ COPY public.tbl_categories (cate_id, cate_name, cate_status, cate_father, cate_c
 
 COPY public.tbl_favorite_product (fav_id, fav_product_id, fav_account_id) FROM stdin;
 1	1	1
-2	2	0
+2	2	1
+3	3	1
 \.
 
 
@@ -337,11 +339,11 @@ COPY public.tbl_favorite_product (fav_id, fav_product_id, fav_account_id) FROM s
 -- Data for Name: tbl_product; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tbl_product (prod_id, prod_name, prod_category_id, prod_amount, prod_price, prod_price_current, prod_price_starting, prod_price_highest, prod_price_step, prod_price_holder, prod_description, prod_status, prod_created_date, prod_updated_date, prod_end_date, prod_auto_extend) FROM stdin;
-1	SamSung S7	2	1	100000	\N	50000	\N	1000	\N	Tốt	0	2021-10-09 12:00:00	\N	\N	\N
-2	SamSung S9	2	1	120000	\N	80000	\N	2000	\N	Tốt	0	2021-10-09 12:00:00	\N	\N	\N
-3	MSI G37	3	1	1500000	\N	120000	\N	5000	\N	Tốt	0	2021-10-09 12:00:00	\N	\N	\N
-4	Chảo chống dính	5	1	20000	\N	8000	\N	1000	\N	Tốt	0	2021-10-09 12:00:00	\N	\N	\N
+COPY public.tbl_product (prod_id, prod_name, prod_category_id, prod_amount, prod_price, prod_price_current, prod_price_starting, prod_price_highest, prod_price_step, prod_price_holder, prod_seller_id, prod_description, prod_status, prod_created_date, prod_updated_date, prod_end_date, prod_auto_extend) FROM stdin;
+1	SamSung S7	2	1	100000	\N	50000	\N	1000	\N	1	Tốt	0	2021-10-09 12:00:00	\N	\N	\N
+2	SamSung S9	2	1	120000	\N	80000	\N	2000	\N	1	Tốt	0	2021-10-09 12:00:00	\N	\N	\N
+3	MSI G37	3	1	1500000	\N	120000	\N	5000	\N	1	Tốt	0	2021-10-09 12:00:00	\N	\N	\N
+4	Chảo chống dính	5	1	20000	\N	8000	\N	1000	\N	1	Tốt	0	2021-10-09 12:00:00	\N	\N	\N
 \.
 
 
@@ -397,7 +399,7 @@ SELECT pg_catalog.setval('public.tbl_categories_id_seq', 1, false);
 -- Name: tbl_favorite_product_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_favorite_product_id_seq', 1, false);
+SELECT pg_catalog.setval('public.tbl_favorite_product_id_seq', 3, true);
 
 
 --
@@ -428,9 +430,6 @@ SELECT pg_catalog.setval('public.tbl_product_image_id_seq', 1, false);
 ALTER TABLE ONLY public.tbl_account_comments
     ADD CONSTRAINT tbl_account_comments_pkey PRIMARY KEY (acom_id);
 
-ALTER TABLE ONLY public.tbl_favorite_product
-    ADD CONSTRAINT tbl_favorite_product_pkey PRIMARY KEY (fav_id);
-
 
 --
 -- Name: tbl_account tbl_account_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
@@ -454,6 +453,14 @@ ALTER TABLE ONLY public.tbl_account_request
 
 ALTER TABLE ONLY public.tbl_categories
     ADD CONSTRAINT tbl_categiries_pkey PRIMARY KEY (cate_id);
+
+
+--
+-- Name: tbl_favorite_product tbl_favorite_product_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tbl_favorite_product
+    ADD CONSTRAINT tbl_favorite_product_pkey PRIMARY KEY (fav_id);
 
 
 --
