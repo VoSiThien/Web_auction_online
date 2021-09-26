@@ -54,6 +54,7 @@ CREATE TABLE public.tbl_account (
     acc_refresh_token character varying(100),
     acc_rating_score integer,
     acc_is_upgrade integer,
+    acc_exp_upgrade character varying(100),
     acc_birthday character varying(100),
     acc_like_bidder integer,
     acc_dis_like_bidder integer,
