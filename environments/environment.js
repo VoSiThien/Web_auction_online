@@ -1,5 +1,5 @@
 require('dotenv').config()
-
+console.log(process.env.LOCAL_CONNECTION)
 const env = {
 	portServer: 3000,
 	configDatabase: {
