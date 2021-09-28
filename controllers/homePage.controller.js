@@ -15,11 +15,11 @@ router.get('/list-home', async (req, res) => {
 	const listAllParent = await catModel.getAllParent()
 
 	var listHomePage = await catModel.getHomePageList(listCategory, listAllChild, listAllParent)
-	console.log(listHomePage)
+
 	listHomePage = pagingService.pagingation(listHomePage, page, limit)
 
 	return res.status(200).json({
-		paginationlist: listHomePage,// DONT RETURN CATEGORIES WITH NO CHILD
+		paginationlist: listHomePage,
 		statusCode: successCode
 	})
 })

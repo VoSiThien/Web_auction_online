@@ -1,17 +1,15 @@
 const express = require('express')
-const moment = require('moment')
-
 const router = express.Router()
 const knex = require('../utils/dbConnection')
 const catValidation = require('../middlewares/validation/categories.validate')
-
-
-const errorCode = 1
+const catModel = require('../models/categories.model')
 const successCode = 0
+
+
 
 router.post('/add-parent', catValidation.newParent, async (req, res) => {
 	const { catName } = req.body
-
+	
 	const currentStampTime = new Date()
 	const newParent = {
 		cate_name: catName,
@@ -46,13 +44,14 @@ router.post('/add-child', catValidation.newChild, async (req, res) => {
 
 router.post('/update', catValidation.updateCat, async (req, res) => {
 	const { catID, catName, catParentID } = req.body
-
+	
 	const result = await catModel.getById(catID)
-
+	
 	let presentDate = new Date()
+	
 	const newCatInfomation = {
 		cate_name: catName,
-		cate_father: checkcatParentID ? catParentID : result[0].cate_father,
+		cate_father: catParentID ? catParentID : result[0].cate_father,
 		cate_updated_date: presentDate
 	}
 
@@ -67,7 +66,7 @@ router.post('/update', catValidation.updateCat, async (req, res) => {
 
 router.post('/delete', catValidation.deleteCat, async (req, res) => {
 	const { catID } = req.body
-
+	console.log('test')
 	await knex('tbl_categories')
 		.where({ cate_id: catID })
 		.del()

@@ -7,7 +7,7 @@ const bidProductController = require('../controllers/bidProduct.controller')
 const categoriesController = require('../controllers/adminCategories.controller')
 
 API.use('/favorite-product', favoriteProductController)
-API.use('/categogies')
+API.use('/categories', categoriesController)
 API.use('/bid', bidProductController)
 
 module.exports = API

@@ -1,6 +1,6 @@
 const ajvLib = require('ajv')
-const catModel = require('../models/categories.model')
-const productModel = require('../models/product.model')
+const catModel = require('../../models/categories.model')
+const productModel = require('../../models/product.model')
 
 const errorCode = 1
 
@@ -23,17 +23,6 @@ const newParent = async (req, res, next) => {
     const validator = ajv.compile(shema)
     const valid = validator(req.body)
 
-    const listCat = await catModel.getAll()
-
-    const existCat = listCat.get((cat) => cat.cate_name.toLowerCase() === catName.toLowerCase())
-
-    if (existCat) {
-        return res.status(400).json({
-            errorMessage: 'Tên chuyên mục cần thêm đã tồn tại !',
-            statusCode: errorCode
-        })
-    }
-
     if (!valid) {
         return res.status(400).json({
             errorMessage: validator.errors[0].message,
@@ -41,6 +30,18 @@ const newParent = async (req, res, next) => {
         })
     }
 
+
+    const listCat = await catModel.getAll()
+    
+    const existCat = listCat.find((cat) => cat.cate_name.toLowerCase() === catName.toLowerCase())
+    if (existCat) {
+        return res.status(400).json({
+            errorMessage: 'Tên chuyên mục cần thêm đã tồn tại !',
+            statusCode: errorCode
+        })
+    }
+
+   
     next()
 }
 
@@ -73,7 +74,7 @@ const newChild = async (req, res, next) => {
 
     const listCategory = await catModel.getAll()
 
-    const checkExist = listCategory.get((item) => item.cate_name.toLowerCase() === catName.toLowerCase())
+    const checkExist = listCategory.find((item) => item.cate_name.toLowerCase() === catName.toLowerCase())
 
     if (checkExist) {
         return res.status(400).json({
@@ -96,7 +97,7 @@ const newChild = async (req, res, next) => {
 
 const updateCat = async (req, res, next) => {
     const { catID, catName, catParentID } = req.body
-
+    
     const shema = {
         type: 'object',
         properties: {
@@ -104,13 +105,16 @@ const updateCat = async (req, res, next) => {
             catName: { type: 'string', pattern: '', minLength: 1, maxLength: 100 },
             catParentID: { type: 'integer' }
         },
-        required: ['catID'],
+        required: ['catID', 'catName'],
         additionalProperties: true
     }
-
+  
     const ajv = new ajvLib({
         allErrors: true
     })
+
+    const validator = ajv.compile(shema)
+    const valid = validator(req.body)
 
     if (!valid) {
         return res.status(400).json({
@@ -118,13 +122,13 @@ const updateCat = async (req, res, next) => {
             statusCode: errorCode
         })
     }
-
+    
     const result = await catModel.getById(catID)
-
+ 
     const listCategory = await catModel.getAll()
 
-    const checkExist = listCategory.get((info) => (info.cate_name.toLowerCase() === catName.toLowerCase()) && (info.cate_id !== catID))
-
+    const checkExist = listCategory.find((info) => (info.cate_name.toLowerCase() === catName.toLowerCase()) && (info.cate_id !== catID))
+ 
     if (checkExist) {
         return res.status(400).json({
             errorMessage: 'Tên chuyên mục mới đã tồn tại!',
@@ -145,6 +149,7 @@ const updateCat = async (req, res, next) => {
         const parent = await catModel.getById(catParentID)
 
         if (parent.length === 0) {
+           
             return res.status(400).json({
                 errorMessage: 'ID của chuyên mục cha không tồn tại',
                 statusCode: errorCode
@@ -152,8 +157,7 @@ const updateCat = async (req, res, next) => {
         }
     }
 
-    const validator = ajv.compile(shema)
-    const valid = validator(req.body)
+    
 
     next()
 }
@@ -240,7 +244,7 @@ const deleteCat = async (req, res, next) => {
     }
 
     const result = await catModel.getById(catID)
-
+    
     if (result.length === 0) {
         res.status(400).json({
             errorMessage: 'Chuyên mục cần xóa không hợp lệ!',
@@ -256,8 +260,8 @@ const deleteCat = async (req, res, next) => {
             statusCode: errorCode
         })
     }
-
-    const productsByCate = await productModel.getBycatID(catID)
+    
+    const productsByCate = await productModel.getByCatId(catID)
 
     if (productsByCate.length !== 0) {
         return res.status(400).json({
@@ -265,7 +269,7 @@ const deleteCat = async (req, res, next) => {
             statusCode: errorCode
         })
     }
-
+ 
     next()
 }
 

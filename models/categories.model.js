@@ -3,7 +3,7 @@ const moment = require('moment')
 const getById = async (cateId) => {
 	const data = await knex('tbl_categories')
 		.where({ cate_id: cateId })
-
+	
 	return data
 }
 
