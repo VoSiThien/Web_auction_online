@@ -2,10 +2,10 @@ const express = require('express')
 
 const API = express.Router()
 
-const categoriesController = require('../controllers/categories.controller')
+const homePageController = require('../controllers/homePage.controller')
 
 
-API.use('/categories', categoriesController)
+API.use('/home', homePageController)
 
 
 module.exports = API
