@@ -40,6 +40,68 @@ const listByCategory = async (req, res, next) => {
 	next()
 }
 
+const productSearching = (req, res, next) => {
+	var { searchKey, limit, page, orderBy, filterField, AndOrCondition } = req.body
+
+	const shema = {
+		type: 'object',
+		properties: {
+			searchKey: { type: 'string'},
+			AndOrCondition: {type : 'string'}
+		},
+		required: ["AndOrCondition", "searchKey"],
+		additionalProperties: true
+	}
+
+	const ajv = new ajvLib({
+		allErrors: true
+	})
+
+	const validator = ajv.compile(shema)
+	const valid = validator(req.body)
+
+	if (!valid) {
+		return res.status(400).json({
+			errorMessage: "Value " + validator.errors[0].message,
+			statusCode: errorCode
+		})
+	}
+
+	
+
+	if (filterField != 'prod_created_date' && filterField != 'prod_price') {
+		return res.status(400).json({
+			errorMessage: "filterField is invalid!",
+			statusCode: errorCode
+		})
+	}
+
+
+	if (orderBy && orderBy != 'asc' && orderBy != 'desc') {
+		return res.status(400).json({
+			errorMessage: "sort by is invalid!",
+			statusCode: errorCode
+		})
+	}
+
+	if (page < 1 || limit < 1) {
+		return res.status(400).json({
+			errorMessage: "limit and page parameter is not valid",
+			statusCode: errorCode
+		})
+	}
+
+	if(AndOrCondition != 'or' && AndOrCondition != 'and'){
+		return res.status(400).json({
+			errorMessage: "And/or condition is not valid",
+			statusCode: errorCode
+		})
+	}
+
+	next()
+}
+
 module.exports = {
-	listByCategory
+	listByCategory,
+	productSearching
 }

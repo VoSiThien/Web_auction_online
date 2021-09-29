@@ -18,6 +18,11 @@ const pagingation = (list, page, limit) => {
     }
 }
 
+const caculateNumberOfPage = (count, limit) => {
+
+}
+
 module.exports = {
-    pagingation
+    pagingation,
+    caculateNumberOfPage
 }
