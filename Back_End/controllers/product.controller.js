@@ -100,7 +100,7 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 			statusCode: successCode
 		})
 	}
-	else{
+	else {
 		return res.status(400).json({
 			numberOfPage: numberOfPage,
 			numberProduct: numberOfProduct.rows[0].count,
@@ -132,17 +132,18 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 
 
 	//set default search condition
-	if (filterField == undefined) {
-		filterField = 'prod_created_date'
+	if (filterField == undefined || filterField == 'prod_created_date') {
+		filterField = 'prod_created_date::timestamp'
 
 	}
-
+	else if (filterField == 'prod_price') {
+		filterField = 'prod_price::integer'
+	}
 	if (orderBy == undefined) {
 		orderBy = 'asc'
-
 	}
 
-
+	//get number of product and number of page
 	var numberOfProduct = await knex.raw(`SELECT count(pr.prod_id)
 	FROM tbl_product pr join tbl_categories cat on pr.prod_category_id = cat.cate_id
 	WHERE cat.ts @@ to_tsquery('english', '${searchKey}') ${AndOrCondition} pr.ts @@ to_tsquery('english', '${searchKey}')`)
@@ -154,56 +155,42 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 	}
 
 	//full-text-search for category & product name
-	var result = await knex.raw(`with product as (
+	var result = await knex.raw(`
 		SELECT *
 		FROM tbl_product pr join tbl_categories cat on pr.prod_category_id = cat.cate_id
 		WHERE cat.ts @@ to_tsquery('english', '${searchKey}') ${AndOrCondition} pr.ts @@ to_tsquery('english', '${searchKey}')
+		order by ${filterField} ${orderBy}
 		limit ${limit}
 		offset ${offset}
-	)
-	select pr.*,img.prod_img_data from product pr left join tbl_product_images img
-	on img.prod_img_product_id = pr.prod_id
-	order by ${filterField} ${orderBy}`)
+	`)
+
 	result = result.rows
 
 	var prodList = []
-	if ((result.length != 0)) {
-		var index = 0
-		var accountList = await accountModel.findActiveUser()
-		while (index < result.length) {
-			let prodObj = {
-				prod_id: result[index].prod_id,
-				prod_name: result[index].prod_name,
-				prod_category_id: result[index].prod_category_id,
-				prod_category_name: result[index].cate_name,
-				prod_amount: result[index].prod_amount,
-				prod_description: result[index].prod_description,
-				prod_created_date: moment(result[index].prod_created_date).format('DD/MM/YYYY'),
-				prod_updated_date: moment(result[index].prod_updated_date).format('DD/MM/YYYY') == 'Invalid date' ? moment(result[index].prod_created_date).format('DD/MM/YYYY') : moment(result[index].prod_updated_date).format('DD/MM/YYYY'),
-				prod_price_starting: result[index].prod_price_starting,
-				prod_price_current: result[index].prod_price_current,
-				prod_price_highest: result[index].prod_price_highest,
-				prod_price_step: result[index].prod_price_step,
-				prod_end_date: result[index].prod_end_date,
-				prod_auto_extend: result[index].prod_auto_extend,
-				prod_seller_id: result[index].prod_seller_id
-			}
-			prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == result[index].prod_price_holder).acc_full_name
-			prodObj.prod_seller = accountList.find((seller) => seller.acc_id == result[index].prod_seller_id).acc_full_name
-			//get image
-			let imageLink = result[index].prod_img_data
-			//push the first record to prodLIst
-			if (index === 0) {
-				prodObj['images'] = imageLink
-				prodList.push(prodObj)
-			}
-			//push the next first record to prod list
-			if (result[index].prod_id !== prodList[prodList.length - 1].prod_id) {
-				prodObj['images'] = imageLink
-				prodList.push(prodObj)
-			}
-			index += 1
+	var index = 0
+	var accountList = await accountModel.findActiveUser()
+	while (index < result.length) {
+		let prodObj = {
+			prod_id: result[index].prod_id,
+			prod_name: result[index].prod_name,
+			prod_category_id: result[index].prod_category_id,
+			prod_category_name: result[index].cate_name,
+			prod_amount: result[index].prod_amount,
+			prod_description: result[index].prod_description,
+			prod_created_date: moment(result[index].prod_created_date).format('DD/MM/YYYY'),
+			prod_updated_date: moment(result[index].prod_updated_date).format('DD/MM/YYYY') == 'Invalid date' ? moment(result[index].prod_created_date).format('DD/MM/YYYY') : moment(result[index].prod_updated_date).format('DD/MM/YYYY'),
+			prod_price_starting: result[index].prod_price_starting,
+			prod_price_current: result[index].prod_price_current,
+			prod_price_highest: result[index].prod_price_highest,
+			prod_price_step: result[index].prod_price_step,
+			prod_end_date: result[index].prod_end_date,
+			prod_auto_extend: result[index].prod_auto_extend,
+			prod_seller_id: result[index].prod_seller_id,
+			prod_main_image: result[index].prod_main_image
 		}
+		prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == result[index].prod_price_holder).acc_full_name
+		prodObj.prod_seller = accountList.find((seller) => seller.acc_id == result[index].prod_seller_id).acc_full_name
+		
 	}
 
 	return res.status(200).json({
@@ -229,7 +216,7 @@ router.get('/details/:id', async (req, res) => {
 			statusCode: 1
 		})
 	}
-	
+
 	var prodObject = {}
 	var accountList = await accountModel.findActiveUser()
 	const prodResult = await knex.from('tbl_product')
@@ -237,12 +224,12 @@ router.get('/details/:id', async (req, res) => {
 		.returning('*')
 		.then(async (rows) => {
 			prodObject = rows[0];
-			
+
 			//get holder & seller information
 			prodObject.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == prodObject.prod_price_holder).acc_full_name
 			console.log(prodObject.prod_price_holder)
 			prodObject.prod_seller = accountList.find((seller) => seller.acc_id == prodObject.prod_seller_id).acc_full_name
-			
+
 			//get sub-iamges
 			var imageResult = await knex.from('tbl_product_images')
 				.where('prod_img_product_id', prodObject.prod_id);
