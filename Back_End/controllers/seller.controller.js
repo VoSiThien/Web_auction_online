@@ -17,10 +17,9 @@ const errorCode = 1
 // Từ chối lượt ra giá của Bidder
 
 router.get('/profile', async(req, res) => {
-    const { id } = req.query
-
-    var seller = await knex.raw(`select *
-	from tbl_account where acc_id = ${id}`)
+    const accId = req.account.accId
+    var seller = await knex('tbl_account').where({ acc_id: accId })
+        .first('acc_like_seller as accLikeSeller', 'acc_dis_like_seller as accDisLikeSeller', 'acc_exp_upgrade as accExpUpgrade') || null
     return res.status(200).json({
         data: seller,
         statusCode: successCode
@@ -29,27 +28,27 @@ router.get('/profile', async(req, res) => {
 
 router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res) => {
     const {
-        prod_name,
-        prod_price_starting,
-        prod_price_step,
-        prod_price,
-        prod_description,
-        prod_end_date,
-        prod_auto_extend
+        prodName,
+        prodPriceStarting,
+        prodPriceStep,
+        prodPrice,
+        prodDescription,
+        prodEndDate,
+        prodAutoExtend
     } = req.body
+    const accId = req.account.accId
     const now = Date.now()
-    const prod_seller_id = null;
     const prodId = await knex('tbl_product').insert({
-            prod_name: prod_name,
-            prod_price_starting: prod_price_starting,
-            prod_price_step: prod_price_step,
-            prod_price: prod_price,
-            prod_description: prod_description,
-            prod_end_date: prod_end_date,
-            prod_seller_id: prod_seller_id,
+            prod_name: prodName,
+            prod_price_starting: prodPriceStarting,
+            prod_price_step: prodPriceStep,
+            prod_price: prodPrice,
+            prod_description: prodDescription,
+            prod_end_date: prodEndDate,
+            prod_seller_id: accId,
             prod_create_date: now,
             prod_update_date: now,
-            prod_auto_extend: prod_auto_extend
+            prod_auto_extend: prodAutoExtend
         })
         .returning('prod_id')
         .then(function(result) {
@@ -78,19 +77,9 @@ router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res)
 })
 
 router.post('/updateAuctionProductDescription', validator.updateAuctionProductDescription, async(req, res) => {
-    const { prod_id, prod_description } = req.body
+    const { prodId, prodDescription } = req.body
     const now = Date.now()
-    await knex('tbl_product').where({ prod_id: prod_id }).update({ prod_description: prod_description, prod_update_date: now })
-    return res.status(200).json({
-        data: true,
-        statusCode: successCode
-    })
-})
-
-router.post('/updateAuctionProductDescription', validator.updateAuctionProductDescription, async(req, res) => {
-    const { prod_id, prod_description } = req.body
-    const now = Date.now()
-    await knex('tbl_product').where({ prod_id: prod_id }).update({ prod_description: prod_description, prod_update_date: now })
+    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_description: prodDescription, prod_update_date: now })
     return res.status(200).json({
         data: true,
         statusCode: successCode
@@ -98,9 +87,9 @@ router.post('/updateAuctionProductDescription', validator.updateAuctionProductDe
 })
 
 router.post('/removeBidHolder', validator.updateAuctionProductDescription, async(req, res) => {
-    const { prod_id, prod_description } = req.body
+    const { prodId, prodDescription } = req.body
     const now = Date.now()
-    await knex('tbl_product').where({ prod_id: prod_id }).update({ prod_description: prod_description, prod_update_date: now })
+    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_description: prodDescription, prod_update_date: now })
     return res.status(200).json({
         data: true,
         statusCode: successCode
