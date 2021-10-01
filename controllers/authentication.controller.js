@@ -188,4 +188,61 @@ router.post('/refresh-token', authenticationValidate.refreshToken, async(req, re
     })
 })
 
+router.post('/register', authenticationValidate.register, async(req, res) => {
+    const { passWord, email, fullName, phoneNumber, role } = req.body
+    let dateOb = new Date()
+
+    // check unique email
+    const verifying = await accountModel.findByEmail(email)
+
+    if (verifying.length != 0) {
+        return res.status(400).json({
+            errorMessage: 'Email existed',
+            statusCode: errorCode
+        })
+    }
+
+    if (role) {
+        const rowRole = await knex('tbl_roles').where('rol_id', role)
+        if (rowRole.length === 0) {
+            return res.status(400).json({
+                errorMessage: 'role not existed',
+                statusCode: errorCode
+            })
+        }
+    }
+
+    var token = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString()
+
+
+    const cusName = fullName || 'quý khách'
+
+    await mailService.sendMail(mailOptions.registerOptions(email, cusName, token), req, res)
+
+
+
+    const hashPassword = bcrypt.hashSync(passWord, 3)
+    const hashToken = bcrypt.hashSync(token, 3)
+
+    // add account
+    const account = {
+        acc_password: hashPassword,
+        acc_email: email,
+        acc_phone_number: phoneNumber || null,
+        acc_full_name: fullName || null,
+        acc_role: role || 'USER',
+        acc_token: hashToken,
+        acc_created_date: dateOb
+    }
+
+    const newAccId = await knex('tbl_account')
+        .returning('acc_id')
+        .insert(account)
+
+    return res.status(200).json({
+        statusCode: successCode,
+        accId: newAccId[0]
+    })
+})
+
 module.exports = router

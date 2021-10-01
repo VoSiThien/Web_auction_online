@@ -6,11 +6,13 @@ const favoriteProductController = require('../controllers/favoriteProduct.contro
 const bidProductController = require('../controllers/bidProduct.controller')
 const sellerController = require('../controllers/seller.controller')
 const authController = require('../controllers/authentication.controller')
+const bidderController = require('../controllers/bidder.controller')
 
 
 API.use('/auth', authController)
 API.use('/favorite-product', favoriteProductController)
 API.use('/bid', bidProductController)
 API.use('/seller', sellerController)
+API.use('/bidder', sellerController)
 
 module.exports = API
