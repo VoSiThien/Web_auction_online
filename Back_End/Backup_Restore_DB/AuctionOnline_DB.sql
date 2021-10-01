@@ -56,10 +56,10 @@ CREATE TABLE public.tbl_account (
     acc_is_upgrade integer,
     acc_exp_upgrade character varying(100),
     acc_birthday character varying(100),
-    acc_like_bidder integer,
-    acc_dis_like_bidder integer,
-    acc_like_seller integer,
-    acc_dis_like_seller integer
+    acc_like_bidder integer DEFAULT 0,
+    acc_dis_like_bidder integer DEFAULT 0,
+    acc_like_seller integer DEFAULT 0,
+    acc_dis_like_seller integer DEFAULT 0
 );
 
 
@@ -205,6 +205,7 @@ CREATE TABLE public.tbl_product (
     prod_updated_date character varying(100),
     prod_end_date character varying(100),
     prod_auto_extend integer,
+    prod_main_image text,
     ts tsvector GENERATED ALWAYS AS (setweight(to_tsvector('english'::regconfig, (COALESCE(prod_name, ''::character varying))::text), 'A'::"char")) STORED
 );
 

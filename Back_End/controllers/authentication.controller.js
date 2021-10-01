@@ -9,6 +9,7 @@ const environment = require('../environments/environment')
 
 const authenticationService = require('../services/authenticationService')
 const authenticationValidate = require('../middlewares/validation/authentication.validate')
+
 const mailService = require('../services/mailService')
 const mailOptions = require('../template/mailOptions')
 
