@@ -12,7 +12,7 @@ const accountModel = require('../models/account.model')
 const successCode = 0
 const errorCode = 1
 
-
+//will update alter
 router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 	const { limit, page, catID } = req.body
 	const offset = limit * (page - 1)
@@ -53,7 +53,7 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 	var prodList = []
 
 	var index = 0
-	var accountList = await accountModel.getActiveUser()
+	var accountList = await accountModel.findActiveUser()
 	while (index < result.length) {
 		let prodObj = {
 			prod_id: result[index].prod_id,
@@ -100,13 +100,14 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 			statusCode: successCode
 		})
 	}
-	else {
-		return res.status(200).json({
-			listProduct: [],
-			statusCode: errorCode
+	else{
+		return res.status(400).json({
+			numberOfPage: numberOfPage,
+			numberProduct: numberOfProduct.rows[0].count,
+			listProduct: prodList,
+			statusCode: successCode
 		})
 	}
-
 })
 
 
@@ -168,7 +169,7 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 	var prodList = []
 	if ((result.length != 0)) {
 		var index = 0
-		var accountList = await accountModel.getActiveUser()
+		var accountList = await accountModel.findActiveUser()
 		while (index < result.length) {
 			let prodObj = {
 				prod_id: result[index].prod_id,
@@ -230,7 +231,7 @@ router.get('/details/:id', async (req, res) => {
 	}
 	
 	var prodObject = {}
-	var accountList = await accountModel.getActiveUser()
+	var accountList = await accountModel.findActiveUser()
 	const prodResult = await knex.from('tbl_product')
 		.where('prod_id', id)
 		.returning('*')
@@ -259,5 +260,6 @@ router.get('/details/:id', async (req, res) => {
 		statusCode: errorCode
 	})
 })
+
 
 module.exports = router
