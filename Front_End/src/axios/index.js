@@ -1,11 +1,12 @@
 import axios from 'axios';
-const baseURL = process.env.APP_BASE_URL || 'http://localhost:3030';
+// import { history } from '../helpers';
+const baseURL = process.env.REACT_APP_BASE_URL || 'http://localhost:3000';
 console.log(baseURL)
 
 axios.defaults.baseURL = baseURL;
 
 // ===================== authenticate login
-// // Add a request interceptor
+// Add a request interceptor
 // axios.interceptors.request.use(
 //   (config) => {
 //     const accessToken = localStorage.accessToken;
