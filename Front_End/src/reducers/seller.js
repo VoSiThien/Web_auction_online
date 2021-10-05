@@ -4,11 +4,11 @@ import { getResponseError } from '../helpers';
 
 export const getProfile = createAsyncThunk(
     'seller/profile',
-    async({ rejectWithValue }) => {
+    async() => {
         try {
             return (await sellerApi.getProfile()).data.data;
         } catch (error) {
-            return rejectWithValue(getResponseError(error));
+            // return rejectWithValue(getResponseError(error));
         }
     }
 );

@@ -50,6 +50,12 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'center',
 		justifyContent: 'center',
     	fontfamily: "Roboto",
+	},
+	carcontent:{
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+    	fontfamily: "Roboto",
 	}
 }));
 
@@ -71,13 +77,12 @@ const TabPanel = (props) => {
 
 
 const Profile = (props) => {
-	const user = useSelector((state) => state.auth.user.user);
+	const user = useSelector((state) => state.auth.user);
 	const history = useHistory();
 	let { slug } = useParams();
 	const classes = useStyles();
 	const [tabValue, setTabValue] = useState(0);
 	const { t } = useTranslation();
-
 	const indexToTabName = {
 		0: "basic",
 		1: "password",
@@ -104,10 +109,11 @@ const Profile = (props) => {
 	const card1 = (
 		<React.Fragment>
 			<CardHeader
-				className={classes.headerstyle}
+				className={classes.carheader}
 				title='Bidder Infomation'
 			/>
-		  <CardContent>
+		  <CardContent 
+				className={classes.carcontent}>
 		  	<BasicProfilePanel />
 		  </CardContent>
 		</React.Fragment>
@@ -115,10 +121,11 @@ const Profile = (props) => {
 	const card2 = (
 		<React.Fragment>
 			<CardHeader
-				className={classes.headerstyle}
+				className={classes.carheader}
 				title='Seller Infomation'
 			/>
-		  <CardContent>
+		  <CardContent
+				className={classes.carcontent}>
 		  	<SellerProfilePanel />
 		  </CardContent>
 		</React.Fragment>
@@ -147,12 +154,13 @@ const Profile = (props) => {
 						index={0}
 						className={classes.tabPanel}
 					>
-						<Box className={classes.boxstyle}>
+						<Box className={classes.boxstyle}
+							sx={{ typography: 'body2' }}>
       						<Card variant="outlined">{card1}</Card>
     					</Box>
-						{/* {console.log(user)} */}
 						{user != null && user.role === Role.Seller && (
-						<Box className={classes.boxstyle}>
+						<Box className={classes.boxstyle}
+							sx={{ typography: 'body2' }}>
       						<Card variant="outlined">{card2}</Card>
     					</Box>
 						)}

@@ -1,7 +1,7 @@
 import axios from '../axios/index';
 
 const getProfile = () => {
-  return axios.get('/api/auth/seller');
+  return axios.get('/api/seller/profile');
 };
 
 const sellerApi = {

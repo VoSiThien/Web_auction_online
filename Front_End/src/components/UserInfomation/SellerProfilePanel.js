@@ -1,8 +1,6 @@
 import {
-	Grid,
-	Paper,
-	styled,
 	makeStyles,
+	Box,
 } from "@material-ui/core";
 // import { useTranslation } from "react-i18next";
 import "react-phone-input-2/lib/style.css";
@@ -11,21 +9,16 @@ import { getProfile } from '../../reducers/seller';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		width: '100',
-		borderBottom: '1px solid #ddd',
-		display: 'flex',
-		flexDirection: 'column',
-		padding: `${theme.spacing(5)}px 20px`,
-		alignItems: 'center',
+		width: "30rem",
+		background: "#fff",
+		maxWidth: "100%",
+		margin: "0 auto",
+		padding: "50px 25px",
+		[theme.breakpoints.down("xs")]: {
+			padding: "35px 15px",
+		},
 	  },
 }));
-
-const Item = styled(Paper)(({ theme }) => ({
-	...theme.typography.body2,
-	padding: theme.spacing(1),
-	textAlign: 'center',
-	color: theme.palette.text.secondary,
-  }));
 
 const BasicProfilePanel = () => {
 	// const { t } = useTranslation();
@@ -34,13 +27,15 @@ const BasicProfilePanel = () => {
 	
 	let accLikeSeller = 0;
 	let accDisLikeSeller = 0;
-	let accExpUpgrade = "";
+	let accExpUpgrade = "NONE";
 
+	
+	// console.log(user)
     try {
 		const { user } = dispatch(
 			getProfile()
 		).unwrap();
-  
+		console.log(user);
 		if (user !== null) {
 			accLikeSeller = user.accLikeSeller;
 			accDisLikeSeller = user.accDisLikeSeller;
@@ -52,26 +47,36 @@ const BasicProfilePanel = () => {
 
 	return (
 		<div className={classes.root}>
-			<Grid container spacing={2}>
-				<Grid item xs={4}>
-					<Item>Expired Upgrade</Item>
-				</Grid>
-				<Grid item xs={8}>
-					<Item>{accExpUpgrade}</Item>
-				</Grid>
-				<Grid item xs={4}>
-					<Item>Number of Like</Item>
-				</Grid>
-				<Grid item xs={8}>
-					<Item>{accLikeSeller}</Item>
-				</Grid>
-				<Grid item xs={4}>
-					<Item>Number of Dislike</Item>
-				</Grid>
-				<Grid item xs={8}>
-					<Item>{accDisLikeSeller}</Item>
-				</Grid>
-			</Grid>
+			<Box sx={{ 
+          		display: 'flex',
+				// padding: 10,
+          		flexWrap: 'wrap', 
+				p: 1,
+				m: 1,
+			}}>
+				<Box sx={{ p: 1 }}>Expired Upgrade:</Box>
+				<Box sx={{ p: 1 }}>{accExpUpgrade}</Box>
+			</Box>
+			<Box sx={{ 
+          		display: 'flex',
+				// padding: 10,
+          		flexWrap: 'wrap', 
+				p: 1,
+				m: 1,
+			}}>
+				<Box sx={{ p: 1 }}>Number of Like:</Box>
+				<Box sx={{ p: 1 }}>{accLikeSeller}</Box>
+			</Box>
+			<Box sx={{ 
+          		display: 'flex',
+				// padding: 10,
+          		flexWrap: 'wrap', 
+				p: 1,
+				m: 1,
+			}}>
+				<Box sx={{ p: 1 }}>Number of Dislike:</Box>
+				<Box sx={{ p: 1 }}>{accDisLikeSeller}</Box>
+			</Box>
 	  	</div>
 	);
 };
