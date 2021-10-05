@@ -28,6 +28,14 @@ router.post('/bid-product',validator.bidProduct ,async (req, res) => {
 
 	var product = await knex('tbl_product').join('tbl_account', 'acc_id', 'prod_seller_id').where("prod_id", prodId)
     var account = await knex('tbl_account').where("acc_id", accId)
+    var historyCheck = await knex('tbl_product_history').where("his_account_id", accId).andWhere("his_status", 3).andWhere("his_product_id", prodId)
+
+    if(historyCheck.length !== 0){
+        return res.status(400).json({
+			errorMessage: 'You do not have the right to bid in this product !',
+			statusCode: errorCode
+		})
+    }
 
     if(product.length === 0){
         return res.status(400).json({
@@ -65,7 +73,7 @@ router.post('/bid-product',validator.bidProduct ,async (req, res) => {
     const resultBid = await bidProduct.bidding(priceBid, product, prodId, account)
     
     if(resultBid.statusCode === 0){
-        await knex('tbl_product_history').where("his_status", 1).update({his_status: 0})
+        await knex('tbl_product_history').where("his_status", 1).andWhere("his_product_id", prodId).update({his_status: 0})
 
         await knex('tbl_product_history').insert({
             his_product_id: prodId,
