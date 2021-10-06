@@ -6,7 +6,7 @@ function NavPage() {
         <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
             <Container>
                 <Navbar.Brand href="/">
-                    <FcShop /> Auction Online</Navbar.Brand>
+                    <FcShop className="iconhome"/> Auction Online</Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
