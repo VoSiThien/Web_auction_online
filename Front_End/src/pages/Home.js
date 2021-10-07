@@ -51,13 +51,13 @@ function Home() {
           </Carousel>
         </div>
 
-        <Alert variant="warning"><FcAlarmClock className="iconaler"/> 5 sản phẩm gần kết thúc!</Alert>
+        <Alert variant="warning"><FcAlarmClock className="iconaler" /> 5 sản phẩm gần kết thúc!</Alert>
 
         <div>
           <Row xs={1} md={2} className="g-4">
             <Col>
               <Card>
-                <Card.Img variant="top" src={iphone1} className="subphotorow1"/>
+                <Card.Img variant="top" src={iphone1} className="subphotorow1" />
                 <Card.Body>
                   <Card.Title>Card title</Card.Title>
                   <Card.Text>
@@ -72,7 +72,7 @@ function Home() {
             </Col>
             <Col>
               <Card>
-                <Card.Img variant="top" src={iphone1} className="subphotorow1"/>
+                <Card.Img variant="top" src={iphone1} className="subphotorow1" />
                 <Card.Body>
                   <Card.Title>Card title</Card.Title>
                   <Card.Text>
@@ -138,7 +138,7 @@ function Home() {
           </Row>
         </div>
 
-        <Alert variant="success"><FcDebt className="iconaler"/> 5 sản phẩm có nhiều lượt ra giá nhất!</Alert>
+        <Alert variant="success"><FcDebt className="iconaler" /> 5 sản phẩm có nhiều lượt ra giá nhất!</Alert>
 
         <div>
           <Row xs={1} md={2} className="g-2">
@@ -225,7 +225,7 @@ function Home() {
           </Row>
         </div>
 
-        <Alert variant="primary"><FcCurrencyExchange className="iconaler"/> 5 sản phẩm có giá cao nhất!</Alert>
+        <Alert variant="primary"><FcCurrencyExchange className="iconaler" /> 5 sản phẩm có giá cao nhất!</Alert>
 
         <div>
           <Row xs={1} md={2} className="g-2">
