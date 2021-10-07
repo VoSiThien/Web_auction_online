@@ -16,7 +16,7 @@
 
 # dependencies
 node_modules
-
+uploads
 # log
 logs/*
 models/logs/*
