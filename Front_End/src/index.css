@@ -11,3 +11,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.photo {
+  height: 610px;
+  width: 1200px; 
+}
+.center {
+  height: 630px;
+  width: 1200px; 
+  margin: auto;
+  padding: 10px;
+}
+.subphotorow1 {
+  height: 320px;
+  width: 200px; 
+}
+.iconhome {
+  height: 35px;
+  width: 45px; 
+}
+.iconaler {
+  height: 30px;
+  width: 30px; 
+}

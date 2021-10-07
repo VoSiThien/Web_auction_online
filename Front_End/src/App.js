@@ -1,7 +1,6 @@
 import { createTheme, ThemeProvider } from '@material-ui/core';
 // import {  } from 'react';
 // import 'react-toastify/dist/ReactToastify.css';
-import { Route, Switch } from 'react-router-dom'; //Redirect
 import { Suspense, useEffect } from 'react';
 import { useDispatch, } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +9,8 @@ import { authActions as userAuthActions } from './reducers/auth';
 import { ToastContainer } from 'react-toastify';
 import { ProtectedRoute } from './components/Common/ProtectedRoute';
 import { routes, adminRoutes } from './config/routes';
+import { Route, Switch, Redirect } from 'react-router-dom';
+import Category from './pages/Category';
 import PageNotFound from './pages/404NotFound';
 import Loading from './components/Loading/Loading';
 import { CheckRole } from './components/Common/CheckRole';
@@ -28,6 +29,24 @@ const theme = createTheme({
   },
 });
 
+// ...rest = path = "link"
+//children = page -------  example : <Category />
+// function PrivateRouter({children, ...rest}) {
+//   let auth = {
+//     user:true
+//   }
+//   return (
+//     <Route {...rest} render={() => {
+//       //check whether user authenticated or not, if not return to homepage
+//       if(auth.user){
+//         return children; 
+//       }else{
+//         return <Redirect to={{ pathname: '/'}} />
+//       }
+//     }} />
+//   );
+// };
+//the main component of ReactJS is App component
 function App() {
   const dispatch = useDispatch();
   const { i18n } = useTranslation();
