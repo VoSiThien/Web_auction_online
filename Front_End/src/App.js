@@ -2,7 +2,7 @@
 // import { Suspense } from 'react';
 // import 'react-toastify/dist/ReactToastify.css';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import Category from './pages/category/Category';
+import Category from './pages/Category';
 import PageNotFound from './pages/404NotFound';
 import HomePage from './pages/Home';
 
@@ -15,6 +15,7 @@ function PrivateRouter({children, ...rest}) {
   }
   return (
     <Route {...rest} render={() => {
+      //check whether user authenticated or not, if not return to homepage
       if(auth.user){
         return children; 
       }else{
@@ -23,7 +24,7 @@ function PrivateRouter({children, ...rest}) {
     }} />
   );
 };
-
+//the main component of ReactJS is App component
 function App() {
   return (
     <div>
