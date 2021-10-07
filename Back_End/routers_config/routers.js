@@ -2,8 +2,11 @@ const express = require('express')
 const router = express.Router()
 
 const API = require('./api')
+const unAuthorizeApi = require('./unAuthorizeApi')
 
 router.use('/api', API)
+router.use('/unauthorized-api', unAuthorizeApi)
+
 
 router.use((req, res, next) => {
 	return res.status(400).json({
