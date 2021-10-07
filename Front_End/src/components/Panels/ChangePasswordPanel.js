@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Validate } from '../../helpers';
 import { useInput } from '../../hooks/use-input';
-import { resetPassword } from '../../reducers/auth';
+import { resetPassword as userResetPassword } from '../../reducers/users/auth';
 const useStyles = makeStyles((theme) => ({
   form: {
     width: '30rem',
@@ -65,7 +65,7 @@ const ChangePasswordPanel = () => {
 
     try {
       await dispatch(
-        resetPassword({
+        userResetPassword({
           userId: user.acc_id,
           newPassword: enteredNewPassword,
         })

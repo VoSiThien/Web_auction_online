@@ -6,14 +6,17 @@ import { Suspense, useEffect } from 'react';
 import { useDispatch, } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { langActions } from './reducers/lang';
-import { authActions } from './reducers/auth';
+import { authActions as userAuthActions } from './reducers/auth';
 import { ToastContainer } from 'react-toastify';
 import { ProtectedRoute } from './components/Common/ProtectedRoute';
-import { routes } from './config/routes';
+import { routes, adminRoutes } from './config/routes';
 import PageNotFound from './pages/404NotFound';
 import Loading from './components/Loading/Loading';
 import { CheckRole } from './components/Common/CheckRole';
 import { mainColor } from './utils/colors';
+import { AdminTemplate } from './components/Layout/AdminTemplate';
+// const AdminLoginPage = lazy(() => import('./components/LoginPage'));
+
 //authentication route
 
 const theme = createTheme({
@@ -44,7 +47,7 @@ function App() {
       const accessToken = localStorage.getItem('accessToken');
       if (!userLocal || !accessToken) return;
       dispatch(
-        authActions.loginVerified({
+        userAuthActions.loginVerified({
           user: userLocal,
           accessToken,
         })
@@ -87,38 +90,33 @@ function App() {
               />
             );
           })}
-
-          {/* <Route
+          
+          <Route
             path="/admin"
             render={(props) => {
               return (
-                <ProtectedRoute {...props} roles={['ADM']}>
                   <AdminTemplate>
-                    <Switch>
                       {adminRoutes.map((route, index) => {
                         return (
-                          <Route
-                            key={index}
-                            path={route.path}
-                            exact={route.exact}
-                            render={(props) => {
-                              return (
-                                <CheckRole roles={route.roles}>
-                                  <route.component {...props} {...route.props} />
-                                </CheckRole>
-                              );
-                            }}
-                          />
+                        <Route
+                          key={index}
+                          path={route.path}
+                          exact={route.exact}
+                          render={(props) => {
+                          return (
+                            <CheckRole roles={route.roles}>
+                            <route.component {...props} {...route.props} />
+                            </CheckRole>
+                          );
+                          }}
+                        />
                         );
                       })}
-                    </Switch>
                   </AdminTemplate>
-                </ProtectedRoute>
               );
             }}
-          /> */}
-
-          <Route path="*">
+            />
+            <Route path="*">
             <PageNotFound />
           </Route>
         </Switch>

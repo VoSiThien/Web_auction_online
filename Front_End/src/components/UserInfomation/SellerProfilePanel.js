@@ -2,10 +2,12 @@ import {
 	makeStyles,
 	Box,
 } from "@material-ui/core";
-// import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import React, { useCallback, useEffect, useState } from 'react';
 import "react-phone-input-2/lib/style.css";
-import { useDispatch } from 'react-redux';
-import { getProfile } from '../../reducers/seller';
+import { useDispatch } from "react-redux";
+import { getProfile } from '../../reducers/users/seller';
+import { toast } from 'react-toastify';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -13,71 +15,62 @@ const useStyles = makeStyles((theme) => ({
 		background: "#fff",
 		maxWidth: "100%",
 		margin: "0 auto",
-		padding: "50px 25px",
+		padding: "20px 25px",
 		[theme.breakpoints.down("xs")]: {
 			padding: "35px 15px",
 		},
 	  },
 }));
 
-const BasicProfilePanel = () => {
-	// const { t } = useTranslation();
+const SellerProfilePanel = () => {
+	const { t } = useTranslation();
 	const classes = useStyles();
+	const [sellerInfo, setSellerInfo] = useState({
+		accExpUpgrade: 'None',
+		accLikeSeller: 0,
+		accDisLikeSeller: 0,
+	});
 	const dispatch = useDispatch();
-	
-	let accLikeSeller = 0;
-	let accDisLikeSeller = 0;
-	let accExpUpgrade = "NONE";
 
-	
-	// console.log(user)
-    try {
-		const { user } = dispatch(
-			getProfile()
-		).unwrap();
-		console.log(user);
-		if (user !== null) {
-			accLikeSeller = user.accLikeSeller;
-			accDisLikeSeller = user.accDisLikeSeller;
-			accExpUpgrade = user.accExpUpgrade;
+	const sellerProfile = useCallback(async () => {
+		try {
+			return await dispatch(getProfile()).unwrap();
+		} catch (err) {
+			toast.error(err);
 		}
-	  } catch (err) {
-		// setError(err);
-	  }
+	}, [dispatch]);
+	
+	useEffect(() => {
+		sellerProfile().then((result) => { setSellerInfo(result) });
+	  }, [sellerProfile]);
 
 	return (
 		<div className={classes.root}>
 			<Box sx={{ 
           		display: 'flex',
-				// padding: 10,
-          		flexWrap: 'wrap', 
+          		flexWrap: 'wrap',
 				p: 1,
-				m: 1,
 			}}>
-				<Box sx={{ p: 1 }}>Expired Upgrade:</Box>
-				<Box sx={{ p: 1 }}>{accExpUpgrade}</Box>
+				<Box sx={{ minWidth: 150 }}>{t('sellerProfile.expUpgrade')}</Box>
+				<Box sx={{ }}>{sellerInfo.accExpUpgrade}</Box>
 			</Box>
 			<Box sx={{ 
           		display: 'flex',
-				// padding: 10,
           		flexWrap: 'wrap', 
 				p: 1,
-				m: 1,
 			}}>
-				<Box sx={{ p: 1 }}>Number of Like:</Box>
-				<Box sx={{ p: 1 }}>{accLikeSeller}</Box>
+				<Box sx={{ minWidth: 150  }}>{t('sellerProfile.likeSeller')}</Box>
+				<Box sx={{ }}>{sellerInfo.accLikeSeller}</Box>
 			</Box>
 			<Box sx={{ 
           		display: 'flex',
-				// padding: 10,
-          		flexWrap: 'wrap', 
+          		flexWrap: 'wrap',
 				p: 1,
-				m: 1,
 			}}>
-				<Box sx={{ p: 1 }}>Number of Dislike:</Box>
-				<Box sx={{ p: 1 }}>{accDisLikeSeller}</Box>
+				<Box sx={{ minWidth: 150  }}>{t('sellerProfile.dislikeSeller')}</Box>
+				<Box sx={{ }}>{sellerInfo.accDisLikeSeller}</Box>
 			</Box>
 	  	</div>
 	);
 };
-export default BasicProfilePanel;
+export default SellerProfilePanel;

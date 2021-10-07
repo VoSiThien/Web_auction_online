@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import authApi from '../apis/users/auth';
-import { getResponseError } from '../helpers';
+import authApi from '../../apis/users/auth';
+import { getResponseError } from '../../helpers';
 
 const initialState = {
     accessToken: null,

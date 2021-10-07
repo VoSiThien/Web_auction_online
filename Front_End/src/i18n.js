@@ -121,6 +121,11 @@ const vnTranslation = {
     categories: 'Danh mục sản phẩm',
   },
   back: 'Quay lại',
+  sellerProfile:{
+    expUpgrade: "Ngày hết hạn seller:",
+    likeSeller: "Số lượt Thích:",
+    dislikeSeller: "Số lượt Không Thích:",
+  },
 };
 const enTranslation = {
   title: 'Family Store - Easy to buy online',
@@ -241,6 +246,12 @@ const enTranslation = {
     categories: 'All Categories',
   },
   back: 'Back',
+
+  sellerProfile:{
+    expUpgrade: "Expired Seller:",
+    likeSeller: "Num of Like:",
+    dislikeSeller: "Num of Dislike:"
+  },
 };
 
 const resources = {

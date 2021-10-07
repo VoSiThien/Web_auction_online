@@ -3,25 +3,26 @@ import {
 	AppBar,
 	makeStyles,
 	IconButton,
-	Badge,
+	// Badge,
 	Toolbar,
 	Select,
 	MenuItem,
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import {
-	LocalMall,
+	// LocalMall,
 	Person,
 	Menu,
 	ExitToApp,
 	Translate,
 } from "@material-ui/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
-import { authActions } from "../../reducers/auth";
+import { authActions as userAuthActions } from "../../reducers/auth";
 import { uiActions } from "../../reducers/ui";
 import { langActions } from "../../reducers/lang";
+import { Role }  from "../../config/role";
 
 import SearchInput from "../UI/SearchInput";
 const useStyles = makeStyles((theme) => ({
@@ -189,11 +190,11 @@ const Header = ({ showMenu, showCart }) => {
 	const classes = useStyles({ showMenu });
 	const dispatch = useDispatch();
 	const history = useHistory();
-	const cartItems = useSelector((state) => state.cart.data);
+	// const cartItems = useSelector((state) => state.cart.data);
 	const lang = useSelector((state) => state.lang.current);
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 	const user = useSelector((state) => state.auth.user);
-	const [btnIsHightlighted, setBtnIsHightlighted] = useState(false);
+	// const [btnIsHightlighted, setBtnIsHightlighted] = useState(false);
 
 	const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
 
@@ -201,20 +202,20 @@ const Header = ({ showMenu, showCart }) => {
 		setToggleUserDropdown((prevState) => !prevState);
 	};
 
-	const numberOfCartItems = cartItems.reduce((cartNumber, item) => {
-		return cartNumber + item.quantity;
-	}, 0);
+	// const numberOfCartItems = cartItems.reduce((cartNumber, item) => {
+	// 	return cartNumber + item.quantity;
+	// }, 0);
 
-	const toggleCartModalHandler = () => {
-		dispatch(uiActions.toggleCartModal());
-	};
+	// const toggleCartModalHandler = () => {
+	// 	dispatch(uiActions.toggleCartModal());
+	// };
 
 	const toggleSideBarHandler = () => {
 		dispatch(uiActions.toggleSideBar());
 	};
 
 	const logoutHandler = () => {
-		dispatch(authActions.logout());
+		dispatch(userAuthActions.logout());
 		history.push("/login");
 	};
 
@@ -224,19 +225,19 @@ const Header = ({ showMenu, showCart }) => {
 		dispatch(langActions.updateLang(langSelected));
 	};
 
-	const btnCart = `${classes.iconButton} ${
-		btnIsHightlighted ? classes.bump : ""
-	}`;
-	useEffect(() => {
-		if (cartItems?.length === 0) {
-			return;
-		}
+	// const btnCart = `${classes.iconButton} ${
+	// 	btnIsHightlighted ? classes.bump : ""
+	// }`;
+	// useEffect(() => {
+	// 	if (cartItems?.length === 0) {
+	// 		return;
+	// 	}
 
-		setBtnIsHightlighted(true);
-		setTimeout(() => {
-			setBtnIsHightlighted(false);
-		}, 300);
-	}, [cartItems]);
+	// 	setBtnIsHightlighted(true);
+	// 	setTimeout(() => {
+	// 		setBtnIsHightlighted(false);
+	// 	}, 300);
+	// }, [cartItems]);
 
 	return (
 		<AppBar position="fixed" className={classes.root}>
@@ -306,18 +307,22 @@ const Header = ({ showMenu, showCart }) => {
 							}`}
 						>
 							{user != null && isAuthenticated && (
+								<>
 									<li>
-										<Link to="/profile">My account</Link>
+										<Link to="/profile">Profile</Link>
 									</li>
+									{(user.role === Role.Seller) && (
+										<li>
+											<Link to="/product-mgt">Product Management</Link>
+										</li>
+									)}
+								</>	
 							)}
 							{(user == null || !isAuthenticated) && (
 								<li>
 									<Link to="/login">Login</Link>
 								</li>
 							)}
-							<li>
-								<Link to="/orders">My orders</Link>
-							</li>
 						</ul>
 					</IconButton>
 					{user != null && isAuthenticated && (
@@ -336,7 +341,7 @@ const Header = ({ showMenu, showCart }) => {
 							</Typography>
 						</IconButton>
 					)}
-					{showCart && (
+					{/* {showCart && (
 						<IconButton
 							aria-label="show number products"
 							color="inherit"
@@ -356,7 +361,7 @@ const Header = ({ showMenu, showCart }) => {
 								My cart
 							</Typography>
 						</IconButton>
-					)}
+					)} */}
 				</div>
 			</Toolbar>
 		</AppBar>
