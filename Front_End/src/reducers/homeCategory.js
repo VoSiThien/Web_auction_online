@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import categoryApi from '../apis/category';
+import homeCategoryApi from '../apis/homeCategory';
 import { getResponseError } from '../helpers';
 
 const initialState = {
@@ -7,12 +7,12 @@ const initialState = {
   loading: false,
 };
 
-export const getListCategory = createAsyncThunk(
-  'category/Get',
-  async ({page, limit}, { rejectWithValue }) => {
+export const getHomeCategory = createAsyncThunk(
+  'homeCategory/GetList',
+  async (_, { rejectWithValue }) => {
   try {
-    const asd = (await categoryApi.getListCategory({page, limit})).data
-    return asd;
+    const catList = (await homeCategoryApi.geHomepageCategory()).data
+    return catList;
   } catch (error) {
     return rejectWithValue(getResponseError(error));
   }
@@ -23,13 +23,13 @@ const adminCategorySlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [getListCategory.pending]: (state) => {
+    [getHomeCategory.pending]: (state) => {
       state.loading = true;
     },
-    [getListCategory.rejected]: (state) => {
+    [getHomeCategory.rejected]: (state) => {
       state.loading = false;
     },
-    [getListCategory.fulfilled]: (state, action) => {
+    [getHomeCategory.fulfilled]: (state, action) => {
       state.loading = false;
       state.data = action.payload;
     },

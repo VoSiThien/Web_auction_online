@@ -1,3 +1,4 @@
+/*
 import { Navbar, Container, Nav, NavDropdown, Form, FormControl, Button, Row, Col, Dropdown } from 'react-bootstrap';
 import { FcShop } from 'react-icons/fc';
 
@@ -16,170 +17,9 @@ import { Link, useHistory } from "react-router-dom";
 import { getHomeCategory } from '../../reducers/homeCategory'
 import { authActions as userAuthActions } from "../../reducers/auth";
 import { Role } from "../../config/role";
-import { CategoryItem } from "../Homepage/CatogoryItem"
 
 const useStyles = makeStyles((theme) => ({
-	root: {},
-	eventsNav: {
-
-	},
-	toolBar: {
-		width: "100%",
-		[theme.breakpoints.down("xs")]: {
-			paddingLeft: theme.spacing(1),
-			paddingRight: theme.spacing(1),
-		},
-	},
-	logo: {
-		flex: 1,
-		display: "flex",
-		alignItems: "center",
-	},
-	menuButton: {
-		display: "none",
-		[theme.breakpoints.down("sm")]: {
-			display: "block",
-		},
-	},
-	fromTablet: {
-		display: "block",
-		[theme.breakpoints.down("xs")]: {
-			display: "none",
-		},
-	},
-	mobileOnly: {
-		display: "none",
-		[theme.breakpoints.down("xs")]: {
-			display: "block",
-		},
-	},
-
-	home: {
-		color: "inherit",
-		textDecoration: "none",
-		display: "flex",
-		alignItems: "center",
-		paddingLeft: ({ showMenu }) => (showMenu ? 0 : theme.spacing(1)),
-		"& img": {
-			width: 24,
-			marginRight: 10,
-			height: "auto",
-			maxHeight: "100%",
-			[theme.breakpoints.down("sm")]: {
-				display: "none",
-			},
-		},
-		"&>h2": {
-			[theme.breakpoints.down("sm")]: {
-				fontSize: "1rem",
-			},
-		},
-	},
-	sectionDesktop: {
-		flex: 1,
-		display: "flex",
-		justifyContent: "center",
-	},
-	search: {
-		flex: 3,
-		marginLeft: theme.spacing(2),
-		marginRight: theme.spacing(2),
-		[theme.breakpoints.down("sm")]: {
-			display: "none",
-		},
-	},
-
-	navLink: {
-		color: "inherit",
-	},
-	iconButton: {
-		position: "relative",
-		[theme.breakpoints.down("sm")]: {
-			padding: "5px",
-		},
-		"&:hover $iconButtonCaption": {
-			opacity: 1,
-		},
-	},
-	iconButtonCaption: {
-		position: "absolute",
-		bottom: -theme.spacing(1.25),
-		left: "50%",
-		transform: "translate(-50%, 100%)",
-		whiteSpace: "nowrap",
-		color: "#333",
-		padding: "0px 2px",
-		background: theme.palette.common.white,
-		borderRadius: theme.shape.borderRadius,
-		opacity: 0,
-		transition: "opacity .3s",
-		pointerEvents: "none",
-		boxShadow: "0px 1px 3px rgba(0,0,0,.3)",
-	},
-	dropDown: {
-		position: "absolute",
-		bottom: -theme.spacing(1.25),
-		right: -5,
-		transform: "translateY(100%)",
-		color: "#333",
-		padding: `${theme.spacing(1.5)}px ${theme.spacing(2)}px`,
-		background: theme.palette.common.white,
-		borderRadius: theme.shape.borderRadius,
-		opacity: 0,
-		pointerEvents: "none",
-		transition: "opacity .3s",
-		boxShadow: "0px 1px 3px rgba(0,0,0,.3)",
-		minWidth: "max-content",
-		listStyle: "none",
-		"& li:not(:last-child)": {
-			display: "block",
-			marginBottom: theme.spacing(1),
-		},
-		"& a": {
-			fontSize: theme.typography.fontSize,
-			textAlign: "left",
-			display: "block",
-			textDecoration: "none",
-			color: "#333",
-			"&:hover": {
-				textDecoration: "underline",
-			},
-		},
-	},
-	dropDownActive: {
-		opacity: 1,
-		pointerEvents: "all",
-	},
-	selectLanguage: {
-		color: "#fff",
-		margin: "0 12px",
-		"& svg": {
-			color: "#fff",
-		},
-		"&:before": {
-			border: "none !important",
-		},
-	},
-	bump: {
-		animation: "$bump 300ms ease-out",
-	},
-	"@keyframes bump": {
-		"0%": {
-			transform: "scale(1)",
-		},
-		"10%": {
-			transform: "scale(0.9)",
-		},
-		"30%": {
-			transform: "scale(1.1)",
-		},
-		"500%": {
-			transform: "scale(1.15)",
-		},
-		"100%": {
-			transform: "scale(1)",
-		},
-	},
+	root: {}
 }));
 function Header({ showMenu }) {
 	const classes = useStyles({ showMenu });
@@ -214,8 +54,14 @@ function Header({ showMenu }) {
 
 
 	return (
-
 		<>
+			{homeCatData.paginationlist?.length > 0 &&
+				homeCatData.paginationlist.map((row, index) => (
+					<tr key={index}>
+						<td>{row.cateName}</td>
+					</tr>
+
+				))}
 
 			<Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
 				<Container>
@@ -224,18 +70,104 @@ function Header({ showMenu }) {
 					<Navbar.Toggle aria-controls="responsive-navbar-nav" />
 					<Navbar.Collapse id="responsive-navbar-nav">
 						<Nav className="me-auto">
-							<NavDropdown title="Chuyên mục" id="collasible-nav-dropdown" menuVariant="dark">
-								{homeCatData?.paginationlist?.length > 0 &&		//khi xai ham cua react phai co dau ?
-									homeCatData.paginationlist.map((cat, index) => (
-										<CategoryItem
-											key={index}
-											id={cat.cateId}
-											title={cat.cateName}
-											items={cat.subCategories} //truyen du lieu giua 2 component
-										/>
-									))}
-
+							<NavDropdown title="Chuyên mục" id="collasible-nav-dropdown">
+								<NavDropdown.Item href="#action/3.1">Điện thoại</NavDropdown.Item>
+								<NavDropdown.Item href="#action/3.1">Máy tính</NavDropdown.Item>
 							</NavDropdown>
+							<NavDropdown title="Chuyên mục" id="collasible-nav-dropdown">
+								<NavDropdown.Item href="#action/3.1">Điện thoại</NavDropdown.Item>
+								<NavDropdown.Item href="#action/3.1">Máy tính</NavDropdown.Item>
+							</NavDropdown>
+							<Container className="eventsNav pt-0 mt-0">
+								<Row>
+									<Col xs="12" md="6" className="text-left">
+										<Dropdown.Header>
+											Catering
+										</Dropdown.Header>
+										<Dropdown.Item>
+											<Link href="/">
+												<a className="nav-link" role="button">
+													Corporate
+												</a>
+											</Link>
+										</Dropdown.Item>
+										<Dropdown.Item>
+											<Link href="/">
+												<a className="nav-link" role="button">
+													Private
+												</a>
+											</Link>
+										</Dropdown.Item>
+
+										<Dropdown.Divider />
+										<Dropdown.Header>
+											
+										</Dropdown.Header>
+										<Dropdown.Item>
+											<Link href="/">
+												<a className="nav-link" role="button">
+													Barista 101
+												</a>
+											</Link>
+										</Dropdown.Item>
+										<Dropdown.Item>
+											<Link href="/">
+												<a className="nav-link" role="button">
+													History of Coffee
+												</a>
+											</Link>
+										</Dropdown.Item>
+										<Dropdown.Item>
+											<Link href="/">
+												<a className="nav-link" role="button">
+													Intro to Cafe Snobbery
+												</a>
+											</Link>
+										</Dropdown.Item>
+										<Dropdown.Divider className="d-md-none" />
+									</Col>
+
+									<Col xs="12" md="6" className="text-left">
+										<Dropdown.Header>
+											{"  "}
+											Rentals
+										</Dropdown.Header>
+										<Dropdown.Item>
+											<Link href="/">
+												<a className="nav-link" role="button">
+													Fireside Room
+												</a>
+											</Link>
+										</Dropdown.Item>
+										<Dropdown.Item>
+											<Link href="/">
+												<a className="nav-link" role="button">
+													Roasting Room
+												</a>
+											</Link>
+										</Dropdown.Item>
+										<Dropdown.Divider />
+										<Dropdown.Header>
+											{"  "}
+											Seasonal
+										</Dropdown.Header>
+										<Dropdown.Item>
+											<Link href="/">
+												<a className="nav-link" role="button">
+													Coldbrew Night
+												</a>
+											</Link>
+										</Dropdown.Item>
+										<Dropdown.Item>
+											<Link href="/">
+												<a className="nav-link text-wrap" role="button">
+													Campfire Coffee Class
+												</a>
+											</Link>
+										</Dropdown.Item>
+									</Col>
+								</Row>
+							</Container>
 						</Nav>
 						<Form className="d-flex">
 							<FormControl
@@ -302,3 +234,4 @@ function Header({ showMenu }) {
 }
 
 export default Header;
+*/

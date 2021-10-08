@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import categoryRedu from '../reducers/category';
+import homeCategoryRedu from '../reducers/homeCategory';
 import historyRedu from '../reducers/historyBid';
 import authSlice from '../reducers/auth';
 // import adminAuthSlice from '../reducers/admin/auth';
@@ -11,6 +12,7 @@ import bidProductRedu from '../reducers/users/bidder';
 const store = configureStore({
   reducer: {
     category: categoryRedu.reducer,
+    homeCategory: homeCategoryRedu.reducer,
     history: historyRedu.reducer,
     bidProduct: bidProductRedu.reducer,
     
