@@ -130,7 +130,7 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 
 	}
 
-
+	
 	//set default search condition
 	if (filterField == undefined || filterField == 'prod_created_date') {
 		filterField = 'prod_created_date::timestamp'
@@ -190,7 +190,8 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 		}
 		prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == result[index].prod_price_holder).acc_full_name
 		prodObj.prod_seller = accountList.find((seller) => seller.acc_id == result[index].prod_seller_id).acc_full_name
-		
+		prodList.push(prodObj)
+		index++
 	}
 
 	return res.status(200).json({
