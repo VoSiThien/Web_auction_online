@@ -55,7 +55,7 @@ const Footer = ({ hasSideBar }) => {
 			<Container className={classes.container}>
 				<div className={classes.content}>
 					<Typography variant="body1">
-						Copyright 2021 © Family market.
+						Copyright 2021 © Auction online.
 					</Typography>
 					<div className={classes.contact}>
 						<Typography variant="body1">Contact us at</Typography>

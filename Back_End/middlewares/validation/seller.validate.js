@@ -102,4 +102,5 @@ const updateAuctionProductDescription = (req, res, next) => {
 module.exports = {
     postAuctionProduct,
     updateAuctionProductDescription,
+    getAuctionProductList
 }
