@@ -12,8 +12,7 @@ const errorCode = 1
 
 router.post('/bid-product', validator.bidProduct, async (req, res) => {
     const { priceBid, prodId } = req.body
-    //const accId = req.account['accId']
-    const accId = 1
+    const accId = req.account['accId']
     let present = moment().format('YYYY-MM-DD HH:mm:ss')
 
     let regexPattern = /^\d+$/
@@ -98,7 +97,7 @@ router.post('/bid-product', validator.bidProduct, async (req, res) => {
     })
 
     return res.status(400).json({
-        message: resultBid.message,
+        errorMessage: resultBid.message,
         statusCode: errorCode
     })
 })
@@ -106,7 +105,7 @@ router.post('/bid-product', validator.bidProduct, async (req, res) => {
 router.post('/history-product', validator.historyProduct, async (req, res) => {
     const { page, limit, prodId, status } = req.body
     const offset = limit * (page - 1)
-    const accRole = 'Sel';
+    const accRole = req.account['accRole']
 
     var numberPage = 1;
 
@@ -220,7 +219,7 @@ router.post('/cancel-bid/:id', async (req, res) => {
 
     if (hisProduct.length === 0) {
         return res.status(400).json({
-            message: "History does not exist or status is not confirmed",
+            errorMessage: "History does not exist or status is not confirmed",
             statusCode: errorCode
         })
     }
@@ -234,7 +233,7 @@ router.post('/cancel-bid/:id', async (req, res) => {
 
     if (checkmailCancel === false) {
         return {
-            message: "send email failed",
+            errorMessage: "send email failed",
             statusCode: 2
         }
     }
@@ -251,7 +250,7 @@ router.post('/confirm-bid/:id', async (req, res) => {
 
     if (hisProduct.length === 0) {
         return res.status(400).json({
-            message: "History does not exist or status is not confirmed",
+            errorMessage: "History does not exist or status is not confirmed",
             statusCode: errorCode
         })
     }
@@ -270,7 +269,7 @@ router.post('/confirm-bid/:id', async (req, res) => {
     }
 
     return res.status(400).json({
-        message: resultBid.message,
+        errorMessage: resultBid.message,
         statusCode: errorCode
     })
 })

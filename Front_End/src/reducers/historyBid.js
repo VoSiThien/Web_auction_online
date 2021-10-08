@@ -32,9 +32,7 @@ export const cancelHistory = createAsyncThunk(
     'Cancel/Post',
     async ({hisId}, { rejectWithValue }) => {
     try {
-        console.log('aa');
         var check = await historyApi.cancelHistory({hisId});
-        console.log(check);
         return check.data;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
@@ -59,5 +57,5 @@ const historyBidSlice = createSlice({
   },
 });
 
-export const historyBidAccounts = historyBidSlice.actions;
+export const historyBidActions = historyBidSlice.actions;
 export default historyBidSlice;
