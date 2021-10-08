@@ -55,12 +55,6 @@ export const routes = [
 ];
 
 export const adminRoutes = [
-  // {
-  //   path: '/admin/login',
-  //   protected: false,
-  //   exact: true,
-  //   component: AdminLoginPage,
-  // },  
   {
     path: '/admin',
     protected: true,
@@ -68,11 +62,4 @@ export const adminRoutes = [
     component: DashbroadPage,
     roles: [Role.Admin],
   },
-  // {
-  //   path: '/admin/dashboard',
-  //   protected: true,
-  //   exact: true,
-  //   component: DashbroadPage,
-  //   roles: [Role.Admin],
-  // },
 ];

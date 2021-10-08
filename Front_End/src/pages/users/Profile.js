@@ -113,6 +113,7 @@ const Profile = (props) => {
 				justifyContent="center" 
 				alignItems="center"
 				title='Bidder Infomation'
+				variant="body2"
 			/>
 		  <CardContent 
 				className={classes.carcontent}>
@@ -127,6 +128,7 @@ const Profile = (props) => {
 				justifyContent="center" 
 				alignItems="center"
 				title='Seller Infomation'
+				variant="body2"
 			/>
 		  <CardContent
 				className={classes.carcontent}>
@@ -136,8 +138,8 @@ const Profile = (props) => {
 	  );
 	return (
 		<>
+			<Header />
 			<div className={classes.root}>
-				<Header showCart />
 				<Container>
 					<Paper>
 						<Tabs

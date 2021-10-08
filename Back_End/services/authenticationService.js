@@ -19,23 +19,15 @@ const getRole = async (acc_id) => {
 
 
 const authenticate = async (email, password, callback, req, res) => {
-	const result = await accountModel.findActiveUser(email)
-
-	if (result.length === 0) {
+	const result = await accountModel.findByEmail(email)
+	if (result == null || !bcrypt.compareSync(password, result.acc_password)) {
 		return res.status(400).json({ 
-			errorMessage: 'User Does Not Exist!',
+			errorMessage: 'Username or  Password Incorrect!',
 			statusCode: errorCode
 		})
 	}
 
-	if (!bcrypt.compareSync(password, result[0].acc_password)) {
-		return res.status(400).json({ 
-			errorMessage: 'Password Incorrect!',
-			statusCode: errorCode
-		})
-	}
-
-	const { acc_id, acc_status } = result[0]
+	const { acc_id, acc_status } = result
 	const auth = {
 		accStaus: acc_status,
 		accId: acc_id,

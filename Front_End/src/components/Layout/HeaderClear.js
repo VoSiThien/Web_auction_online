@@ -184,7 +184,6 @@ function Header({ showMenu }) {
 	const user = useSelector((state) => state.auth.user);
 
 	const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
-
 	const toggleUserDropdownHandler = () => {
 		setToggleUserDropdown((prevState) => !prevState);
 	};
@@ -216,12 +215,12 @@ function Header({ showMenu }) {
                     <Form className="d-flex">
                         <FormControl
                             type="search"
-                            placeholder="Search"
+                            placeholder="Tìm kiếm"
                             className="mr-2"
                             aria-label="Search"
 							hidden
                         />
-                        <Button variant="dark" hidden>Search</Button>
+                        <Button variant="dark" hidden>Tìm kiếm</Button>
                     </Form>
 					<Nav>
 						<IconButton
@@ -238,18 +237,18 @@ function Header({ showMenu }) {
 								{user != null && isAuthenticated && (
 									<>
 										<li>
-											<Link to="/profile">Profile</Link>
+											<Link to="/profile">Trang cá nhân</Link>
 										</li>
 										{(user.role === Role.Seller) && (
 											<li>
-												<Link to="/product-mgt">Product Management</Link>
+												<Link to="/product-mgt">Quản lý sản phẩm</Link>
 											</li>
 										)}
 									</>
 								)}
 								{(user == null || !isAuthenticated) && (
 									<li>
-										<Link to="/login">Login</Link>
+										<Link to="/login">Đăng nhập</Link>
 									</li>
 								)}
 							</ul>
@@ -266,7 +265,7 @@ function Header({ showMenu }) {
 									variant="caption"
 									className={classes.iconButtonCaption}
 								>
-									Log out
+									Đăng xuất
 								</Typography>
 							</IconButton>
 						)}

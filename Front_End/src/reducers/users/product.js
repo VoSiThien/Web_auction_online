@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import API from '../../apis/users/product-mgt';
+import API from '../../apis/users/product';
 import { getResponseError } from '../../helpers';
 
 const initialState = {
@@ -9,10 +9,10 @@ const initialState = {
 };
 
 export const getAuctionProductList = createAsyncThunk(
-  'users/product/GetList',
-  async (page, { rejectWithValue }) => {
+  'product/getAuctionProductList',
+  async ({page, limit}, { rejectWithValue }) => {
     try {
-      return (await API.getAuctionProductList(page, 10)).data.data;
+      return (await API.getAuctionProductList({page, limit})).data.data;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }
@@ -30,12 +30,12 @@ export const deleteProduct = createAsyncThunk(
   }
 );
 
-export const addNewProduct = createAsyncThunk(
-  'product/AddNewProduct',
+export const postAuctionProduct = createAsyncThunk(
+  'product/postAuctionProduct',
   async (formData, { rejectWithValue }) => {
-    console.log('Form data', formData);
+    // console.log('Form data', formData);
     try {
-      return (await API.addNew(formData)).data;
+      return (await API.postAuctionProduct(formData)).data;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }
@@ -55,16 +55,19 @@ const adminProductSlice = createSlice({
     },
     [getAuctionProductList.fulfilled]: (state, action) => {
       state.loading = false;
-      state.data = action.payload.listProducts;
+      const { productList } = action.payload;
+      state.loading = false;
+      state.data = productList;
+      console.log(productList)
     },
 
-    [addNewProduct.pending]: (state) => {
+    [postAuctionProduct.pending]: (state) => {
       state.modifyLoading = true;
     },
-    [addNewProduct.rejected]: (state) => {
+    [postAuctionProduct.rejected]: (state) => {
       state.modifyLoading = false;
     },
-    [addNewProduct.fulfilled]: (state) => {
+    [postAuctionProduct.fulfilled]: (state) => {
       state.modifyLoading = false;
     },
   },

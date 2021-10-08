@@ -103,13 +103,13 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
   const [currentAmount, setCurrentAmount] = useState('');
   const [currentDescription, setCurrentDescription] = useState('');
   const [images, setImages] = useState([]);
-  const [listRemoveImage, setListRemoveImage] = useState([]);
-  const [listNewImage, setListNewImage] = useState([]);
+  // const [listRemoveImage, setListRemoveImage] = useState([]);
+  // const [listNewImage, setListNewImage] = useState([]);
   const [listNewImageRender, setListNewImageRender] = useState([]);
 
   const fileChangeHandler = (file) => {
     if (file) {
-      setListNewImage((prevState) => [...prevState, file]);
+      // setListNewImage((prevState) => [...prevState, file]);
       getBase64(file);
     }
   };
@@ -126,9 +126,9 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
     console.log(item);
     if (images.includes(item)) {
       setImages((prevState) => prevState.filter((image) => image !== item));
-      setListRemoveImage((prevState) => [...prevState, item]);
+      // setListRemoveImage((prevState) => [...prevState, item]);
     }
-    setListNewImage((prevState) => prevState.filter((image) => image !== item?.file));
+    // setListNewImage((prevState) => prevState.filter((image) => image !== item?.file));
     setListNewImageRender((prevState) => prevState.filter((image) => image !== item));
   };
 
@@ -149,7 +149,7 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
     }
 
     setError('');
-    setListRemoveImage([]);
+    // setListRemoveImage([]);
     onClose();
   };
   const addNewProductHandler = async () => {

@@ -8,7 +8,7 @@ const findAll = async () => {
 
 const findByEmail = async (email) => {
 	const info = await knex('tbl_account')
-					.where({ acc_email: email })
+					.where({ acc_email: email }).first()
 	return info
 }
 

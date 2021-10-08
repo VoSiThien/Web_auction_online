@@ -67,7 +67,7 @@ function Home() {
         <Header />
         <div className={classes.content}>
           <Container>
-            <div class="container">
+            <div className="container">
               <div>
                 <Carousel className="center">
                   <Carousel.Item>

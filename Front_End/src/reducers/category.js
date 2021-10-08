@@ -11,8 +11,8 @@ export const getListCategory = createAsyncThunk(
   'category/Get',
   async ({page, limit}, { rejectWithValue }) => {
   try {
-    const asd = (await categoryApi.getListCategory({page, limit})).data
-    return asd;
+    const categories = (await categoryApi.getListCategory({page, limit})).data
+    return categories;
   } catch (error) {
     return rejectWithValue(getResponseError(error));
   }

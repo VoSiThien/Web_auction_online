@@ -14,7 +14,7 @@ import { Add, Delete } from '@material-ui/icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListCategory } from '../../../reducers/category';
-import { addNewProduct } from '../../../reducers/users/product';
+import { postAuctionProduct } from '../../../reducers/users/product';
 import { toast } from 'react-toastify';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
   },
   textField: {
     marginBottom: theme.spacing(1),
-
     '& > p': {
       width: 300,
       fontWeight: 'bold',
@@ -83,19 +82,22 @@ const AddProduct = ({ isOpen, onClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.category.data);
-  const [images, setImages] = useState([]);
+  const [prodImages, setProdImages] = useState([]);
   const [mainImageSrc, setMainImageSrc] = useState(null);
   const [submitIsValid, setSubmitIsValid] = useState(true);
   const [error, setError] = useState('');
-  const titleRef = useRef('');
-  const categoryRef = useRef('');
-  const priceRef = useRef(0);
-  const amountRef = useRef(0);
-  const descriptionRef = useRef('');
-
+  const prodNameRef = useRef('');
+  const prodCategoryIdRef = useRef(0);
+  const prodPriceStartingRef = useRef(0);
+  const prodPriceStepRef = useRef(0);
+  const prodPriceRef = useRef(0);
+  const prodDescriptionRef = useRef('');
+  const prodEndDateRef = useRef(Date.now());
+  const prodAutoExtendRef = useRef(0);
+  
   const fileChangeHandler = (file) => {
     if (file) {
-      setImages((prevState) => [...prevState, file]);
+      setProdImages((prevState) => [...prevState, file]);
     }
   };
 
@@ -111,12 +113,14 @@ const AddProduct = ({ isOpen, onClose }) => {
   };
 
   const removeFile = (item) => {
-    setImages((prevState) => prevState.filter((image) => image !== item));
+    setProdImages((prevState) => prevState.filter((image) => image !== item));
   };
 
   const getListCategoryHandler = useCallback(async () => {
     try {
-      const repsone = await dispatch(getListCategory()).unwrap();
+      const page = 1;
+      const limit = 10000;
+      const repsone = await dispatch(getListCategory({page, limit})).unwrap();
       console.log('category', repsone);
     } catch (err) {
       console.log('🚀 ~ file: Product.js ~ line 166 ~ getListCategoryHandler ~ err', err);
@@ -130,18 +134,22 @@ const AddProduct = ({ isOpen, onClose }) => {
   const addNewProductHandler = async () => {
     setError('');
 
-    const enteredTitle = titleRef.current.value;
-    const enteredCategory = categoryRef.current.value;
-    const enteredPrice = priceRef.current.value;
-    const enteredAmount = amountRef.current.value;
-    const enteredDescription = descriptionRef.current.value;
+    const enteredProdName = prodNameRef.current.value;
+    const enteredProdCategoryId = prodCategoryIdRef.current.value;
+    const enteredProdPriceStarting = prodPriceStartingRef.current.value;
+    const enteredProdPriceStep = prodPriceStepRef.current.value;
+    const enteredProdPrice = prodPriceRef.current.value;
+    const enteredProdDescription = prodDescriptionRef.current.value;
+    const enteredProdEndDate = prodEndDateRef.current.value;
+    const enteredProdAutoExtend = prodAutoExtendRef.current.value;
     let formData = new FormData();
 
     if (
-      enteredTitle?.length > 0 &&
-      enteredCategory?.length > 0 &&
-      enteredPrice?.length > 0 &&
-      enteredAmount?.length > 0
+      enteredProdName?.length > 0 &&
+      enteredProdCategoryId?.length > 0 &&
+      enteredProdPriceStarting?.length > 0 &&
+      enteredProdPriceStep?.length > 0 &&
+      enteredProdEndDate?.length > 0
     ) {
       setSubmitIsValid(true);
     } else {
@@ -149,17 +157,20 @@ const AddProduct = ({ isOpen, onClose }) => {
       return;
     }
 
-    for (let i = 0; i < images.length; i++) {
-      formData.append('image', images[i]);
+    for (let i = 0; i < prodImages.length; i++) {
+      formData.append('image', prodImages[i]);
     }
 
-    formData.append('prodName', enteredTitle);
-    formData.append('prodCategoryID', enteredCategory);
-    formData.append('prodPrice', enteredPrice);
-    formData.append('prodAmount', enteredAmount);
-    formData.append('prodDescription', enteredDescription);
+    formData.append('prodName', enteredProdName);
+    formData.append('prodCategoryId', enteredProdCategoryId);
+    formData.append('prodPriceStarting', enteredProdPriceStarting);
+    formData.append('prodPriceStep', enteredProdPriceStep);
+    formData.append('prodPrice', enteredProdPrice);
+    formData.append('prodDescription', enteredProdDescription);
+    formData.append('prodEndDate', enteredProdEndDate);
+    formData.append('prodAutoExtend', enteredProdAutoExtend);
     try {
-      await dispatch(addNewProduct(formData)).unwrap();
+      await dispatch(postAuctionProduct(formData)).unwrap();
       toast.success('Add new product success');
     } catch (err) {
       setError(err);
@@ -170,12 +181,12 @@ const AddProduct = ({ isOpen, onClose }) => {
     getListCategoryHandler();
   }, [dispatch, getListCategoryHandler]);
   useEffect(() => {
-    if (images.length > 0) {
-      getBase64(images[0]);
+    if (prodImages.length > 0) {
+      getBase64(prodImages[0]);
     } else {
       setMainImageSrc(null);
     }
-  }, [images]);
+  }, [prodImages]);
 
   return (
     <ProductModal isOpen={isOpen} onClose={closeModalHandler}>
@@ -183,11 +194,11 @@ const AddProduct = ({ isOpen, onClose }) => {
         <Box borderRadius={6} className={classes.content}>
           <Box marginBottom={4} marginTop={2}>
             <Typography variant="h5" className={classes.title}>
-              ADD PRODUCTS
+              Thêm mới sản Phẩm
             </Typography>
-            <Typography variant="caption" className={classes.subTitle}>
+            {/* <Typography variant="caption" className={classes.subTitle}>
               Family Admin Panel
-            </Typography>
+            </Typography> */}
           </Box>
           <form encType="multipart/form-data" className={classes.section}>
             <Box marginBottom={2} className={classes.image}>
@@ -204,15 +215,15 @@ const AddProduct = ({ isOpen, onClose }) => {
               </div>
               <div className={classes.listUpload}>
                 <input
-                  accept="image/jpeg"
+                  accept="image/jpeg, image/png"
                   id="img1"
                   type="file"
                   style={{ display: 'none' }}
                   onChange={(e) => fileChangeHandler(e.target.files[0])}
                 />
                 <Box display="flex" flexWrap="wrap" alignItems="center">
-                  {images?.length > 0 &&
-                    images.map((item, index) => (
+                  {prodImages?.length > 0 &&
+                    prodImages.map((item, index) => (
                       <Box display="flex" alignItems="center" key={index}>
                         <Typography variant="body2">{item.name}</Typography>
                         <Delete onClick={() => removeFile(item)} />
@@ -229,22 +240,26 @@ const AddProduct = ({ isOpen, onClose }) => {
             </Box>
             <Box className={classes.productInformation}>
               <div className={classes.textField}>
-                <Typography variant="body1" component="p">
-                  Title
+                <Typography variant="caption" component="p">
+                  Tên sản phẩm
                 </Typography>
-                <TextField variant="outlined" size="small" fullWidth inputRef={titleRef} />
+                <TextField 
+                variant="standard" 
+                size="small" 
+                fullWidth 
+                inputRef={prodNameRef} />
               </div>
 
               <div className={classes.textField}>
-                <Typography variant="body1" component="p">
-                  Category
+                <Typography variant="caption" component="p">
+                  Danh mục
                 </Typography>
-                <FormControl variant="outlined" size="small" fullWidth>
+                <FormControl variant="standard" size="small" fullWidth>
                   <Select
                     native
                     defaultValue=""
                     MenuProps={{ classes: { paper: classes.menuPaper } }}
-                    inputRef={categoryRef}>
+                    inputRef={prodCategoryIdRef}>
                     <option aria-label="None" value="" />
                     {categories?.length > 0 &&
                       categories.map((cate, index) => (
@@ -261,40 +276,67 @@ const AddProduct = ({ isOpen, onClose }) => {
                 </FormControl>
               </div>
               <div className={classes.textField}>
-                <Typography variant="body1" component="p">
-                  Price (VND)
+                <Typography variant="caption" component="p">
+                Giá bắt đầu (VND)
                 </Typography>
                 <TextField
-                  variant="outlined"
+                  variant="standard"
                   size="small"
                   inputProps={{ type: 'number' }}
                   fullWidth
-                  inputRef={priceRef}
+                  inputRef={prodPriceStartingRef}
                 />
               </div>
               <div className={classes.textField}>
-                <Typography variant="body1" component="p">
-                  Amount
+                <Typography variant="caption" component="p">
+                Bước giá (VND)
                 </Typography>
                 <TextField
-                  variant="outlined"
+                  variant="standard"
                   size="small"
                   inputProps={{ type: 'number' }}
                   fullWidth
-                  inputRef={amountRef}
+                  inputRef={prodPriceStepRef}
                 />
               </div>
               <div className={classes.textField}>
-                <Typography variant="body1" component="p">
-                  Add Description
+                <Typography variant="caption" component="p">
+                Giá mua thẳng (VND)
                 </Typography>
                 <TextField
-                  variant="outlined"
+                  variant="standard"
+                  size="small"
+                  inputProps={{ type: 'number' }}
+                  fullWidth
+                  inputRef={prodPriceRef}
+                />
+              </div>
+              <div className={classes.textField}>
+                <Typography variant="caption" component="p">
+                Ngày hết hạn
+                </Typography>
+                <TextField
+                  defaultValue={Date.now()}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  inputProps={{ type: 'date' }}
+                  minDate={Date.now()}
+                  fullWidth
+                  inputRef={prodEndDateRef}
+                />
+              </div>
+              <div className={classes.textField}>
+                <Typography variant="caption" component="p">
+                  Mô tả
+                </Typography>
+                <TextField
+                  variant="standard"
                   size="small"
                   multiline
                   rows={4}
                   fullWidth
-                  inputRef={descriptionRef}
+                  inputRef={prodDescriptionRef}
                 />
               </div>
               {!submitIsValid && (
@@ -314,10 +356,10 @@ const AddProduct = ({ isOpen, onClose }) => {
                   variant="contained"
                   style={{ marginRight: 16 }}
                   onClick={addNewProductHandler}>
-                  ADD
+                  Thêm
                 </Button>
                 <Button variant="contained" onClick={onClose}>
-                  Discard
+                  Huỷ
                 </Button>
               </Box>
             </Box>

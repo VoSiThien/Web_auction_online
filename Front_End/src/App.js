@@ -9,7 +9,7 @@ import { authActions as userAuthActions } from './reducers/auth';
 import { ToastContainer } from 'react-toastify';
 import { ProtectedRoute } from './components/Common/ProtectedRoute';
 import { routes, adminRoutes } from './config/routes';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import PageNotFound from './pages/404NotFound';
 import Loading from './components/Loading/Loading';
 import { CheckRole } from './components/Common/CheckRole';
@@ -75,7 +75,6 @@ function App() {
 
 
   return (
-// <<<<<<< HEAD
 //     <div>
 //       <Switch>
 //         <Route exact path="/" render = {() =>{return <HomePage />}} />
@@ -92,7 +91,6 @@ function App() {
 //         </Route>
 //       </Switch>
 //     </div>
-// =======
     <ThemeProvider theme={theme}>
       <ToastContainer
         autoClose={5000}
@@ -140,9 +138,11 @@ function App() {
                           exact={route.exact}
                           render={(props) => {
                           return (
-                            <CheckRole roles={route.roles}>
-                            <route.component {...props} {...route.props} />
-                            </CheckRole>
+                            <ProtectedRoute {...props}>
+                              <CheckRole roles={route.roles}>
+                                <route.component {...props} {...route.props} />
+                              </CheckRole>
+                            </ProtectedRoute>
                           );
                           }}
                         />

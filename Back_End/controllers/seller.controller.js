@@ -42,9 +42,10 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
 	from tbl_product where prod_seller_id = ${accId}`)
 
 
-	numPage = Number(total.rows[0].count)
-	if (numPage > limit) {
-		numPage = Math.ceil(numPage / limit)
+	total = Number(total.rows[0].count)
+    numPage = 1
+	if (total > limit) {
+		numPage = Math.ceil(total / limit)
 	}
 	else {
 		numPage = 1
@@ -66,13 +67,18 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
 			prodPrice: result[index].prod_price,
 
             prodCategoryName: result[index].prod_category_name,
+            prodPrice: result[index].prod_price,
             prodPriceStarting: result[index].prod_price_starting,
             prodPriceStep: result[index].prod_price_step,
+            prodPriceStarting: result[index].prod_price_starting,
+            prodPriceCurrent: result[index].prod_price_current,
+            prodPriceHighest: result[index].prod_price_highest,
             prodEndDate: result[index].prod_end_date,
             prodAutoExtend: result[index].prod_auto_extend,
+            prodMainImage: result[index].prod_main_image,
 
 			prodDescription: result[index].prod_description,
-			prodCreatedDate: result[index].prod_created_date
+			prodUpdatedDate: result[index].prod_updated_date
 		}
 		prodList.push(probItem)
 		index++
@@ -82,7 +88,7 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
 		numPage: numPage,
 		curPage: page,
         total: total,
-		watchList: prodList,
+		productList: prodList,
 		statusCode: successCode
 	})
 })
