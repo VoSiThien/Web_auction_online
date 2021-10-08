@@ -10,7 +10,6 @@ import { ToastContainer } from 'react-toastify';
 import { ProtectedRoute } from './components/Common/ProtectedRoute';
 import { routes, adminRoutes } from './config/routes';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import Category from './pages/Category';
 import PageNotFound from './pages/404NotFound';
 import Loading from './components/Loading/Loading';
 import { CheckRole } from './components/Common/CheckRole';
@@ -76,6 +75,24 @@ function App() {
 
 
   return (
+// <<<<<<< HEAD
+//     <div>
+//       <Switch>
+//         <Route exact path="/" render = {() =>{return <HomePage />}} />
+
+//         <Route exact path="/seller/History-bid" render = {() =>{return <HistoryBidSeller />}} />
+//         <Route exact path="/bidder/History-bid" render = {() =>{return <HistoryBidBidder />}} />
+
+//         <PrivateRouter path="/category">
+//           <Category />
+//         </PrivateRouter>
+
+//         <Route path="*">
+//           <PageNotFound />
+//         </Route>
+//       </Switch>
+//     </div>
+// =======
     <ThemeProvider theme={theme}>
       <ToastContainer
         autoClose={5000}
