@@ -1,4 +1,4 @@
-import axios from '../axios/index';
+import axios from '../../axios/index';
 
 const login = ({ email, password }) => {
   return axios.post('/unauthorized-api/auth/login', {

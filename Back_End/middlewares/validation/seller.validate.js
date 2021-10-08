@@ -1,6 +1,34 @@
 const ajvLib = require('ajv')
 const errorCode = 1
 
+const getAuctionProductList = (req, res, next) => {
+	const shema = {
+		type: 'object',
+		properties: {
+			page: { type: 'integer' },
+			limit: { type: 'integer' }
+		},
+		required: ["page", "limit"],
+		additionalProperties: true
+	}
+
+	const ajv = new ajvLib({
+		allErrors: true
+	})
+
+	const validator = ajv.compile(shema)
+	const valid = validator(req.body)
+
+	if (!valid) {
+		return res.status(400).json({
+			errorMessage: validator.errors[0].message,
+			statusCode: errorCode
+		})
+	}
+
+	next()
+}
+
 const postAuctionProduct = (req, res, next) => {
     const shema = {
         type: "object",
@@ -11,9 +39,10 @@ const postAuctionProduct = (req, res, next) => {
             prodPrice: { type: "string", nullable: true },
             prodDescription: { type: "string", nullable: true },
             prodEndDate: { type: "string" },
+            prodCategoryId: { type: "integer" },
             prodAutoExtend: { enum: ["0", "1"] }
         },
-        required: ["prodName", "prodPriceStarting", "prodPriceStep", "prodEndDate"],
+        required: ["prodName", "prodPriceStarting", "prodPriceStep", "prodEndDate", "prodCategoryId"],
         additionalProperties: true
     }
 

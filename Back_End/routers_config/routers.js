@@ -4,9 +4,11 @@ const authentication = require('../middlewares/authentication')
 
 const API = require('./api')
 const unAuthorizeApi = require('./unAuthorizeApi')
+const ADMIN = require('./admin')
 
 router.use('/api', authentication.verifyToken, API)
 router.use('/unauthorized-api', unAuthorizeApi)
+router.use('/api/admin', authentication.verifyToken, ADMIN)
 
 
 router.use((req, res, next) => {

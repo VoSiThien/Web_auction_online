@@ -13,7 +13,7 @@ const errorCode = 1
 router.post('/bid-product',validator.bidProduct ,async (req, res) => {
 	const { priceBid, prodId } = req.body
     //const accId = req.account['accId']
-    const accId = 2
+    const accId = 1
     let present = moment().format('YYYY-MM-DD HH:mm:ss')
 
     let regexPattern = /^\d+$/

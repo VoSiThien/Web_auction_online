@@ -106,10 +106,12 @@ const Profile = (props) => {
 		document.title = t("profilepage.title");
 	}, [t]);
 
-	const card1 = (
+	const cardBidder = (
 		<React.Fragment>
 			<CardHeader
 				className={classes.carheader}
+				justifyContent="center" 
+				alignItems="center"
 				title='Bidder Infomation'
 			/>
 		  <CardContent 
@@ -118,10 +120,12 @@ const Profile = (props) => {
 		  </CardContent>
 		</React.Fragment>
 	  );
-	const card2 = (
+	const cardSeller = (
 		<React.Fragment>
 			<CardHeader
 				className={classes.carheader}
+				justifyContent="center" 
+				alignItems="center"
 				title='Seller Infomation'
 			/>
 		  <CardContent
@@ -155,13 +159,13 @@ const Profile = (props) => {
 						className={classes.tabPanel}
 					>
 						<Box className={classes.boxstyle}
-							sx={{ typography: 'body2' }}>
-      						<Card variant="outlined">{card1}</Card>
+							sx={{ typography: 'body2', }}>
+      						<Card variant="outlined">{cardBidder}</Card>
     					</Box>
 						{user != null && user.role === Role.Seller && (
 						<Box className={classes.boxstyle}
 							sx={{ typography: 'body2' }}>
-      						<Card variant="outlined">{card2}</Card>
+      						<Card variant="outlined">{cardSeller}</Card>
     					</Box>
 						)}
 					</TabPanel>

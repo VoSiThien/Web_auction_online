@@ -13,11 +13,14 @@
     "axios": "^0.21.1",
     "dotenv": "^10.0.0",
     "i18next": "^20.6.1",
+    "bootstrap": "^5.1.1",
     "node-sass": "^6.0.1",
     "query-string": "^7.0.1",
     "react": "^17.0.2",
+    "react-bootstrap": "^2.0.0-rc.0",
     "react-dom": "^17.0.2",
     "react-i18next": "^11.11.3",
+    "react-icons": "^4.3.1",
     "react-phone-input-2": "^2.14.0",
     "react-phone-number-input": "^3.1.25",
     "react-redux": "^7.2.4",
@@ -29,7 +32,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set port=4000 & react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

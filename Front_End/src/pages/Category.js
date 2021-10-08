@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getListCategory } from '../../reducers/category';
+import { getListCategory } from '../reducers/category';
 import Pagination from '@material-ui/lab/Pagination';
 import {
   makeStyles,

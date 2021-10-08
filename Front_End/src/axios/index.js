@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { history } from '../helpers';
-const baseURL = process.env.REACT_APP_BASE_URL || 'http://localhost:3000';
+const baseURL = process.env.APP_BASE_URL || 'http://localhost:3000';
 console.log(baseURL)
 
 axios.defaults.baseURL = baseURL;
@@ -29,6 +28,7 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response.status === 401 || error.response.status === 403) {
       console.log('Your access token is expired. Please log in again');
+      //       //use history object to return back to login page, history != redirect, it will redirect user to this address but still contains data 
       history.push('/login');
     }
 

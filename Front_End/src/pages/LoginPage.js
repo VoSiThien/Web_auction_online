@@ -16,8 +16,9 @@ import { mainColor } from '../utils';
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
 import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../reducers/auth';
+import { login as userLogin } from '../reducers/auth';
 import { FormHelperText } from '@material-ui/core';
+import { Role } from '../config/role';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -73,6 +74,7 @@ const LoginPage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
 
   const [error, setError] = useState('');
@@ -102,7 +104,7 @@ const LoginPage = () => {
 
     try {
       const { user } = await dispatch(
-        login({
+        userLogin({
           email: enteredUsername,
           password: enteredPassword,
         })
@@ -127,7 +129,14 @@ const LoginPage = () => {
     document.title = t('loginpage.title');
   }, [t]);
 
-  if (isAuthenticated) return <Redirect to={location.state?.from || '/'} />;
+
+  if (isAuthenticated) {
+    if(user.role === Role.Admin){
+      return <Redirect to='/admin' />;
+    } else {
+      return <Redirect to={location.state?.from || '/'} />;
+    }
+  }
 
   return (
     <>
