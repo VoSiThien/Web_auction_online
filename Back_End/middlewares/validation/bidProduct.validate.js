@@ -35,9 +35,10 @@ const historyProduct = (req, res, next) => {
 		properties: {
 			page: { type: 'integer' },
 			limit: { type: 'integer' },
-            prodId: { type: 'integer' }
+            prodId: { type: 'integer' },
+			status: {type: 'integer'}
 		},
-		required: ["page", "limit", "prodId"],
+		required: ["page", "limit", "prodId", "status"],
 		additionalProperties: true
 	}
 

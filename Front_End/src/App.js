@@ -5,6 +5,8 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import Category from './pages/Category';
 import PageNotFound from './pages/404NotFound';
 import HomePage from './pages/Home';
+import HistoryBidSeller from './pages/seller/HistoryBid';
+import HistoryBidBidder from './pages/bidder/HistoryBid';
 
 //authentication route
 // ...rest = path = "link"
@@ -30,6 +32,9 @@ function App() {
     <div>
       <Switch>
         <Route exact path="/" render = {() =>{return <HomePage />}} />
+
+        <Route exact path="/seller/History-bid" render = {() =>{return <HistoryBidSeller />}} />
+        <Route exact path="/bidder/History-bid" render = {() =>{return <HistoryBidBidder />}} />
 
         <PrivateRouter path="/category">
           <Category />
