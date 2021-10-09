@@ -8,6 +8,7 @@ import "react-phone-input-2/lib/style.css";
 import { useDispatch } from "react-redux";
 import { getProfile } from '../../reducers/users/seller';
 import { toast } from 'react-toastify';
+import { uiActions } from '../../reducers/ui';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -32,7 +33,7 @@ const SellerProfilePanel = () => {
 	});
 	const dispatch = useDispatch();
 
-	const sellerProfile = useCallback(async () => {
+	const sellerProfileHandler = useCallback(async () => {
 		try {
 			return await dispatch(getProfile()).unwrap();
 		} catch (err) {
@@ -41,8 +42,9 @@ const SellerProfilePanel = () => {
 	}, [dispatch]);
 	
 	useEffect(() => {
-		sellerProfile().then((result) => { setSellerInfo(result) });
-	  }, [sellerProfile]);
+		dispatch(uiActions.hideModal());
+		sellerProfileHandler().then((result) => { setSellerInfo(result) });
+	  }, [dispatch, sellerProfileHandler]);
 
 	return (
 		<div className={classes.root}>

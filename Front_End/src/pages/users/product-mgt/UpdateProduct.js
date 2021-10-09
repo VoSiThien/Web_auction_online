@@ -11,9 +11,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Add, Close } from '@material-ui/icons';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListCategory } from '../../../reducers/category';
+import { updateAuctionProduct } from '../../../reducers/users/product';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
@@ -93,16 +94,30 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.category.data);
-  // const [mainImageSrc, setMainImageSrc] = useState(null);
-  // const [submitIsValid, setSubmitIsValid] = useState(true);
   const [error, setError] = useState('');
+  const [submitIsValid, setSubmitIsValid] = useState(true);
 
-  const [currentTitle, setCurrentTitle] = useState('');
-  const [currentcategoryId, setCurrentCategoryId] = useState('');
-  const [currentPrice, setCurrentPrice] = useState('');
-  const [currentAmount, setCurrentAmount] = useState('');
-  const [currentDescription, setCurrentDescription] = useState('');
-  const [images, setImages] = useState([]);
+  const [currentProdName, setCurrentProdName] = useState('');
+  const [currentProdCategoryId, setCurrentProdCategoryId] = useState(0);
+  const [currentProdPriceStarting, setCurrentPriceStarting] = useState(0);
+  const [currentProdPriceStep, setCurrentProdPriceStep] = useState(0);
+  const [currentProdPrice, setCurrentProdPrice] = useState(0);
+  const [currentProdDescription, setCurrentProdDescription] = useState('');
+  const [currentProdEndDate, setCurrentProdEndDate] = useState('');
+  const [currentProdAutoExtend, setCurrentProdAutoExtend] = useState(0);
+
+  const [prodImages, setProdImages] = useState([]);
+  const [mainImageSrc, setMainImageSrc] = useState(null);
+
+  const prodNameRef = useRef('');
+  const prodCategoryIdRef = useRef(0);
+  const prodPriceStartingRef = useRef(0);
+  const prodPriceStepRef = useRef(0);
+  const prodPriceRef = useRef(0);
+  const prodDescriptionRef = useRef('');
+  const prodEndDateRef = useRef(Date.now());
+  const prodAutoExtendRef = useRef(0);
+
   const [listRemoveImage, setListRemoveImage] = useState([]);
   const [listNewImage, setListNewImage] = useState([]);
   const [listNewImageRender, setListNewImageRender] = useState([]);
@@ -123,9 +138,9 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
   };
 
   const removeFile = (item) => {
-    console.log(item);
-    if (images.includes(item)) {
-      setImages((prevState) => prevState.filter((image) => image !== item));
+    // console.log(item);
+    if (prodImages.includes(item)) {
+      setProdImages((prevState) => prevState.filter((image) => image !== item));
       setListRemoveImage((prevState) => [...prevState, item]);
     }
     setListNewImage((prevState) => prevState.filter((image) => image !== item?.file));
@@ -140,64 +155,96 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
 
   const closeModalHandler = () => {
     if (itemInfo) {
-      setCurrentTitle(itemInfo?.prod_name);
-      setCurrentCategoryId(itemInfo?.prod_category_id);
-      setCurrentPrice(itemInfo?.prod_price);
-      setCurrentAmount(itemInfo?.prod_amount);
-      setCurrentDescription(itemInfo?.prod_description);
-      setImages(itemInfo?.images || []);
+      setCurrentProdName(itemInfo?.prodName);
+      setCurrentProdCategoryId(itemInfo?.prodCategoryId);
+      setCurrentPriceStarting(itemInfo?.prodPriceStarting);
+      setCurrentProdPriceStep(itemInfo?.prodPriceStep);    
+      setCurrentProdPrice(itemInfo?.prodPrice);  
+      setCurrentProdDescription(itemInfo?.prodDescription);
+      setCurrentProdEndDate(itemInfo?.prodEndDate);
+      setCurrentProdAutoExtend(itemInfo?.prodAutoExtend);
+      setProdImages(itemInfo?.prodImages || []);
     }
-
     setError('');
     setListRemoveImage([]);
     onClose();
   };
-  const addNewProductHandler = async () => {
+
+  const updateProductHandler = async () => {
     setError('');
 
+    const enteredProdName = prodNameRef.current.value;
+    const enteredProdCategoryId = prodCategoryIdRef.current.value;
+    const enteredProdPriceStarting = prodPriceStartingRef.current.value;
+    const enteredProdPriceStep = prodPriceStepRef.current.value;
+    const enteredProdPrice = prodPriceRef.current.value;
+    const enteredProdDescription = prodDescriptionRef.current.value;
+    const enteredProdEndDate = prodEndDateRef.current.value;
+    const enteredProdAutoExtend = prodAutoExtendRef.current.value;
     let formData = new FormData();
 
-    // if (
-    //   enteredTitle?.length > 0 &&
-    //   enteredCategory?.length > 0 &&
-    //   enteredPrice?.length > 0 &&
-    //   enteredAmount?.length > 0
-    // ) {
-    //   setSubmitIsValid(true);
-    // } else {
-    //   setSubmitIsValid(false);
-    //   return;
-    // }
-
-    for (let i = 0; i < images.length; i++) {
-      formData.append('image', images[i]);
+    if (
+      enteredProdName?.length > 0 &&
+      enteredProdCategoryId?.length > 0 &&
+      enteredProdPriceStarting?.length > 0 &&
+      enteredProdPriceStep?.length > 0 &&
+      enteredProdEndDate?.length > 0
+    ) {
+      setSubmitIsValid(true);
+    } else {
+      setSubmitIsValid(false);
+      return;
     }
 
-    // formData.append('prodName', enteredTitle);
-    // formData.append('prodCategoryID', enteredCategory);
-    // formData.append('prodPrice', enteredPrice);
-    // formData.append('prodAmount', enteredAmount);
-    // formData.append('prodDescription', enteredDescription);
-    // try {
-    //   await dispatch(addNewProduct(formData)).unwrap();
-    //   toast.success('Add new product success');
-    // } catch (err) {
-    //   setError(err);
-    //   console.log('🚀 ~ file: AddProduct.js ~ line 140 ~ addNewProductHandler ~ error', error);
-    // }
+    for (let i = 0; i < prodImages.length; i++) {
+      formData.append('prodImages', prodImages[i]);
+    }
+
+    formData.append('prodName', enteredProdName);
+    formData.append('prodCategoryId', enteredProdCategoryId);
+    formData.append('prodPriceStarting', enteredProdPriceStarting);
+    formData.append('prodPriceStep', enteredProdPriceStep);
+    formData.append('prodPrice', enteredProdPrice);
+    formData.append('prodDescription', enteredProdDescription);
+    formData.append('prodEndDate', enteredProdEndDate);
+    formData.append('prodAutoExtend', enteredProdAutoExtend);
+    try {
+      await dispatch(updateAuctionProduct(formData)).unwrap();
+      // toast.success('Add new product success');
+    } catch (err) {
+      setError(err);
+      // console.log('🚀 ~ file: AddProduct.js ~ line 140 ~ addNewProductHandler ~ error', error);
+    }
+    onClose();
   };
+
   useEffect(() => {
     getListCategoryHandler();
   }, [dispatch, getListCategoryHandler]);
 
   useEffect(() => {
+    if (prodImages.length > 0) {
+      try {
+        getBase64(prodImages[0]);
+      } catch (error) {
+      }
+    } else {
+      setMainImageSrc(null);
+    }
+  }, [prodImages]);
+
+  useEffect(() => {
     if (itemInfo) {
-      setCurrentTitle(itemInfo?.prod_name);
-      setCurrentCategoryId(itemInfo?.prod_category_id);
-      setCurrentPrice(itemInfo?.prod_price);
-      setCurrentAmount(itemInfo?.prod_amount);
-      setCurrentDescription(itemInfo?.prod_description);
-      setImages(itemInfo?.images || []);
+      setCurrentProdName(itemInfo?.prodName);
+      setCurrentProdCategoryId(itemInfo?.prodCategoryId);
+      setCurrentPriceStarting(itemInfo?.prodPriceStarting);
+      setCurrentProdPriceStep(itemInfo?.prodPriceStep);    
+      setCurrentProdPrice(itemInfo?.prodPrice);  
+      setCurrentProdDescription(itemInfo?.prodDescription);
+      setCurrentProdEndDate(itemInfo?.prodEndDate);
+      setCurrentProdAutoExtend(itemInfo?.prodAutoExtend);
+      setProdImages(itemInfo?.prodImages || []);
+      // setMainImageSrc(itemInfo?.prodImages[0]);
     }
   }, [itemInfo]);
   return (
@@ -206,11 +253,11 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
         <Box borderRadius={6} className={classes.content}>
           <Box marginBottom={4} marginTop={2}>
             <Typography variant="h5" className={classes.title}>
-              UPDATE PRODUCTS
+              Cập nhật sản phẩm
             </Typography>
-            <Typography variant="caption" className={classes.subTitle}>
+            {/* <Typography variant="caption" className={classes.subTitle}>
               Family Admin Panel
-            </Typography>
+            </Typography> */}
           </Box>
           <form encType="multipart/form-data" className={classes.section}>
             <Box marginBottom={2} className={classes.image}>
@@ -233,8 +280,8 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
                   onChange={(e) => fileChangeHandler(e.target.files[0])}
                 />
                 <Box display="flex" flexWrap="wrap" alignItems="center">
-                  {images?.length > 0 &&
-                    images.map((item, index) => (
+                  {prodImages?.length > 0 &&
+                    prodImages.map((item, index) => (
                       <Box
                         display="flex"
                         alignItems="center"
@@ -308,30 +355,37 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
             </Box>
             <Box className={classes.productInformation}>
               <div className={classes.textField}>
-                <Typography variant="body1" component="p">
-                  Title
+                <Typography variant="caption" component="p">
+                  Tên sản phẩm
                 </Typography>
-                <TextField variant="outlined" size="small" fullWidth value={currentTitle} />
+                <TextField 
+                variant="standard" 
+                size="small" 
+                fullWidth
+                value={currentProdName}
+                inputRef={prodNameRef} 
+                />
               </div>
 
               <div className={classes.textField}>
-                <Typography variant="body1" component="p">
-                  Category
+                <Typography variant="caption" component="p">
+                  Danh mục
                 </Typography>
-                <FormControl variant="outlined" size="small" fullWidth>
+                <FormControl variant="standard" size="small" fullWidth>
                   <Select
                     native
                     defaultValue=""
                     MenuProps={{ classes: { paper: classes.menuPaper } }}
-                    value={currentcategoryId}>
-                    <option aria-label="None" value="" />
+                    value={currentProdCategoryId}
+                    inputRef={prodCategoryIdRef}>
+                    {categories?.length === 0 &&(<option aria-label="None" value="" />)}
                     {categories?.length > 0 &&
                       categories.map((cate, index) => (
                         <optgroup label={cate.cateName} key={index}>
                           {cate.subCategories?.length > 0 &&
-                            cate.subCategories.map((subCate, index) => (
+                            cate.subCategories[0].map((subCate, index) => (
                               <option value={subCate.cateId} key={index}>
-                                {subCate.CateName}
+                                {subCate.cateName}
                               </option>
                             ))}
                         </optgroup>
@@ -340,47 +394,95 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
                 </FormControl>
               </div>
               <div className={classes.textField}>
-                <Typography variant="body1" component="p">
-                  Price (VND)
+                <Typography variant="caption" component="p">
+                Giá bắt đầu (VND)
                 </Typography>
                 <TextField
-                  variant="outlined"
+                  variant="standard"
                   size="small"
                   inputProps={{ type: 'number' }}
                   fullWidth
-                  value={currentPrice}
+                  value={currentProdPriceStarting}
+                  inputRef={prodPriceStartingRef}
                 />
               </div>
               <div className={classes.textField}>
-                <Typography variant="body1" component="p">
-                  Amount
+                <Typography variant="caption" component="p">
+                Bước giá (VND)
                 </Typography>
                 <TextField
-                  variant="outlined"
+                  variant="standard"
                   size="small"
                   inputProps={{ type: 'number' }}
                   fullWidth
-                  value={currentAmount}
+                  value={currentProdPriceStep}
+                  inputRef={prodPriceStepRef}
                 />
               </div>
               <div className={classes.textField}>
-                <Typography variant="body1" component="p">
-                  Add Description
+                <Typography variant="caption" component="p">
+                Giá mua thẳng (VND)
                 </Typography>
                 <TextField
-                  variant="outlined"
+                  variant="standard"
+                  size="small"
+                  inputProps={{ type: 'number' }}
+                  fullWidth
+                  value={currentProdPrice}
+                  inputRef={prodPriceRef}
+                />
+              </div>
+              <div className={classes.textField}>
+                <Typography variant="caption" component="p">
+                Ngày hết hạn
+                </Typography>
+                <TextField
+                  defaultValue={Date.now()}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  inputProps={{ type: 'date' }}
+                  // minDate={Date.now()}
+                  fullWidth
+                  value={currentProdEndDate}
+                  inputRef={prodEndDateRef}
+                />
+              </div>
+              <div className={classes.textField}>
+                <Typography variant="caption" component="p">
+                  Danh mục
+                </Typography>
+                <FormControl variant="standard" size="small" fullWidth>
+                  <Select
+                    native
+                    defaultValue=""
+                    MenuProps={{ classes: { paper: classes.menuPaper } }}
+                    value={currentProdAutoExtend}
+                    inputRef={prodAutoExtendRef}>
+                    <option value="0">Không gia hạn</option>
+                    <option value="1">Gia hạn</option>
+                  </Select>
+                </FormControl>
+              </div>
+              <div className={classes.textField}>
+                <Typography variant="caption" component="p">
+                  Mô tả
+                </Typography>
+                <TextField
+                  variant="standard"
                   size="small"
                   multiline
                   rows={4}
                   fullWidth
-                  value={currentDescription}
+                  value={currentProdDescription}
+                  inputRef={prodDescriptionRef}
                 />
               </div>
-              {/* {!submitIsValid && (
+              {!submitIsValid && (
                 <FormHelperText error style={{ marginBottom: 8 }}>
-                  All textfield must not be null or empty
+                Tất cả các ô không được bỏ trống
                 </FormHelperText>
-              )} */}
+              )}
               {error.length > 0 && (
                 <FormHelperText error style={{ marginBottom: 8 }}>
                   {error}
@@ -392,11 +494,11 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
                   color="primary"
                   variant="contained"
                   style={{ marginRight: 16 }}
-                  onClick={addNewProductHandler}>
-                  UPDATE
+                  onClick={updateProductHandler}>
+                  Cập Nhật
                 </Button>
                 <Button variant="contained" onClick={onClose}>
-                  Discard
+                  Huỷ
                 </Button>
               </Box>
             </Box>

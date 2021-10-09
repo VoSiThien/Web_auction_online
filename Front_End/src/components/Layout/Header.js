@@ -10,9 +10,9 @@ import {
 	Person,
 	ExitToApp
 } from "@material-ui/icons";
-import { useState } from "react";
+// import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom"; //Link, 
 import { authActions as userAuthActions } from "../../reducers/auth";
 import { Role }  from "../../config/role";
 
@@ -182,17 +182,18 @@ function Header({showMenu}) {
 	const history = useHistory();
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 	const user = useSelector((state) => state.auth.user);
+	// const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
 
-	const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
-
-	const toggleUserDropdownHandler = () => {
-		setToggleUserDropdown((prevState) => !prevState);
-	};
+	// const toggleUserDropdownHandler = () => {
+	// 	setToggleUserDropdown((prevState) => !prevState);
+	// };
 
 	const logoutHandler = () => {
 		dispatch(userAuthActions.logout());
 		history.push("/login");
 	};
+	
+	const domain = window.location.origin;
     return (
         <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
             <Container>
@@ -216,44 +217,56 @@ function Header({showMenu}) {
                     <Form className="d-flex">
                         <FormControl
                             type="search"
-                            placeholder="Search"
+                            placeholder="Tìm kiếm"
                             className="mr-2"
                             aria-label="Search"
                         />
-                        <Button variant="dark">Search</Button>
+                        <Button variant="dark">Tìm</Button>
                     </Form>
                     <Nav>
-                    <IconButton
+					<NavDropdown title={<div style={{display: "inline-block"}}><Person/></div>} id="collasible-nav-dropdown-2">
+						{user != null && isAuthenticated && (
+							<>
+								<NavDropdown.Item href={domain +'/profile'} >Trang cá nhân</NavDropdown.Item>
+								{(user.role === Role.Seller) && (
+									<NavDropdown.Item href={domain +'/product-mgt'} >Quản lý sản phẩm</NavDropdown.Item>
+								)}
+							</>
+						)}
+						{(user == null || !isAuthenticated) && (
+							<NavDropdown.Item href={domain +'/login'} >Đăng nhập</NavDropdown.Item>
+						)}
+					</NavDropdown>
+                    {/* <IconButton
 						aria-label="My profile"
 						color="inherit"
 						className={classes.iconButton}
 						onClick={toggleUserDropdownHandler}
 					>
-						<Person />
+					<Person />
 						<ul
-							className={`${classes.dropDown} ${
-								toggleUserDropdown ? classes.dropDownActive : ""
-							}`}
-						>
-							{user != null && isAuthenticated && (
-								<>
-									<li>
-										<Link to="/profile">Profile</Link>
-									</li>
-									{(user.role === Role.Seller) && (
+								className={`${classes.dropDown} ${toggleUserDropdown ? classes.dropDownActive : ""
+									}`}
+							>
+								{user != null && isAuthenticated && (
+									<>
 										<li>
-											<Link to="/product-mgt">Product Management</Link>
+											<Link to="/profile">Trang cá nhân</Link>
 										</li>
-									)}
-								</>	
-							)}
-							{(user == null || !isAuthenticated) && (
-								<li>
-									<Link to="/login">Login</Link>
-								</li>
-							)}
-						</ul>
-					</IconButton>
+										{(user.role === Role.Seller) && (
+											<li>
+												<Link to="/product-mgt">Quản lý sản phẩm</Link>
+											</li>
+										)}
+									</>
+								)}
+								{(user == null || !isAuthenticated) && (
+									<li>
+										<Link to="/login">Đăng nhập</Link>
+									</li>
+								)}
+							</ul>
+					</IconButton> */}
 					{user != null && isAuthenticated && (
 						<IconButton
 							aria-label="My profile"
@@ -266,7 +279,7 @@ function Header({showMenu}) {
 								variant="caption"
 								className={classes.iconButtonCaption}
 							>
-								Log out
+								Đăng xuất
 							</Typography>
 						</IconButton>
 					)}
