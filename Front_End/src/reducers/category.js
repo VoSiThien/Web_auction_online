@@ -31,7 +31,8 @@ const adminCategorySlice = createSlice({
     },
     [getListCategory.fulfilled]: (state, action) => {
       state.loading = false;
-      state.data = action.payload;
+      const {paginationResult} = action.payload;
+      state.data = paginationResult
     },
   },
 });

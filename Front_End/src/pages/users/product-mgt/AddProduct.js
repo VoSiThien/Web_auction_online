@@ -15,7 +15,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListCategory } from '../../../reducers/category';
 import { postAuctionProduct } from '../../../reducers/users/product';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
@@ -120,8 +120,9 @@ const AddProduct = ({ isOpen, onClose }) => {
     try {
       const page = 1;
       const limit = 10000;
-      const repsone = await dispatch(getListCategory({page, limit})).unwrap();
-      console.log('category', repsone);
+      // const repsone = 
+      await dispatch(getListCategory({page, limit})).unwrap();
+      // console.log('category', repsone);
     } catch (err) {
       console.log('🚀 ~ file: Product.js ~ line 166 ~ getListCategoryHandler ~ err', err);
     }
@@ -131,6 +132,7 @@ const AddProduct = ({ isOpen, onClose }) => {
     setError('');
     onClose();
   };
+
   const addNewProductHandler = async () => {
     setError('');
 
@@ -158,7 +160,7 @@ const AddProduct = ({ isOpen, onClose }) => {
     }
 
     for (let i = 0; i < prodImages.length; i++) {
-      formData.append('image', prodImages[i]);
+      formData.append('prodImages', prodImages[i]);
     }
 
     formData.append('prodName', enteredProdName);
@@ -171,15 +173,18 @@ const AddProduct = ({ isOpen, onClose }) => {
     formData.append('prodAutoExtend', enteredProdAutoExtend);
     try {
       await dispatch(postAuctionProduct(formData)).unwrap();
-      toast.success('Add new product success');
+      // toast.success('Add new product success');
     } catch (err) {
       setError(err);
-      console.log('🚀 ~ file: AddProduct.js ~ line 140 ~ addNewProductHandler ~ error', error);
+      // console.log('🚀 ~ file: AddProduct.js ~ line 140 ~ addNewProductHandler ~ error', error);
     }
+    onClose();
   };
+  
   useEffect(() => {
     getListCategoryHandler();
   }, [dispatch, getListCategoryHandler]);
+
   useEffect(() => {
     if (prodImages.length > 0) {
       getBase64(prodImages[0]);
@@ -260,14 +265,14 @@ const AddProduct = ({ isOpen, onClose }) => {
                     defaultValue=""
                     MenuProps={{ classes: { paper: classes.menuPaper } }}
                     inputRef={prodCategoryIdRef}>
-                    <option aria-label="None" value="" />
+                    {categories?.length === 0 &&(<option aria-label="None" value="" />)}
                     {categories?.length > 0 &&
                       categories.map((cate, index) => (
                         <optgroup label={cate.cateName} key={index}>
                           {cate.subCategories?.length > 0 &&
-                            cate.subCategories.map((subCate, index) => (
+                            cate.subCategories[0].map((subCate, index) => (
                               <option value={subCate.cateId} key={index}>
-                                {subCate.CateName}
+                                {subCate.cateName}
                               </option>
                             ))}
                         </optgroup>
@@ -321,10 +326,25 @@ const AddProduct = ({ isOpen, onClose }) => {
                     shrink: true,
                   }}
                   inputProps={{ type: 'date' }}
-                  minDate={Date.now()}
+                  // minDate={Date.now()}
                   fullWidth
                   inputRef={prodEndDateRef}
                 />
+              </div>
+              <div className={classes.textField}>
+                <Typography variant="caption" component="p">
+                  Danh mục
+                </Typography>
+                <FormControl variant="standard" size="small" fullWidth>
+                  <Select
+                    native
+                    defaultValue=""
+                    MenuProps={{ classes: { paper: classes.menuPaper } }}
+                    inputRef={prodAutoExtendRef}>
+                    <option value="0">Không gia hạn</option>
+                    <option value="1">Gia hạn</option>
+                  </Select>
+                </FormControl>
               </div>
               <div className={classes.textField}>
                 <Typography variant="caption" component="p">
@@ -341,7 +361,7 @@ const AddProduct = ({ isOpen, onClose }) => {
               </div>
               {!submitIsValid && (
                 <FormHelperText error style={{ marginBottom: 8 }}>
-                  All textfield must not be null or empty
+                  Tất cả các ô không được bỏ trống
                 </FormHelperText>
               )}
               {error.length > 0 && (

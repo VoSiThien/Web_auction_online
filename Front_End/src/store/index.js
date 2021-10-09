@@ -2,8 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import categoryRedu from '../reducers/category';
 import historyRedu from '../reducers/historyBid';
 import authSlice from '../reducers/auth';
-// import adminAuthSlice from '../reducers/admin/auth';
-import userProductSlice from '../reducers/users/product';
+import selProductRedu from '../reducers/users/product';
 import cartSlice from '../reducers/cart';
 import langSlice from '../reducers/lang';
 import uiSlice from '../reducers/ui';
@@ -15,9 +14,7 @@ const store = configureStore({
     bidProduct: bidProductRedu.reducer,
     
     auth: authSlice.reducer,
-    userProduct: userProductSlice.reducer,
-
-    // adminAuth: adminAuthSlice.reducer,
+    selProduct: selProductRedu.reducer,
 
     ui: uiSlice.reducer,
     cart: cartSlice.reducer,

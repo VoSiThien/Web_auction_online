@@ -57,7 +57,7 @@ function HistoryBid() {
                 setShowSuccess(false)
             }, 5000);
         }
-    }, []);
+    }, [showFailed, showSuccess]);
 
     const getListHistoryHandler = useCallback(async ({ page, limit, prodId, status }) => {
         try {

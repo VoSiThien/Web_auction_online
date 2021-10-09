@@ -8,10 +8,19 @@ const postAuctionProduct = (data) => {
   return axios.post('/api/seller/postAuctionProduct', data);
 };
 
+const updateAuctionProduct = (data) => {
+  return axios.post('/api/seller/updateAuctionProduct', data);
+};
+
+const deleteAuctionProduct = (data) => {
+  return axios.post('/api/seller/deleteAuctionProductList', data);
+};
 
 const sellerProductApi = {
   getAuctionProductList,
   postAuctionProduct,
+  updateAuctionProduct,
+  deleteAuctionProduct,
 };
 
 export default sellerProductApi;

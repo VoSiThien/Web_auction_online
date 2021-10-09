@@ -126,7 +126,7 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    document.title = t('loginpage.title');
+    document.title = 'Đăng nhập';
   }, [t]);
 
 
@@ -146,7 +146,7 @@ const LoginPage = () => {
           <Container>
             <Box className={classes.form} boxShadow={3}>
               <Typography variant="h3" className={classes.title}>
-                {t('loginpage.formTitle')}
+              Đăng nhập
               </Typography>
               <form noValidate autoComplete="off" onSubmit={formSubmitHandler}>
                 <FormControl className={classes.formControl}>
@@ -157,7 +157,7 @@ const LoginPage = () => {
                     helperText={usernameHasError && 'Địa chỉ email không hợp lệ'}
                     fullWidth
                     size="small"
-                    variant="outlined"
+                    variant="standard"
                     value={enteredUsername}
                     onBlur={usernameBlurHandler}
                     onChange={usernameChangeHandler}
@@ -172,7 +172,7 @@ const LoginPage = () => {
                     helperText={passwordHasError && 'Mật khẩu không hợp lệ'}
                     fullWidth
                     size="small"
-                    variant="outlined"
+                    variant="standard"
                     value={enteredPassword}
                     onBlur={passwordBlurHandler}
                     onChange={passwordChangeHandler}

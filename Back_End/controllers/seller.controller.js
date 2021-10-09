@@ -80,6 +80,16 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
 			prodDescription: result[index].prod_description,
 			prodUpdatedDate: result[index].prod_updated_date
 		}
+
+        let imageLink = []
+		for (let i = index; i < result.length; i++) {
+			index = i + 1
+			imageLink.push(result[i].prod_img_data)
+			if ((i >= result.length - 1) || (result[index].prod_id != result[index - 1].prod_id)) {
+				break;
+			}
+		}
+		probItem['prodImages'] = imageLink
 		prodList.push(probItem)
 		index++
 	}
@@ -106,7 +116,11 @@ router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res)
     } = req.body
     const accId = req.account.accId
     const now = Date.now()
-    const prodId = await knex('tbl_product').insert({
+    let prodId = null;
+    try {
+
+        prodId = await knex('tbl_product')
+        .insert({
             prod_name: prodName,
             prod_category_id: prodCategoryId,
             prod_price_starting: prodPriceStarting,
@@ -115,14 +129,27 @@ router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res)
             prod_description: prodDescription,
             prod_end_date: prodEndDate,
             prod_seller_id: accId,
-            prod_create_date: now,
-            prod_update_date: now,
+            prod_created_date: now,
+            prod_updated_date: now,
             prod_auto_extend: prodAutoExtend
         })
+        // .returning('*')
+        // console.error(prodId)
+        // prodId = await knex.raw(`INSERT INTO public.tbl_product(prodName,prod_category_id,prod_price_starting,
+        //     prod_price_step,prod_price,prod_description,prod_end_date,prod_seller_id,
+        //     prod_create_date,prod_update_date,prod_auto_extend) VALUES(${prodName},${prodCategoryId},${prodPriceStarting},${prodPriceStep},
+        //         ${prodPrice},${prodDescription},${prodEndDate},${accId},${now},${now},${prodAutoExtend})`)
         .returning('prod_id')
         .then(function(result) {
             return result[0]
         })
+    } catch (error) {
+        console.error(error)
+        return res.status(400).json({
+            data: error.message,
+            statusCode: successCode
+        })
+    }
     const { prod_images } = req.files
     let mainImage = null;
     prod_images.forEach(async(image) => {
@@ -154,6 +181,16 @@ router.post('/updateAuctionProductDescription', validator.updateAuctionProductDe
     const { prodId, prodDescription } = req.body
     const now = Date.now()
     await knex('tbl_product').where({ prod_id: prodId }).update({ prod_description: prodDescription, prod_update_date: now })
+    return res.status(200).json({
+        data: true,
+        statusCode: successCode
+    })
+})
+
+router.put('/deleteAuctionProduct', validator.deleteAuctionProduct, async(req, res) => {
+    const { prodId } = req.body
+    const now = Date.now()
+    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_status: 2, prod_update_date: now })
     return res.status(200).json({
         data: true,
         statusCode: successCode

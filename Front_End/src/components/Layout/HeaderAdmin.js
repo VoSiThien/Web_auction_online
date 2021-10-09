@@ -198,7 +198,7 @@ const HeaderAdmin = ({ showMenu }) => {
 
 <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
 <Container>
-  <Navbar.Brand href="/admin/login">
+  <Navbar.Brand href="#">
     <FcShop className="iconhome" /> Auction Online</Navbar.Brand>
   <Navbar.Toggle aria-controls="responsive-navbar-nav" />
   <Navbar.Collapse id="responsive-navbar-nav">

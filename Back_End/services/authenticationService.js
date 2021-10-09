@@ -17,6 +17,11 @@ const getRole = async (acc_id) => {
 	}
 }
 
+const getAccount = async (acc_id) => {
+	const acc = await knex('tbl_account').where({ acc_id: acc_id }).first('acc_role','acc_full_name','acc_avatar')
+	return acc
+}
+
 
 const authenticate = async (email, password, callback, req, res) => {
 	const result = await accountModel.findByEmail(email)
@@ -34,11 +39,13 @@ const authenticate = async (email, password, callback, req, res) => {
 	}
 	const info = await Promise.all([
 		auth, 
-		getRole(acc_id).then((role) => {
+		getAccount(acc_id).then((acc) => {
 			return {
-				role,
+				role: acc.acc_role,
 				accStatus: acc_status,
-				accId: acc_id
+				accId: acc_id,
+				accFullName: acc.acc_full_name,
+				accAvatar: acc.acc_avatar
 			}
 		})
 	])

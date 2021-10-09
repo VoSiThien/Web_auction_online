@@ -4,6 +4,9 @@ import { getResponseError } from '../../helpers';
 
 const initialState = {
   data: [],
+  curPage: 1,
+  numPage: 1,
+  total: 1,
   loading: false,
   modifyLoading: false,
 };
@@ -12,18 +15,18 @@ export const getAuctionProductList = createAsyncThunk(
   'product/getAuctionProductList',
   async ({page, limit}, { rejectWithValue }) => {
     try {
-      return (await API.getAuctionProductList({page, limit})).data.data;
+      return (await API.getAuctionProductList({page, limit})).data;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }
   }
 );
 
-export const deleteProduct = createAsyncThunk(
-  'product/DeleteProduct',
+export const deleteAuctionProduct = createAsyncThunk(
+  'product/deleteAuctionProductList',
   async (productId, { rejectWithValue }) => {
     try {
-      return (await API.deleteById(productId)).data;
+      return (await API.deleteAuctionProduct({productId})).data;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }
@@ -33,7 +36,6 @@ export const deleteProduct = createAsyncThunk(
 export const postAuctionProduct = createAsyncThunk(
   'product/postAuctionProduct',
   async (formData, { rejectWithValue }) => {
-    // console.log('Form data', formData);
     try {
       return (await API.postAuctionProduct(formData)).data;
     } catch (error) {
@@ -42,8 +44,19 @@ export const postAuctionProduct = createAsyncThunk(
   }
 );
 
+export const updateAuctionProduct = createAsyncThunk(
+  'product/updateAuctionProduct',
+  async (formData, { rejectWithValue }) => {
+    try {
+      return (await API.updateAuctionProduct(formData)).data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
 const adminProductSlice = createSlice({
-  name: 'category',
+  name: 'product',
   initialState,
   reducers: {},
   extraReducers: {
@@ -54,11 +67,12 @@ const adminProductSlice = createSlice({
       state.loading = false;
     },
     [getAuctionProductList.fulfilled]: (state, action) => {
-      state.loading = false;
-      const { productList } = action.payload;
-      state.loading = false;
-      state.data = productList;
-      console.log(productList)
+      state.loading = false
+      const { productList, curPage, numPage, total } = action.payload
+      state.curPage = curPage
+      state.numPage = numPage
+      state.total = total
+      state.data = productList
     },
 
     [postAuctionProduct.pending]: (state) => {
@@ -70,8 +84,18 @@ const adminProductSlice = createSlice({
     [postAuctionProduct.fulfilled]: (state) => {
       state.modifyLoading = false;
     },
+    
+    [updateAuctionProduct.pending]: (state) => {
+      state.modifyLoading = true;
+    },
+    [updateAuctionProduct.rejected]: (state) => {
+      state.modifyLoading = false;
+    },
+    [updateAuctionProduct.fulfilled]: (state) => {
+      state.modifyLoading = false;
+    },
   },
 });
 
-export const adminProductActión = adminProductSlice.actions;
+export const adminProductActions = adminProductSlice.actions;
 export default adminProductSlice;

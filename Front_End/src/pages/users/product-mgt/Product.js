@@ -20,7 +20,7 @@ import SearchInput from '../../../components/UI/SearchInput';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { Add } from '@material-ui/icons';
-import { deleteProduct, getAuctionProductList } from '../../../reducers/users/product';
+import { deleteAuctionProduct, getAuctionProductList } from '../../../reducers/users/product';
 import AddProduct from './AddProduct';
 import UpdateProduct from './UpdateProduct';
 import TableError from '../../../components/Table/TableError';
@@ -138,15 +138,17 @@ const ProductManager = (props) => {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [productInfo, setProductInfo] = useState({productList: [], numPage:1});
+  // const [productInfo, setProductInfo] = useState({});
   const [selectedId, setSelectedId] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
 
-  const loading = useSelector((state) => state.userProduct.loading);
+  // const loading = useSelector((state) => state.selProduct.loading);
+  // const products = useSelector((state) => state.selProduct.data);
+  const productInfo = useSelector((state) => state.selProduct);
   const dispatch = useDispatch();
-  let { productList, numPage } = productInfo;
+  // let { productList, numPage } = productInfo;
   // const [optionPrice, setOptionPrice] = useState('Price');
   // const [optionType, setOptionType] = useState('Ascending');
 
@@ -182,8 +184,8 @@ const ProductManager = (props) => {
   const productDeleteHandler = async () => {
     if (!selectedId) return;
     try {
-      await dispatch(deleteProduct(selectedId)).unwrap();
-      toast.success(`Delete product id ${selectedId} successfully`);
+      await dispatch(deleteAuctionProduct(selectedId)).unwrap();
+      // toast.success(`Delete product id ${selectedId} successfully`);
       productInfo.productList = productInfo.productList.filter(
         (product) => product.prodId !== selectedId
       );
@@ -197,9 +199,10 @@ const ProductManager = (props) => {
     async (page = 1) => {
       try {
         const limit = 10;
-        const response = await dispatch(getAuctionProductList({page, limit})).unwrap();
-        setProductInfo(response);
-        return response;
+        // const response = await dispatch(getAuctionProductList({page, limit})).unwrap();
+        await dispatch(getAuctionProductList({page, limit})).unwrap();
+        // setProductInfo(response);
+        // return response;
       } catch (err) {
         setError(err);
       }
@@ -210,10 +213,6 @@ const ProductManager = (props) => {
   useEffect(() => {
     dispatch(uiActions.hideModal());
     getAuctionProductListHandler(page)
-    // .then((result) => { 
-    //   console.log(result)
-    //   // setProductInfo(result) 
-    // });
   }, [dispatch, getAuctionProductListHandler, page]);
 
   useEffect(() => {
@@ -224,8 +223,12 @@ const ProductManager = (props) => {
     window.scrollTo(0, 0);
   }, []);
 
-  console.log(loading)
-  console.log(Date.now())
+
+  const addDefaultSrc = (e)=>{
+    const errImg = window.location.origin + '/img/no-image-available.jpg';
+    e.target.src = errImg
+  }
+
   return (
     <>
       <div className={classes.root}>
@@ -267,13 +270,8 @@ const ProductManager = (props) => {
                 </div>
               </div>
               
-              <div className={`${classes.tableSection} `}>
-                {loading ? ( <TableLoading /> ): error?.length > 0 ?
-                 (
-                  <TableError message={error} onTryAgain={getAuctionProductListHandler} />
-                ) : productList?.length > 0 ? (
-                  <>
-                    <TableContainer component={Paper} className={classes.section}>
+              <div>
+              <TableContainer component={Paper} className={classes.section}>
                       <Table aria-label="a dense table">
                         <TableHead>
                           <TableRow className={classes.tableHead}>
@@ -281,20 +279,25 @@ const ProductManager = (props) => {
                             <TableCell>Product Name</TableCell>
                             <TableCell>Image</TableCell>
                             <TableCell>Category</TableCell>
-                            <TableCell>Current Price</TableCell>
-                            <TableCell>Highest Price</TableCell>
+                            {/* <TableCell>Current Price</TableCell> */}
+                            {/* <TableCell>Highest Price</TableCell> */}
                             <TableCell>Start Price</TableCell>
                             <TableCell>Step Price</TableCell>
-                            <TableCell>Price</TableCell>
+                            {/* <TableCell>Price</TableCell> */}
                             <TableCell>End Date</TableCell>
                             <TableCell>Auto Extend</TableCell>
-                            <TableCell>Description</TableCell>
+                            {/* <TableCell>Description</TableCell> */}
                             <TableCell>Last Modified</TableCell>
                             <TableCell align="center">Options</TableCell>
                           </TableRow>
                         </TableHead>
+                {productInfo.loading ? ( <TableLoading /> ): error?.length > 0 ?
+                 (
+                  <TableError message={error} onTryAgain={getAuctionProductListHandler} />
+                ) : productInfo.data?.length > 0 ? (
+                  <>
                         <TableBody>
-                          {productList.map((row, index) => (
+                          {productInfo.data.map((row, index) => (
                             <TableRow key={index}>
                               <TableCell component="th" scope="row">
                                 {row.prodId}
@@ -302,21 +305,21 @@ const ProductManager = (props) => {
                               <TableCell>{row.prodName}</TableCell>
                               <TableCell>
                                 <img
-                                  // src={row.images[0]}
                                   src={row.prodMainImage}
                                   alt={row.prodName}
+                                  onError={addDefaultSrc}
                                   style={{ width: 100, height: 80, objectFit: 'cover' }}
                                 />
                               </TableCell>
                               <TableCell>{row.prodCategoryName}</TableCell>
-                              <TableCell>{row.prodPriceCurrent}</TableCell>
-                              <TableCell>{row.prodPriceHighest}</TableCell>
+                              {/* <TableCell>{row.prodPriceCurrent}</TableCell> */}
+                              {/* <TableCell>{row.prodPriceHighest}</TableCell> */}
                               <TableCell>{row.prodPriceStarting}</TableCell>
                               <TableCell>{row.prodPriceStep}</TableCell>
-                              <TableCell>{row.prodPrice}</TableCell>
+                              {/* <TableCell>{row.prodPrice}</TableCell> */}
                               <TableCell>{row.prodEndDate}</TableCell>
                               <TableCell>{row.prodAutoExtend}</TableCell>
-                              <TableCell>{row.prodDescription}</TableCell>
+                              {/* <TableCell>{row.prodDescription}</TableCell> */}
                               <TableCell>{row.prodUpdatedDate}</TableCell>
                               <TableCell align="center" style={{ minWidth: 150 }}>
                                 <EditIcon
@@ -333,23 +336,27 @@ const ProductManager = (props) => {
                             </TableRow>
                           ))}
                         </TableBody>
-                      </Table>
-                    </TableContainer>
-                    <div className={`${classes.pagination} ${classes.section}`}>
+                    {/* <div className={`${classes.pagination} ${classes.section}`}>
                       <Pagination
-                        count={numPage}
+                        count={productInfo.numPage}
                         color="primary"
                         variant="outlined"
                         shape="rounded"
                         page={page}
                         onChange={pageChangeHandler}
                       />
-                    </div>
+                    </div> */}
                   </>
                 ) : (
                   <TableError message="No data in database" onTryAgain={getAuctionProductListHandler} />
                 )}
+                  </Table>
+                </TableContainer>
               </div>
+
+            <div className={`${classes.pagination} ${classes.section}`}>
+                <Pagination count={productInfo.numPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+            </div>
             </Container>
           </div>
         </div>

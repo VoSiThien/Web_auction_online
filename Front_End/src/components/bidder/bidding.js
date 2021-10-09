@@ -23,7 +23,7 @@ function Bidding({ isOpen, onClose, prod_id, getList }) {
                 setShowSuccess(false)
             }, 5000);
         }
-    },[])
+    },[showFailed, showSuccess])
 
     const onClickHandle = async () => {
         try {
