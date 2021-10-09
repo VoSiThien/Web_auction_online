@@ -20,7 +20,7 @@ export const routes = [
     component: HomePage,
   },
   {
-    path: '/details',
+    path: '/details/:productId',
     protected: false,
     exact: true,
     component: ProductDetail,

@@ -206,12 +206,11 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 /*1.Get product detail information*/
 router.get('/details/:id', async (req, res) => {
 	const { id } = req.params
-
-	var date = new Date();
 	var prod = await knex('tbl_product')
 		.where('prod_id', id)
-
+	
 	if (prod.length === 0) {
+		
 		return res.status(400).json({
 			errorMessage: " Product record doesn't exist!",
 			statusCode: 1
@@ -220,17 +219,18 @@ router.get('/details/:id', async (req, res) => {
 
 	var prodObject = {}
 	var accountList = await accountModel.findActiveUser()
-	const prodResult = await knex.from('tbl_product')
+	await knex.from('tbl_product')
 		.where('prod_id', id)
 		.returning('*')
 		.then(async (rows) => {
 			prodObject = rows[0];
-
 			//get holder & seller information
-			prodObject.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == prodObject.prod_price_holder).acc_full_name
-			console.log(prodObject.prod_price_holder)
-			prodObject.prod_seller = accountList.find((seller) => seller.acc_id == prodObject.prod_seller_id).acc_full_name
-
+			if(prodObject.prod_price_holder)
+				prodObject.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == prodObject.prod_price_holder).acc_full_name
+			if(prodObject.prod_seller_id)
+				prodObject.prod_seller_id = accountList.find((seller) => seller.acc_id == prodObject.prod_seller_id).acc_full_name
+			var catName = await knex('tbl_categories').where('cate_id', prodObject.prod_category_id)
+			prodObject.prod_categoryName = catName[0].cate_name
 			//get sub-iamges
 			var imageResult = await knex.from('tbl_product_images')
 				.where('prod_img_product_id', prodObject.prod_id);
@@ -238,13 +238,13 @@ router.get('/details/:id', async (req, res) => {
 		})
 	if (prodObject) {
 		return res.status(200).json({
-			listProductDetail: prodObject,
+			productDetail: prodObject,
 			statusCode: successCode
 		})
 	}
 
 	return res.status(200).json({
-		listProductDetail: [],
+		productDetail: [],
 		statusCode: errorCode
 	})
 })

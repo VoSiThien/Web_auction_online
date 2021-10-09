@@ -18,7 +18,7 @@ export const getHomeCategory = createAsyncThunk(
   }
 });
 
-const adminCategorySlice = createSlice({
+const honeCategorySlice = createSlice({
   name: 'category',
   initialState,
   reducers: {},
@@ -36,5 +36,5 @@ const adminCategorySlice = createSlice({
   },
 });
 
-export const adminCategoryActions = adminCategorySlice.actions;
-export default adminCategorySlice;
+export const adminCategoryActions = honeCategorySlice.actions;
+export default honeCategorySlice;

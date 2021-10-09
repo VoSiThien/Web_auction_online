@@ -187,7 +187,7 @@ function Header({ showMenu }) {
 	const history = useHistory();
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 	const user = useSelector((state) => state.auth.user);
-	const homeCatData = useSelector((state) => state.homeCategory.data)// lay tu trong store
+	const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store
 	const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
 
 	const toggleUserDropdownHandler = () => {
@@ -198,25 +198,25 @@ function Header({ showMenu }) {
 		dispatch(userAuthActions.logout());
 		history.push("/login");
 	};
-
+	//define a handler function
 	const getListCategoryHandler = useCallback(async () => {
 		try {
-			await dispatch(getHomeCategory()).unwrap();//dispatch dung de goi 1 ham trong reducer
+			await dispatch(getHomeCategory()).unwrap();//dispatch's used to call a function inside reducer
 		} catch (err) {
 			alert(err);
 		}
 	}, [dispatch]);
 
-	useEffect(() => {//ham khai bao thi phai duoc bo trong useEffect thi no moi chay, ham useEffect auto chay, khi data thay doi no se tu load thay
+	//useEffect run automatically, when data's changed, function define below it will be loaded again
+	useEffect(() => {
+		//in order to run handler function, we need to put it inside useEffect
 		getListCategoryHandler();
-	}, [getListCategoryHandler]);//gia tri theo doi, khi thay doi thi ham nay se goi lai
+	}, [getListCategoryHandler]);//followed value, when data's changed, this function defined here will be called again
 
 
 
 	return (
-
 		<>
-
 			<Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
 				<Container>
 					<Navbar.Brand href="/">
@@ -225,13 +225,13 @@ function Header({ showMenu }) {
 					<Navbar.Collapse id="responsive-navbar-nav">
 						<Nav className="me-auto">
 							<NavDropdown title="Chuyên mục" id="collasible-nav-dropdown" menuVariant="dark">
-								{homeCatData?.paginationlist?.length > 0 &&		//khi xai ham cua react phai co dau ?
+								{homeCatData?.paginationlist?.length > 0 &&		//want to use function of react, need to add "?"
 									homeCatData.paginationlist.map((cat, index) => (
 										<CategoryItem
 											key={index}
 											id={cat.cateId}
 											title={cat.cateName}
-											items={cat.subCategories} //truyen du lieu giua 2 component
+											items={cat.subCategories} //pass data between 2 components
 										/>
 									))}
 
