@@ -59,4 +59,5 @@ const updateInfo = (req, res, next) => {
 
 module.exports = {
     updateAllowSellIn7Date,
+    updateInfo
 }
