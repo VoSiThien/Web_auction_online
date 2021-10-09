@@ -126,7 +126,7 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    document.title = t('loginpage.title');
+    document.title = 'Đăng nhập';
   }, [t]);
 
 
@@ -146,7 +146,7 @@ const LoginPage = () => {
           <Container>
             <Box className={classes.form} boxShadow={3}>
               <Typography variant="h3" className={classes.title}>
-                {t('loginpage.formTitle')}
+              Đăng nhập
               </Typography>
               <form noValidate autoComplete="off" onSubmit={formSubmitHandler}>
                 <FormControl className={classes.formControl}>
@@ -154,10 +154,10 @@ const LoginPage = () => {
                     error={usernameHasError}
                     label={t('loginpage.email')}
                     type="email"
-                    helperText={usernameHasError && t('loginpage.emailInValid')}
+                    helperText={usernameHasError && 'Địa chỉ email không hợp lệ'}
                     fullWidth
                     size="small"
-                    variant="outlined"
+                    variant="standard"
                     value={enteredUsername}
                     onBlur={usernameBlurHandler}
                     onChange={usernameChangeHandler}
@@ -166,13 +166,13 @@ const LoginPage = () => {
                 <FormControl className={classes.formControl}>
                   <TextField
                     // error
-                    label={t('loginpage.password')}
+                    label='Mật khẩu'
                     type="password"
                     error={passwordHasError}
-                    helperText={passwordHasError && t('loginpage.passwordInValid')}
+                    helperText={passwordHasError && 'Mật khẩu không hợp lệ'}
                     fullWidth
                     size="small"
-                    variant="outlined"
+                    variant="standard"
                     value={enteredPassword}
                     onBlur={passwordBlurHandler}
                     onChange={passwordChangeHandler}
@@ -190,16 +190,16 @@ const LoginPage = () => {
                   disabled={!formIsValid}
                   type="submit"
                   className={classes.button}>
-                  {!loading ? t('loginpage.buttonLogin') : t('loginpage.buttonLoginPending')}
+                  {!loading ? 'Đăng nhập' : 'Đang đăng nhập...'}
                 </Button>
               </form>
               <div className={classes.actions}>
                 <Typography variant="body2">
-                  {t('loginpage.newMember')} <Link to="/register">{t('loginpage.signUp')}</Link>
+                  Người dùng mới <Link to="/register">Đăng kí</Link>
                 </Typography>
 
                 <Link to="/forgot-password">
-                  <Typography variant="body2">{t('loginpage.forgotPassword')}</Typography>
+                  <Typography variant="body2">Quên mật khẩu</Typography>
                 </Link>
               </div>
             </Box>

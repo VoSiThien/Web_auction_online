@@ -1,5 +1,5 @@
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { bidProduct } from '../../reducers/users/bidder';
 
@@ -16,14 +16,14 @@ function Bidding({ isOpen, onClose, prod_id, getList }) {
         setPriceBid(value);
     };
 
-    const handleVisible = () => {
+    const handleVisible = useCallback(() => {
         if (showFailed === true || showSuccess === true) {
             setTimeout(() => {
                 setShowFailed(false)
                 setShowSuccess(false)
             }, 5000);
         }
-    }
+    },[showFailed, showSuccess])
 
     const onClickHandle = async () => {
         try {

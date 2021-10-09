@@ -1,6 +1,6 @@
 export const Role = {
   Admin: 'ADM',
   User: 'USER',
-  Bidder: 'Bid',
-  Seller: 'Sel',
+  Bidder: 'BID',
+  Seller: 'SEL',
 };

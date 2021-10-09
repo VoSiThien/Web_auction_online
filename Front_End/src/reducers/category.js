@@ -11,8 +11,8 @@ export const getListCategory = createAsyncThunk(
   'category/Get',
   async ({page, limit}, { rejectWithValue }) => {
   try {
-    const asd = (await categoryApi.getListCategory({page, limit})).data
-    return asd;
+    const categories = (await categoryApi.getListCategory({page, limit})).data
+    return categories;
   } catch (error) {
     return rejectWithValue(getResponseError(error));
   }
@@ -31,7 +31,8 @@ const adminCategorySlice = createSlice({
     },
     [getListCategory.fulfilled]: (state, action) => {
       state.loading = false;
-      state.data = action.payload;
+      const {paginationResult} = action.payload;
+      state.data = paginationResult
     },
   },
 });

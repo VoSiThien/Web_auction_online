@@ -77,8 +77,8 @@ const getListParentWithoutChild = async (listCategory, listCatParentWithNoChild)
 			subCategories: [listChild.map((childItem) => {//always return the blank array
 				const createDate = moment(new Date(childItem.cate_created_date)).format("DD-MM-YYYY")
 				return {
-					catID: childItem.cate_id,
-					catName: childItem.cate_name,
+					cateId: childItem.cate_id,
+					cateName: childItem.cate_name,
 					createDate
 				}
 			})]
@@ -116,6 +116,7 @@ module.exports = {
 	getAllParent,
 	getAllChild,
 	getAll,
+	getListParentWithoutChild,
 	getFatherWithLimit,
 	getHomePageList
 }

@@ -116,7 +116,7 @@ const BasicProfilePanel = () => {
 					}
 					fullWidth
 					size="small"
-					variant="outlined"
+					variant="standard"
 					value={enteredFullName}
 					onChange={fullNameChangeHandler}
 					onBlur={fullNameBlurHandler}
@@ -130,7 +130,7 @@ const BasicProfilePanel = () => {
 					helperText={emailHasError && "Please enter a valid email."}
 					fullWidth
 					size="small"
-					variant="outlined"
+					variant="standard"
 					value={enteredEmail}
 					onChange={emailChangeHandler}
 					onBlur={emailBlurHandler}
@@ -152,10 +152,10 @@ const BasicProfilePanel = () => {
 				/>
 				{false && (
 					<FormHelperText
-						variant="outlined"
+						variant="standard"
 						className={classes.formHelperText}
 					>
-						Please enter a valid phone number
+						Xin vui lòng nhập số điện thoại hợp lệ
 					</FormHelperText>
 				)}
 			</FormControl>
@@ -168,7 +168,7 @@ const BasicProfilePanel = () => {
 					}
 					fullWidth
 					size="small"
-					variant="outlined"
+					variant="standard"
 					multiline
 					rows={4}
 					value={enteredAddress}

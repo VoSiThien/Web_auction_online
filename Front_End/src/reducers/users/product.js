@@ -1,41 +1,54 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import API from '../../apis/users/product-mgt';
+import API from '../../apis/users/product';
 import { getResponseError } from '../../helpers';
 
 const initialState = {
   data: [],
+  curPage: 1,
+  numPage: 1,
+  total: 1,
   loading: false,
   modifyLoading: false,
 };
 
 export const getAuctionProductList = createAsyncThunk(
-  'users/product/GetList',
-  async (page, { rejectWithValue }) => {
+  'product/getAuctionProductList',
+  async ({page, limit}, { rejectWithValue }) => {
     try {
-      return (await API.getAuctionProductList(page, 10)).data.data;
+      return (await API.getAuctionProductList({page, limit})).data;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }
   }
 );
 
-export const deleteProduct = createAsyncThunk(
-  'product/DeleteProduct',
+export const deleteAuctionProduct = createAsyncThunk(
+  'product/deleteAuctionProductList',
   async (productId, { rejectWithValue }) => {
     try {
-      return (await API.deleteById(productId)).data;
+      return (await API.deleteAuctionProduct({productId})).data;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }
   }
 );
 
-export const addNewProduct = createAsyncThunk(
-  'product/AddNewProduct',
+export const postAuctionProduct = createAsyncThunk(
+  'product/postAuctionProduct',
   async (formData, { rejectWithValue }) => {
-    console.log('Form data', formData);
     try {
-      return (await API.addNew(formData)).data;
+      return (await API.postAuctionProduct(formData)).data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
+export const updateAuctionProduct = createAsyncThunk(
+  'product/updateAuctionProduct',
+  async (formData, { rejectWithValue }) => {
+    try {
+      return (await API.updateAuctionProduct(formData)).data;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }
@@ -43,7 +56,7 @@ export const addNewProduct = createAsyncThunk(
 );
 
 const adminProductSlice = createSlice({
-  name: 'category',
+  name: 'product',
   initialState,
   reducers: {},
   extraReducers: {
@@ -54,21 +67,35 @@ const adminProductSlice = createSlice({
       state.loading = false;
     },
     [getAuctionProductList.fulfilled]: (state, action) => {
-      state.loading = false;
-      state.data = action.payload.listProducts;
+      state.loading = false
+      const { productList, curPage, numPage, total } = action.payload
+      state.curPage = curPage
+      state.numPage = numPage
+      state.total = total
+      state.data = productList
     },
 
-    [addNewProduct.pending]: (state) => {
+    [postAuctionProduct.pending]: (state) => {
       state.modifyLoading = true;
     },
-    [addNewProduct.rejected]: (state) => {
+    [postAuctionProduct.rejected]: (state) => {
       state.modifyLoading = false;
     },
-    [addNewProduct.fulfilled]: (state) => {
+    [postAuctionProduct.fulfilled]: (state) => {
+      state.modifyLoading = false;
+    },
+    
+    [updateAuctionProduct.pending]: (state) => {
+      state.modifyLoading = true;
+    },
+    [updateAuctionProduct.rejected]: (state) => {
+      state.modifyLoading = false;
+    },
+    [updateAuctionProduct.fulfilled]: (state) => {
       state.modifyLoading = false;
     },
   },
 });
 
-export const adminProductActión = adminProductSlice.actions;
+export const adminProductActions = adminProductSlice.actions;
 export default adminProductSlice;

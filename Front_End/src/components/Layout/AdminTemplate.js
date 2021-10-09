@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const user = JSON.parse(localStorage.getItem('user'));
 export const AdminTemplate = ({children}) => {
   const classes = useStyles();
   return (
@@ -72,8 +73,8 @@ export const AdminTemplate = ({children}) => {
       <SideBar>
         <UserInfomation
           avatar="http://themes.pixelstrap.com/multikart/assets/images/dashboard/man.png"
-          name="Super Admin"
-          position="GENERAL MANAGER"
+          name={user.accFullName || ""}
+          position="ADMIN"
         />
         <AdminMenu options={options} />
       </SideBar>

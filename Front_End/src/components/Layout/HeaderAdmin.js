@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { authActions as userAuthActions } from "../../reducers/auth";
-import { Role } from "../../config/role";
+// import { Role } from "../../config/role";
 
 const useStyles = makeStyles((theme) => ({
 	root: {},
@@ -198,7 +198,7 @@ const HeaderAdmin = ({ showMenu }) => {
 
 <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
 <Container>
-  <Navbar.Brand href="/admin/login">
+  <Navbar.Brand href="#">
     <FcShop className="iconhome" /> Auction Online</Navbar.Brand>
   <Navbar.Toggle aria-controls="responsive-navbar-nav" />
   <Navbar.Collapse id="responsive-navbar-nav">

@@ -100,6 +100,7 @@ const authSlice = createSlice({
         [login.fulfilled]: (state, action) => {
             const { user, accessToken, refreshToken } = action.payload;
             state.loading = false;
+            console.log('login sadasdasd')
             if (user.accStatus === 0) {
                 state.user = user;
                 state.refreshToken = refreshToken;
