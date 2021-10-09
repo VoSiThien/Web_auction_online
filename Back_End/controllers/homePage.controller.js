@@ -16,7 +16,7 @@ router.get('/list-cat-home', async (req, res) => {
 
 	var listHomePage = await catModel.getHomePageList(listCategory, listAllChild, listAllParent)
 
-	listHomePage = pagingService.pagingation(listHomePage, page, limit)
+	//listHomePage = pagingService.pagingation(listHomePage, page, limit)
 
 	return res.status(200).json({
 		paginationlist: listHomePage,
