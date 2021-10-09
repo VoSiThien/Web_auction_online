@@ -19,7 +19,7 @@ const getRole = async (acc_id) => {
 
 
 const authenticate = async (email, password, callback, req, res) => {
-	const result = await accountModel.findActiveUser(email)
+	const result = await accountModel.findByEmail(email)
 
 	if (result.length === 0) {
 		return res.status(400).json({ 

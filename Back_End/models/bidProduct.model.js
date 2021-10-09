@@ -16,17 +16,17 @@ const bidding = async (priceBid, product, prodId, account) => {
 			
 			if(checkmailBid === false || checkmailSeller === false){
 				return {
-					message: "send email failed",
+					message: "Gửi email không thành công !",
 					statusCode: 2
 				}
 			}
 			return {
-				message: "success",
+				message: "Đấu giá thành công !",
 				statusCode: 0
 			}
 		}
 		return {
-			message: "failed",
+			message: "Đấu giá không thành công !",
 			statusCode: 1
 		}
 	}
@@ -50,12 +50,12 @@ const bidding = async (priceBid, product, prodId, account) => {
 
 		if (checkmailBid === false || checkmailSeller === false || checkmailBidOld === false){
 			return {
-				message: "send email failed",
+				message: "Gửi email không thành công !",
 				statusCode: 2
 			}
 		}
 		return {
-			message: "success",
+			message: "Đấu giá thành công !",
 			statusCode: 0
 		}
 	}
@@ -67,7 +67,7 @@ const bidding = async (priceBid, product, prodId, account) => {
 		await knex('tbl_product').where("prod_id", prodId).update({ prod_price_current: priceBid })
 
 		return {
-			message: "failed",
+			message: "Đấu giá không thành công !",
 			statusCode: 1
 		}
 	}
@@ -75,7 +75,7 @@ const bidding = async (priceBid, product, prodId, account) => {
     // bidder bidPrice < prod_price_current + prod_price_step
 	else{
 		return{
-			message: "failed",
+			message: "Đấu giá không thành công !",
 			statusCode: 1
 		}
 	}

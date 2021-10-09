@@ -20,7 +20,7 @@ router.post('/bid-product', validator.bidProduct, async (req, res) => {
 
     if (!resultInteger) {
         return res.status(400).json({
-            errorMessage: 'Price bid must be integer !',
+            errorMessage: 'Giá phải thuộc kiểu số !',
             statusCode: errorCode
         })
     }
@@ -31,14 +31,14 @@ router.post('/bid-product', validator.bidProduct, async (req, res) => {
 
     if (historyCheck.length !== 0) {
         return res.status(400).json({
-            errorMessage: 'You do not have the right to bid in this product !',
+            errorMessage: 'Bạn không thể đấu giá sản phẩm này !',
             statusCode: errorCode
         })
     }
 
     if (product.length === 0) {
         return res.status(400).json({
-            errorMessage: 'Product id not exists !',
+            errorMessage: 'Sản phẩm không tồn tại !',
             statusCode: errorCode
         })
     }
@@ -56,14 +56,14 @@ router.post('/bid-product', validator.bidProduct, async (req, res) => {
         })
 
         return res.status(400).json({
-            message: "You need to be confirmed by the seller",
+            message: "Bạn cần được xác nhận bởi người bán !",
             statusCode: errorCode
         })
     }
 
     else if (result < 80) {
         return res.status(400).json({
-            errorMessage: "Your review score is less than 80%",
+            errorMessage: "Đánh giá của bạn phải trên 80% !",
             statusCode: errorCode
         })
     }
@@ -219,7 +219,7 @@ router.post('/cancel-bid/:id', async (req, res) => {
 
     if (hisProduct.length === 0) {
         return res.status(400).json({
-            errorMessage: "History does not exist or status is not confirmed",
+            errorMessage: "Lịch sử không tồn tại hoặc trạng thái không phải là xác nhận !",
             statusCode: errorCode
         })
     }
@@ -233,7 +233,7 @@ router.post('/cancel-bid/:id', async (req, res) => {
 
     if (checkmailCancel === false) {
         return {
-            errorMessage: "send email failed",
+            errorMessage: "Gửi email không thành công !",
             statusCode: 2
         }
     }
@@ -250,7 +250,7 @@ router.post('/confirm-bid/:id', async (req, res) => {
 
     if (hisProduct.length === 0) {
         return res.status(400).json({
-            errorMessage: "History does not exist or status is not confirmed",
+            errorMessage: "Lịch sử không tồn tại hoặc trạng thái không phải là xác nhận !",
             statusCode: errorCode
         })
     }
