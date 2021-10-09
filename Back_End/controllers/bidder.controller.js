@@ -17,10 +17,10 @@ const errorCode = 1
 
 router.post('/allowSell', validator.updateAllowSellIn7Date, async(req, res) => {
     const { accIsUpgrade } = req.body
-    const result = await accountModel.findById(accId)
 
     const accId = req.account.accId;
-
+    const result = await accountModel.findById(accId)
+    
     if (result.length === 0) {
         return res.status(400).json({
             errorMessage: 'id not exists',

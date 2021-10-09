@@ -6,8 +6,15 @@ const bidProduct = ({ priceBid, prodId }) => {
   return axios.post(query, { priceBid, prodId });
 };
 
+const bidAllow = ({ accIsUpgrade }) => {
+
+  let query = `/api/bid/allowSell`;
+  return axios.post(query, { accIsUpgrade });
+};
+
 const bidderApi = {
-    bidProduct
+    bidProduct,
+    bidAllow
 };
 
 export default bidderApi;
