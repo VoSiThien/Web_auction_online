@@ -10,17 +10,15 @@ export const CategoryItem = ({ id, title, items }) => {
                 menuVariant="dark"
             >
                 {items?.length > 0 && items.map((item, index) => (
-                    <Container className="eventsNav pt-0 mt-0">
-                        <Row>
-                            <Col xs="12" md="6" className="text-left">
+                    <Container className="eventsNav pt-0 mt-0" >
                                 <Dropdown.Item>
                                     <Link href={`/collections/${item.cateId}`}>
-                                        <a className="nav-link" role="button">
+                                        <a className="nav-link" role="button" >
                                             {item.catName}
                                         </a>
                                     </Link>
                                 </Dropdown.Item>
-                            </Col>
+                                
                             
                             {/* <Col xs="12" md="6" className="text-left">
                                 <Dropdown.Item>
@@ -32,7 +30,6 @@ export const CategoryItem = ({ id, title, items }) => {
                                 </Dropdown.Item>
                             </Col> */}
                             
-                        </Row>
                     </Container>
                 ))}
 
