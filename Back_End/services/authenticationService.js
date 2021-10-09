@@ -22,7 +22,6 @@ const getAccount = async (acc_id) => {
 	return acc
 }
 
-
 const authenticate = async (email, password, callback, req, res) => {
 	const result = await accountModel.findByEmail(email)
 	if (result == null || !bcrypt.compareSync(password, result.acc_password)) {
