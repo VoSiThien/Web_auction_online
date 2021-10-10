@@ -11,7 +11,7 @@ router.post('/list', validator.listFavoriteProduct, async (req, res) => {
 	const { page, limit } = req.body
 	const offset = limit * (page - 1)
 	//const accId = req.account['accId']
-	const accId = 1
+	const accId = 2
 
 	if (page < 1 || limit < 1) {
 		return res.status(400).json({
@@ -43,6 +43,7 @@ router.post('/list', validator.listFavoriteProduct, async (req, res) => {
 
 	while(index < result.length){
 		let probItem = {
+			fav_id: result[index].fav_id,
 			prod_id: result[index].prod_id,
 			prod_name: result[index].prod_name,
 			prod_price: result[index].prod_price,
@@ -74,14 +75,14 @@ router.post('/add', validator.addFavoriteProduct, async (req, res) => {
 
 	if(checkProduct.length === 0){
 		return res.status(400).json({
-			errorMessage: "product id not exists",
+			errorMessage: "Sản phẩm không tồn tại !",
 			statusCode: errorCode
 		})
 	}
 
 	if(checkProductUnique.length !== 0){
 		return res.status(400).json({
-			errorMessage: "product exists in watch list",
+			errorMessage: "Sản phẩn đã tồn tại trong danh sách yêu thích của bạn !",
 			statusCode: errorCode
 		})
 	}
@@ -104,7 +105,7 @@ router.post('/delete/:id', async (req, res) => {
 
 	if (favorite.length === 0) {
 		return res.status(400).json({
-			errorMessage: 'favorive id not exists!',
+			errorMessage: 'Id sản phẩm yêu thích không tồn tại !',
 			statusCode: errorCode
 		})
 	}

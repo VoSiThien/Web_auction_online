@@ -18,7 +18,29 @@ export const bidProduct = createAsyncThunk(
   }
 });
 
-const bidProductSlice = createSlice({
+export const bidAddWatchList = createAsyncThunk(
+  'addWatchList/Post',
+  async ({ prodId }, { rejectWithValue }) => {
+  try {
+      const result = (await bidderApi.bidAddWatchList({ prodId }));
+      return result.data;
+  } catch (error) {
+    return rejectWithValue(getResponseError(error));
+  }
+});
+
+export const bidDeleteWatchList = createAsyncThunk(
+  'deleteWatchList/Post',
+  async ({favId}, { rejectWithValue }) => {
+  try {
+      const result = (await bidderApi.bidDeleteWatchList({ favId }));
+      return result.data;
+  } catch (error) {
+    return rejectWithValue(getResponseError(error));
+  }
+});
+
+const bidderSlice = createSlice({
   name: 'bidProduct',
   initialState,
   reducers: {},
@@ -30,5 +52,5 @@ const bidProductSlice = createSlice({
   },
 });
 
-export const bidProductActions = bidProductSlice.actions;
-export default bidProductSlice;
+export const bidderActions = bidderSlice.actions;
+export default bidderSlice;

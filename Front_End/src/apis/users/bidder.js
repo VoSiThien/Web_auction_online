@@ -6,8 +6,22 @@ const bidProduct = ({ priceBid, prodId }) => {
   return axios.post(query, { priceBid, prodId });
 };
 
+const bidAddWatchList = ({ prodId }) => {
+
+  let query = `/api/bidder/favorite-product/add`;
+  return axios.post(query, { prodId });
+};
+
+const bidDeleteWatchList = ({ favId }) => {
+
+  let query = `/api/bidder/favorite-product/delete/${favId}`;
+  return axios.post(query);
+};
+
 const bidderApi = {
-    bidProduct
+    bidProduct,
+    bidAddWatchList,
+    bidDeleteWatchList
 };
 
 export default bidderApi;

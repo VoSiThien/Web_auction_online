@@ -6,12 +6,12 @@ import selProductRedu from '../reducers/users/product';
 import cartSlice from '../reducers/cart';
 import langSlice from '../reducers/lang';
 import uiSlice from '../reducers/ui';
-import bidProductRedu from '../reducers/users/bidder';
+import bidderRedu from '../reducers/users/bidder';
 const store = configureStore({
   reducer: {
     category: categoryRedu.reducer,
     history: historyRedu.reducer,
-    bidProduct: bidProductRedu.reducer,
+    bidder: bidderRedu.reducer,
     
     auth: authSlice.reducer,
     selProduct: selProductRedu.reducer,
