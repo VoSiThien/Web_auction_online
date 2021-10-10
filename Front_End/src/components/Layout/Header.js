@@ -1,4 +1,4 @@
-import { Navbar, Container, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap';
+import { Navbar, Container, Nav, NavDropdown, Form, FormControl, Button, Row, Col, Dropdown } from 'react-bootstrap';
 import { FcShop } from 'react-icons/fc';
 
 import {
@@ -10,14 +10,19 @@ import {
 	Person,
 	ExitToApp
 } from "@material-ui/icons";
-// import { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom"; //Link, 
+import { useHistory } from "react-router-dom";
+// import { getHomeCategory } from '../../reducers/homeCategory'
 import { authActions as userAuthActions } from "../../reducers/auth";
-import { Role }  from "../../config/role";
+import { Role } from "../../config/role";
+// import { CategoryItem } from "../Homepage/CatogoryItem"
 
 const useStyles = makeStyles((theme) => ({
 	root: {},
+	eventsNav: {
+
+	},
 	toolBar: {
 		width: "100%",
 		[theme.breakpoints.down("xs")]: {
@@ -176,17 +181,18 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 }));
-function Header({showMenu}) {
-    const classes = useStyles({ showMenu });
+function Header({ showMenu }) {
+	const classes = useStyles({ showMenu });
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 	const user = useSelector((state) => state.auth.user);
-	// const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
+	const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store
+	const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
 
-	// const toggleUserDropdownHandler = () => {
-	// 	setToggleUserDropdown((prevState) => !prevState);
-	// };
+	const toggleUserDropdownHandler = () => {
+		setToggleUserDropdown((prevState) => !prevState);
+	};
 
 	const logoutHandler = () => {
 		dispatch(userAuthActions.logout());
@@ -237,36 +243,6 @@ function Header({showMenu}) {
 							<NavDropdown.Item href={domain +'/login'} >Đăng nhập</NavDropdown.Item>
 						)}
 					</NavDropdown>
-                    {/* <IconButton
-						aria-label="My profile"
-						color="inherit"
-						className={classes.iconButton}
-						onClick={toggleUserDropdownHandler}
-					>
-					<Person />
-						<ul
-								className={`${classes.dropDown} ${toggleUserDropdown ? classes.dropDownActive : ""
-									}`}
-							>
-								{user != null && isAuthenticated && (
-									<>
-										<li>
-											<Link to="/profile">Trang cá nhân</Link>
-										</li>
-										{(user.role === Role.Seller) && (
-											<li>
-												<Link to="/product-mgt">Quản lý sản phẩm</Link>
-											</li>
-										)}
-									</>
-								)}
-								{(user == null || !isAuthenticated) && (
-									<li>
-										<Link to="/login">Đăng nhập</Link>
-									</li>
-								)}
-							</ul>
-					</IconButton> */}
 					{user != null && isAuthenticated && (
 						<IconButton
 							aria-label="My profile"

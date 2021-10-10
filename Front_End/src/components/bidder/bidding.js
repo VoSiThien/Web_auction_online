@@ -1,64 +1,43 @@
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { bidProduct } from '../../reducers/users/bidder';
+// import { useDispatch } from 'react-redux';
+// import { bidProduct } from '../../reducers/users/bidder';
+import ConfirmModel from './confirm';
 
 
 function Bidding({ isOpen, onClose, prod_id, getList }) {
     var [priceBid, setPriceBid] = useState(0);
     var prodId = prod_id;
-    const dispatch = useDispatch();
-    const [showFailed, setShowFailed] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
-    const [text, setText] = useState('');
+    const [openModal, setOpenModal] = useState(false);
 
     const onChangeHandler = (value) => {
         setPriceBid(value);
     };
 
-    const handleVisible = useCallback(() => {
-        if (showFailed === true || showSuccess === true) {
-            setTimeout(() => {
-                setShowFailed(false)
-                setShowSuccess(false)
-            }, 5000);
-        }
-    },[showFailed, showSuccess])
-
-    const onClickHandle = async () => {
-        try {
-            const check = await dispatch(bidProduct({ priceBid, prodId })).unwrap();
-            setText(check.message)
-            onClose();
-            getList();
-            setShowSuccess(true);
-        } catch (error) {            
-            setText(error)
-            setShowFailed(true);
-            onClose();
-            getList();
-        }
+    const openModalHandler = () => {
+        setOpenModal(true);
+        onClose();
     };
-
-    useEffect(() => {
-        handleVisible();
-    }, [handleVisible]);
+    const handleClose = () => {
+        setOpenModal(false);
+    };
 
     return (
         <div>
-            <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
-                <Alert.Heading>{text}</Alert.Heading>
-            </Alert>
-
-            <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
-                <Alert.Heading>{text}</Alert.Heading>
-            </Alert>
+            <ConfirmModel 
+            isOpen={openModal}
+            onClose={handleClose}
+            prod_id={prodId}
+            getList={() => { getList() }}
+            price_bid = {priceBid}
+            />
 
             <Modal
                 show={isOpen}
                 onHide={onClose}
                 backdrop="static"
                 keyboard={false}
+                style={{justifyContent: 'center',  marginTop: '10%', position:'center'}}
             >
                 <Modal.Header closeButton>
                     <Modal.Title>Đấu giá</Modal.Title>
@@ -74,10 +53,10 @@ function Bidding({ isOpen, onClose, prod_id, getList }) {
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={onClose}>
+                        <Button variant="danger" onClick={onClose}>
                             Đóng
                         </Button>
-                        <Button variant="primary" onClick={onClickHandle}>Xác nhận</Button>
+                        <Button variant="primary" onClick={openModalHandler}>Xác nhận</Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

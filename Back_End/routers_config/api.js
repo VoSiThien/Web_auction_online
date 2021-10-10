@@ -15,7 +15,7 @@ API.use('/favorite-product', favoriteProductController)
 API.use('/categories', categoriesController)
 API.use('/bid', bidProductController)
 API.use('/seller', sellerController)
-API.use('/bidder', sellerController)
+API.use('/bidder', bidderController)
 
 API.use('/admin', authentication.verifyToken, ADMIN)
 

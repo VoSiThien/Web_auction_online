@@ -130,5 +130,5 @@ module.exports = {
     postAuctionProduct,
     updateAuctionProductDescription,
     deleteAuctionProduct,
-    getAuctionProductList,
+    getAuctionProductList
 }
