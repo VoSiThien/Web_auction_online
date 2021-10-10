@@ -1,3 +1,4 @@
+/*
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListCategory } from '../reducers/category';
@@ -176,3 +177,4 @@ const SubCateManager = (props) => {
   );
 };
 export default SubCateManager;
+*/

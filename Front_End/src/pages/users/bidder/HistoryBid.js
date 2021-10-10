@@ -31,7 +31,7 @@ function HistoryBid() {
     const classes = useStyles();
     var [page, setPage] = useState(1);
     var limit = 5;
-    var prodId = 2;
+    var prodId = 1;
     var favId = 14;
     const status = 0;
     const data = useSelector((state) => state.history.data);

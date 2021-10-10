@@ -6,6 +6,7 @@ const HomePage = lazy(() => import('../pages/HomePage'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const ProfilePage = lazy(() => import('../pages/users/Profile'));
 const ProductPage = lazy(() => import('../pages/users/product-mgt/Product'));
+const ProductDetail = lazy(() => import('../pages/ProductDetail'));
 // const AdminLoginPage = lazy(() => import('../pages/admin/LoginPage'));
 const DashbroadPage = lazy(() => import('../pages/admin/DashbroadPage'));
 const HistoryBidBidder = lazy(() => import('../pages/users/bidder/HistoryBid'));
@@ -17,6 +18,12 @@ export const routes = [
     protected: false,
     exact: true,
     component: HomePage,
+  },
+  {
+    path: '/details/:productId',
+    protected: false,
+    exact: true,
+    component: ProductDetail,
   },
   {
     path: '/login',
