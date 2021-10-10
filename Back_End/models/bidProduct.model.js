@@ -75,7 +75,7 @@ const bidding = async (priceBid, product, prodId, account) => {
     // bidder bidPrice < prod_price_current + prod_price_step
 	else{
 		return{
-			message: "Đấu giá không thành công !",
+			message: `Đấu giá không thành công !`,
 			statusCode: 1
 		}
 	}

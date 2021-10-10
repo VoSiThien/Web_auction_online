@@ -324,4 +324,55 @@ router.post('/get-list-comment-seller/:id', async (req, res) => {
 //     })
 // })
 
+router.post('/favorite-product/add', validator.addFavoriteProduct, async (req, res) => {
+	const { prodId } = req.body
+	const accId = req.account['accId']
+	//const accId = 1
+
+	const checkProduct = await knex('tbl_product').where("prod_id", prodId)
+	const checkProductUnique = await knex('tbl_favorite_product').where("fav_account_id", accId).andWhere("fav_product_id", prodId)
+
+	if(checkProduct.length === 0){
+		return res.status(400).json({
+			errorMessage: "Sản phẩm không tồn tại !",
+			statusCode: errorCode
+		})
+	}
+
+	if(checkProductUnique.length !== 0){
+		return res.status(400).json({
+			errorMessage: "Sản phẩn đã tồn tại trong danh sách yêu thích của bạn !",
+			statusCode: errorCode
+		})
+	}
+	
+	await knex('tbl_favorite_product').insert({
+		fav_product_id: prodId,
+		fav_account_id: accId
+	})
+
+	return res.status(200).json({
+		statusCode: successCode
+	})
+})
+
+router.post('/favorite-product/delete/:id', async (req, res) => {
+	const { id } = req.params
+
+	var favorite = await knex('tbl_favorite_product')
+		.where('fav_id', id)
+
+	if (favorite.length === 0) {
+		return res.status(400).json({
+			errorMessage: 'Id sản phẩm yêu thích không tồn tại !',
+			statusCode: errorCode
+		})
+	}
+	await knex('tbl_favorite_product').where("fav_id", id).del()
+
+	return res.status(200).json({
+		statusCode: successCode
+	})
+})
+
 module.exports = router;

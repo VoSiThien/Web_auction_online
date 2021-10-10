@@ -32,7 +32,7 @@ function HistoryBid() {
     const [keys, setKeys] = useState('bid');
     var [page, setPage] = useState(1);
     var limit = 5;
-    var prodId = 2;
+    var prodId = 1;
     const [status, setStatus] = useState(0);
     const data = useSelector((state) => state.history.data);
     const dispatch = useDispatch();
@@ -83,10 +83,22 @@ function HistoryBid() {
         }
     };
 
-    const CancelHandler = async (hisId, { page, limit, prodId, status }) => {
+    const CancelStatus2Handler = async (hisId, { page, limit, prodId, status }) => {
         try {
             await dispatch(cancelHistory({ hisId })).unwrap();
             getListHistoryHandler({ page, limit, prodId, status: 2 });
+            setText('Từ chối lượt đấu giá thành công!!!');
+            setShowSuccess(true);
+        } catch (err) {
+            setText(err);
+            setShowFailed(true);
+        }
+    };
+
+    const CancelStatus0Handler = async (hisId, { page, limit, prodId, status }) => {
+        try {
+            await dispatch(cancelHistory({ hisId })).unwrap();
+            getListHistoryHandler({ page, limit, prodId, status: 0 });
             setText('Từ chối lượt đấu giá thành công!!!');
             setShowSuccess(true);
         } catch (err) {
@@ -143,6 +155,7 @@ function HistoryBid() {
                                         <th>Thời điểm</th>
                                         <th>Người mua</th>
                                         <th>Giá</th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -152,7 +165,10 @@ function HistoryBid() {
                                                 <td>{index + 1}</td>
                                                 <td>{row.his_created_date}</td>
                                                 <td>{row.acc_full_name}</td>
-                                                <td>{row.his_price}</td>
+                                                <td>{row.his_price} VNĐ</td>
+                                                <td>
+                                                <Button variant="danger" size="small" onClick={() => CancelStatus0Handler(row.his_id, { page, limit, prodId, status })}><BsXLg /> Từ chối</Button>
+                                                </td>
                                             </tr>
                                         ))}
                                 </tbody>
@@ -181,10 +197,10 @@ function HistoryBid() {
                                                 <td>{index + 1}</td>
                                                 <td>{row.his_created_date}</td>
                                                 <td>{row.acc_full_name}</td>
-                                                <td>{row.his_price}</td>
+                                                <td>{row.his_price} VNĐ</td>
                                                 <td>
                                                     <Button variant="primary" size="small" onClick={() => ConfirmHandler(row.his_id, { page, limit, prodId, status })}><BsCheckLg /> Xác nhận</Button>
-                                                    <Button variant="danger" size="small" onClick={() => CancelHandler(row.his_id, { page, limit, prodId, status })}><BsXLg /> Từ chối</Button>
+                                                    <Button variant="danger" size="small" onClick={() => CancelStatus2Handler(row.his_id, { page, limit, prodId, status })}><BsXLg /> Từ chối</Button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -213,7 +229,7 @@ function HistoryBid() {
                                                 <td>{index + 1}</td>
                                                 <td>{row.his_created_date}</td>
                                                 <td>{row.acc_full_name}</td>
-                                                <td>{row.his_price}</td>
+                                                <td>{row.his_price} VNĐ</td>
                                             </tr>
                                         ))}
                                 </tbody>

@@ -109,7 +109,7 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
 
     var numberPage = 1;
 
-    if (accRole === 'Sel') {
+    if (accRole === 'SEL') {
         var result
         if (status === 2 || status === 3) {
             numberPage = await knex.raw(`select count(distinct his_id) 
@@ -141,7 +141,7 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
 
             result = await knex.raw(`select * from tbl_product_history h join tbl_account a
                                 on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
-								 order by h.his_created_date desc offset ${offset} limit ${limit}`)
+								 order by h.his_status desc, h.his_created_date desc offset ${offset} limit ${limit}`)
         }
 
         result = result.rows
@@ -182,7 +182,7 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
 
     var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
                                 on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
-								 order by h.his_created_date desc offset ${offset} limit ${limit}`)
+								 order by h.his_status desc, h.his_created_date desc offset ${offset} limit ${limit}`)
 
     result = result.rows
 
@@ -215,21 +215,50 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
 router.post('/cancel-bid/:id', async (req, res) => {
     const { id } = req.params
 
-    const hisProduct = await knex('tbl_product_history').where("his_id", id).andWhere("his_status", 2)
+    const hisProduct = await knex('tbl_product_history').join('tbl_account', 'acc_id', 'his_account_id').where("his_id", id)
 
     if (hisProduct.length === 0) {
         return res.status(400).json({
-            errorMessage: "Lịch sử không tồn tại hoặc trạng thái không phải là xác nhận !",
+            errorMessage: "Lịch sử đấu giá không tồn tại !",
             statusCode: errorCode
         })
     }
 
+    const product = await knex('tbl_product').join('tbl_account', 'acc_id', 'prod_seller_id').where("prod_id", hisProduct[0].his_product_id)
+    //const account = await knex('tbl_account').where("acc_id", hisProduct[0].his_account_id)
+
+    if(hisProduct[0].his_status === 1){
+        var hisProductAccount = await knex.raw(`select * from tbl_product_history h, tbl_account a, tbl_product p
+                                                where h.his_account_id = acc_id and h.his_account_id != ${hisProduct[0].his_account_id}
+                                                and h.his_price::integer >= (p.prod_price_starting::integer + p.prod_price_step::integer)
+                                                and p.prod_id = ${hisProduct[0].his_product_id}
+                                                and h.his_status = 0
+                                                and not exists (select h1.his_id from tbl_product_history h1 
+                                                                where h1.his_status = 3 and h1.his_account_id = h.his_account_id)
+                                                order by h.his_price desc`)
+        hisProductAccount = hisProductAccount.rows
+
+        if(hisProductAccount.length === 0){
+            await knex('tbl_product').where("prod_id", hisProduct[0].his_product_id).update({prod_price_current: null, prod_price_highest: null, prod_price_holder: null})
+        }
+        else{
+            await knex.raw(`update tbl_product_history set his_status = 1 where his_id = ${hisProductAccount[0].his_id};
+                            update tbl_product set prod_price_holder = ${hisProductAccount[0].his_account_id}, prod_price_highest = ${hisProductAccount[0].his_price} where prod_id = ${hisProductAccount[0].his_product_id}`)
+
+            const checkmailInher = await mailService.sendMailTran(mailOptions.notifyCancelToBidderInheritance(hisProductAccount, hisProductAccount, hisProductAccount[0].his_price))
+
+            if (checkmailInher === false) {
+                return {
+                    errorMessage: "Gửi email không thành công !",
+                    statusCode: 2
+                }
+            }
+        }
+    }
+
     await knex('tbl_product_history').where("his_id", id).update({ his_status: 3 })
 
-    const product = await knex('tbl_product').join('tbl_account', 'acc_id', 'prod_seller_id').where("prod_id", hisProduct[0].his_product_id)
-    const account = await knex('tbl_account').where("acc_id", hisProduct[0].his_account_id)
-
-    const checkmailCancel = await mailService.sendMailTran(mailOptions.notifyCancelToBidder(account, product, hisProduct[0].his_price))
+    const checkmailCancel = await mailService.sendMailTran(mailOptions.notifyCancelToBidder(hisProduct, product, hisProduct[0].his_price))
 
     if (checkmailCancel === false) {
         return {
@@ -250,7 +279,7 @@ router.post('/confirm-bid/:id', async (req, res) => {
 
     if (hisProduct.length === 0) {
         return res.status(400).json({
-            errorMessage: "Lịch sử không tồn tại hoặc trạng thái không phải là xác nhận !",
+            errorMessage: "Lịch sử đấu giá không tồn tại hoặc trạng thái không phải là xác nhận !",
             statusCode: errorCode
         })
     }
