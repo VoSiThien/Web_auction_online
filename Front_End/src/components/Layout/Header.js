@@ -224,7 +224,7 @@ function Header({showMenu}) {
                         <Button variant="dark">Tìm</Button>
                     </Form>
                     <Nav>
-					<NavDropdown title={<div style={{display: "inline-block"}}><Person/></div>} id="collasible-nav-dropdown-2">
+					<NavDropdown title={<div style={{display: "inline-block"}}><Person style={{color: 'white'}}/></div>} id="collasible-nav-dropdown-2">
 						{user != null && isAuthenticated && (
 							<>
 								<NavDropdown.Item href={domain +'/profile'} >Trang cá nhân</NavDropdown.Item>
@@ -274,7 +274,7 @@ function Header({showMenu}) {
 							className={classes.iconButton}
 							onClick={logoutHandler}
 						>
-							<ExitToApp />
+							<ExitToApp style={{color: 'white'}}/>
 							<Typography
 								variant="caption"
 								className={classes.iconButtonCaption}

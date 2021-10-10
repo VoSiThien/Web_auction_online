@@ -1,4 +1,4 @@
-import { Navbar, Container, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap';
 import { FcShop } from 'react-icons/fc';
 
 import {
@@ -7,12 +7,11 @@ import {
 	IconButton,
 } from "@material-ui/core";
 import {
-	Person,
 	ExitToApp
 } from "@material-ui/icons";
-import { useState } from "react";
+// import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { authActions as userAuthActions } from "../../reducers/auth";
 // import { Role } from "../../config/role";
 
@@ -183,94 +182,94 @@ const HeaderAdmin = ({ showMenu }) => {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 	const user = useSelector((state) => state.auth.user);
 
-	const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
+	// const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
 
-	const toggleUserDropdownHandler = () => {
-		setToggleUserDropdown((prevState) => !prevState);
-	};
+	// const toggleUserDropdownHandler = () => {
+	// 	setToggleUserDropdown((prevState) => !prevState);
+	// };
 
 	const logoutHandler = () => {
 		dispatch(userAuthActions.logout());
 		history.push("/login");
 	};
 
-  return (
 
-<Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
-<Container>
-  <Navbar.Brand href="#">
-    <FcShop className="iconhome" /> Auction Online</Navbar.Brand>
-  <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-  <Navbar.Collapse id="responsive-navbar-nav">
-  <Nav className="me-auto" disabled>
-                  {/* <Nav.Link href="#features">Features</Nav.Link> */}
-                  <NavDropdown title="Điện tử" id="collasible-nav-dropdown" hidden>
-                      <NavDropdown.Item href="#action/3.1">Điện thoại</NavDropdown.Item>
-                      <NavDropdown.Item href="#action/3.1">Máy tính</NavDropdown.Item>
-                      {/* <NavDropdown.Divider />
-                      <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item> */}
-                  </NavDropdown>
-                  <NavDropdown title="Bếp" id="collasible-nav-dropdown" hidden>
-                      <NavDropdown.Item href="#action/3.1">Chảo chống dính</NavDropdown.Item>
-                      <NavDropdown.Item href="#action/3.1">Nồi inox</NavDropdown.Item>
-                  </NavDropdown>
-              </Nav>
-              <Form className="d-flex">
-                  <FormControl
-                      type="search"
-                      placeholder="Search"
-                      className="mr-2"
-                      aria-label="Search"
-        hidden
-                  />
-                  <Button variant="dark" hidden>Search</Button>
-              </Form>
-    <Nav>
-      <IconButton
-        aria-label="My profile"
-        color="inherit"
-        className={classes.iconButton}
-        onClick={toggleUserDropdownHandler}
-      >
-        <Person />
-        <ul
-          className={`${classes.dropDown} ${toggleUserDropdown ? classes.dropDownActive : ""
-            }`}
-        >
-          {user != null && isAuthenticated && (
-            <>
-              <li>
-                <Link to="/admin/profile">Profile</Link>
-              </li>
-            </>
-          )}
-          {(user == null || !isAuthenticated) && (
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-          )}
-        </ul>
-      </IconButton>
-      {user != null && isAuthenticated && (
-        <IconButton
-          aria-label="My profile"
-          color="inherit"
-          className={classes.iconButton}
-          onClick={logoutHandler}
-        >
-          <ExitToApp />
-          <Typography
-            variant="caption"
-            className={classes.iconButtonCaption}
-          >
-            Log out
-          </Typography>
-        </IconButton>
-      )}
-    </Nav>
-  </Navbar.Collapse>
-</Container>
-</Navbar>
-  );
+  return (
+	<Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
+	{/* <Container> */}
+	<Navbar.Brand href="#">
+		<FcShop className="iconhome" /> Auction Online</Navbar.Brand>
+	<Navbar.Toggle aria-controls="responsive-navbar-nav" />
+	<Navbar.Collapse id="responsive-navbar-nav">
+	<Nav className="me-auto" disabled>
+					{/* <Nav.Link href="#features">Features</Nav.Link> */}
+					<NavDropdown title="Điện tử" id="collasible-nav-dropdown" hidden>
+						<NavDropdown.Item href="#action/3.1">Điện thoại</NavDropdown.Item>
+						<NavDropdown.Item href="#action/3.1">Máy tính</NavDropdown.Item>
+						{/* <NavDropdown.Divider />
+						<NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item> */}
+					</NavDropdown>
+					<NavDropdown title="Bếp" id="collasible-nav-dropdown" hidden>
+						<NavDropdown.Item href="#action/3.1">Chảo chống dính</NavDropdown.Item>
+						<NavDropdown.Item href="#action/3.1">Nồi inox</NavDropdown.Item>
+					</NavDropdown>
+				</Nav>
+				<Form className="d-flex">
+					<FormControl
+						type="search"
+						placeholder="Search"
+						className="mr-2"
+						aria-label="Search"
+			hidden
+					/>
+					<Button variant="dark" hidden>Search</Button>
+				</Form>
+		<Nav>
+		{/* <IconButton
+			aria-label="My profile"
+			color="inherit"
+			className={classes.iconButton}
+			onClick={toggleUserDropdownHandler}
+		>
+			<Person style={{color: 'white'}}/>
+			<ul
+			className={`${classes.dropDown} ${toggleUserDropdown ? classes.dropDownActive : ""
+				}`}
+			>
+			{user != null && isAuthenticated && (
+				<>
+				<li>
+					<Link to="/admin/profile">Thông tin cá nhân</Link>
+				</li>
+				</>
+			)}
+			{(user == null || !isAuthenticated) && (
+				<li>
+				<Link to="/login">Đăng nhập</Link>
+				</li>
+			)}
+			</ul>
+		</IconButton> */}
+		{user != null && isAuthenticated && (
+			<IconButton
+			aria-label="My profile"
+			color="inherit"
+			className={classes.iconButton}
+			onClick={logoutHandler}
+			>
+			<ExitToApp style={{color: 'white'}}/>
+			<Typography
+				variant="caption"
+				className={classes.iconButtonCaption}
+			>
+				Đăng xuất
+			</Typography>
+			</IconButton>
+		)}
+		</Nav>
+	</Navbar.Collapse>
+	{/* </Container> */}
+	</Navbar>
+	);
 };
 export default HeaderAdmin;

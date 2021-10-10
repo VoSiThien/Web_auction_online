@@ -3,7 +3,7 @@ import API from '../../apis/users/product';
 import { getResponseError } from '../../helpers';
 
 const initialState = {
-  data: [],
+  productList: [],
   curPage: 1,
   numPage: 1,
   total: 1,
@@ -55,7 +55,7 @@ export const updateAuctionProduct = createAsyncThunk(
   }
 );
 
-const adminProductSlice = createSlice({
+const userProductSlice = createSlice({
   name: 'product',
   initialState,
   reducers: {},
@@ -72,7 +72,7 @@ const adminProductSlice = createSlice({
       state.curPage = curPage
       state.numPage = numPage
       state.total = total
-      state.data = productList
+      state.productList = productList
     },
 
     [postAuctionProduct.pending]: (state) => {
@@ -97,5 +97,5 @@ const adminProductSlice = createSlice({
   },
 });
 
-export const adminProductActions = adminProductSlice.actions;
-export default adminProductSlice;
+export const userProductActions = userProductSlice.actions;
+export default userProductSlice;

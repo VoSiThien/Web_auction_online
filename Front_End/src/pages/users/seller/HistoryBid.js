@@ -50,15 +50,6 @@ function HistoryBid() {
         setOpenModal(true);
     };
 
-    const handleVisible = useCallback(() => {
-        if (showFailed === true || showSuccess === true) {
-            setTimeout(() => {
-                setShowFailed(false)
-                setShowSuccess(false)
-            }, 5000);
-        }
-    }, [showFailed, showSuccess]);
-
     const getListHistoryHandler = useCallback(async ({ page, limit, prodId, status }) => {
         try {
             await dispatch(getListHistory({ page, limit, prodId, status })).unwrap();
@@ -109,9 +100,19 @@ function HistoryBid() {
         getListHistoryHandler({ page, limit, prodId, status });
     }, [getListHistoryHandler, page, limit, prodId, status, keys]);
 
+    const handleVisible = useCallback(() => {
+        if (showFailed === true || showSuccess === true) {
+            setTimeout(() => {
+                setShowFailed(false)
+                setShowSuccess(false)
+            }, 5000);
+        }
+    }, [showFailed, showSuccess]);
+
     useEffect(() => {
         handleVisible();
     }, [handleVisible]);
+    
     return (
         <div>
             <HeaderClear />

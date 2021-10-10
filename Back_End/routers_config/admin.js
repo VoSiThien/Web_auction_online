@@ -2,8 +2,8 @@ const express = require('express')
 
 const API = express.Router()
 
-// const bidProductController = require('../controllers/bidProduct.controller')
+const userController = require('../controllers/user.controller')
 
-// API.use('/bid', bidProductController)
+API.use('/user', userController)
 
 module.exports = API

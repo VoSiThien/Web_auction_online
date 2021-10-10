@@ -1,7 +1,7 @@
 const { ClientCredentials, ResourceOwnerPassword, AuthorizationCode } = require('simple-oauth2')
 const jsonWebToken = require('jsonwebtoken')
 const environment = require('../environments/environment')
-
+const { Role } = require('../middlewares/role')
 
 const credentials = {
     client: {
@@ -45,6 +45,16 @@ const verifyToken = (req, res, next) => {
 
         next()
     })
+}
+
+const verifyAdmin = (req, res, next) => {
+    account = req.account
+    if (!account || account.accRole !== Role.Admin)
+        return res.status(400).json({
+            errorMessage: 'Unauthorized User!',
+            statusCode: 3, //
+        })
+    next()
 }
 
 function getAuthUrl() {

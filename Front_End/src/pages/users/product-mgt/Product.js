@@ -11,10 +11,11 @@ import {
   Typography,
   Button,
 } from '@material-ui/core';
+import { Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import Pagination from '@material-ui/lab/Pagination';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { uiActions } from '../../../reducers/ui';
 import SearchInput from '../../../components/UI/SearchInput';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -135,27 +136,25 @@ const useStyles = makeStyles((theme) => ({
 const ProductManager = (props) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  // const [productInfo, setProductInfo] = useState({});
+  const [productInfo, setProductInfo] = useState({});
   const [selectedId, setSelectedId] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
-
-  // const loading = useSelector((state) => state.selProduct.loading);
-  // const products = useSelector((state) => state.selProduct.data);
-  const productInfo = useSelector((state) => state.selProduct);
-  const dispatch = useDispatch();
-  // let { productList, numPage } = productInfo;
-  // const [optionPrice, setOptionPrice] = useState('Price');
-  // const [optionType, setOptionType] = useState('Ascending');
+  const [showFailed, setShowFailed] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [text, setText] = useState('');
+  let { loading, productList, numPage } = productInfo;
 
   const openAddModalHandler = () => {
     setOpenAddModal(true);
     setOpenUpdateModal(false);
     setOpenDeleteModal(false);
+    setText('');
   };
 
   const openUpdateModalHandler = (item) => {
@@ -163,18 +162,21 @@ const ProductManager = (props) => {
     setOpenUpdateModal(true);
     setOpenAddModal(false);
     setOpenDeleteModal(false);
+    setText('');
   };
   const openDeleteModalHandler = (id) => {
     setSelectedId(id);
     setOpenUpdateModal(false);
     setOpenAddModal(false);
     setOpenDeleteModal(true);
+    setText('');
   };
 
   const closeModalHandler = () => {
     setOpenUpdateModal(false);
     setOpenAddModal(false);
     setOpenDeleteModal(false);
+    setText('');
   };
 
   const pageChangeHandler = (event, value) => {
@@ -185,8 +187,7 @@ const ProductManager = (props) => {
     if (!selectedId) return;
     try {
       await dispatch(deleteAuctionProduct(selectedId)).unwrap();
-      // toast.success(`Delete product id ${selectedId} successfully`);
-      productInfo.productList = productInfo.productList.filter(
+      productList = productList.filter(
         (product) => product.prodId !== selectedId
       );
     } catch (err) {
@@ -199,10 +200,8 @@ const ProductManager = (props) => {
     async (page = 1) => {
       try {
         const limit = 10;
-        // const response = await dispatch(getAuctionProductList({page, limit})).unwrap();
-        await dispatch(getAuctionProductList({page, limit})).unwrap();
-        // setProductInfo(response);
-        // return response;
+        const response = await dispatch(getAuctionProductList({page, limit})).unwrap();
+        setProductInfo(response);
       } catch (err) {
         setError(err);
       }
@@ -223,11 +222,22 @@ const ProductManager = (props) => {
     window.scrollTo(0, 0);
   }, []);
 
-
   const addDefaultSrc = (e)=>{
     const errImg = window.location.origin + '/img/no-image-available.jpg';
     e.target.src = errImg
   }
+
+  const handleVisible = useCallback(() => {
+    if (showSuccess === true) {
+        setTimeout(() => {
+            setShowSuccess(false)
+        }, 5000);
+    }
+}, [showSuccess]);
+
+  useEffect(() => {
+      handleVisible();
+  }, [handleVisible]);
 
   return (
     <>
@@ -235,11 +245,21 @@ const ProductManager = (props) => {
         <Header />
           <div className={classes.content}>
             <Container>
-              <AddProduct isOpen={openAddModal} onClose={closeModalHandler} />
+              <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
+                  <Alert.Heading>{text}</Alert.Heading>
+              </Alert>
+              <AddProduct 
+                isOpen={openAddModal} 
+                onClose={closeModalHandler}
+                showSuccess={setShowSuccess}
+                textAlert={setText}
+              />
               <UpdateProduct
                 itemInfo={selectedItem}
                 isOpen={openUpdateModal}
                 onClose={closeModalHandler}
+                showSuccess={setShowSuccess}
+                textAlert={setText}
               />
               <ModalConfirm
                 title="Xoá sản phẩm"
@@ -271,81 +291,69 @@ const ProductManager = (props) => {
               </div>
               
               <div>
+              <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
+                      <Alert.Heading style={{textAlign: "center"}}>{text}</Alert.Heading>
+                  </Alert>
+                  <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
+                      <Alert.Heading style={{textAlign: "center"}}>{text}</Alert.Heading>
+              </Alert>
               <TableContainer component={Paper} className={classes.section}>
                       <Table aria-label="a dense table">
                         <TableHead>
                           <TableRow className={classes.tableHead}>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Product Name</TableCell>
-                            <TableCell>Image</TableCell>
-                            <TableCell>Category</TableCell>
-                            {/* <TableCell>Current Price</TableCell> */}
-                            {/* <TableCell>Highest Price</TableCell> */}
-                            <TableCell>Start Price</TableCell>
-                            <TableCell>Step Price</TableCell>
-                            {/* <TableCell>Price</TableCell> */}
-                            <TableCell>End Date</TableCell>
-                            <TableCell>Auto Extend</TableCell>
-                            {/* <TableCell>Description</TableCell> */}
-                            <TableCell>Last Modified</TableCell>
+                            <TableCell>STT</TableCell>
+                            <TableCell>Tên sản phẩm</TableCell>
+                            <TableCell>Hình ảnh</TableCell>
+                            <TableCell>Danh mục</TableCell>
+                            <TableCell>Giá khởi điểm</TableCell>
+                            <TableCell>Bước giá</TableCell>
+                            <TableCell>Hạn đấu giá</TableCell>
+                            <TableCell>Tự động gia hạn</TableCell>
+                            <TableCell>Ngày cập nhật cuối</TableCell>
                             <TableCell align="center">Options</TableCell>
                           </TableRow>
                         </TableHead>
-                {productInfo.loading ? ( <TableLoading /> ): error?.length > 0 ?
+                {loading ? ( <TableLoading /> ): error?.length > 0 ?
                  (
                   <TableError message={error} onTryAgain={getAuctionProductListHandler} />
-                ) : productInfo.data?.length > 0 ? (
+                ) : productList?.length > 0 ? (
                   <>
-                        <TableBody>
-                          {productInfo.data.map((row, index) => (
-                            <TableRow key={index}>
-                              <TableCell component="th" scope="row">
-                                {row.prodId}
-                              </TableCell>
-                              <TableCell>{row.prodName}</TableCell>
-                              <TableCell>
-                                <img
-                                  src={row.prodMainImage}
-                                  alt={row.prodName}
-                                  onError={addDefaultSrc}
-                                  style={{ width: 100, height: 80, objectFit: 'cover' }}
-                                />
-                              </TableCell>
-                              <TableCell>{row.prodCategoryName}</TableCell>
-                              {/* <TableCell>{row.prodPriceCurrent}</TableCell> */}
-                              {/* <TableCell>{row.prodPriceHighest}</TableCell> */}
-                              <TableCell>{row.prodPriceStarting}</TableCell>
-                              <TableCell>{row.prodPriceStep}</TableCell>
-                              {/* <TableCell>{row.prodPrice}</TableCell> */}
-                              <TableCell>{row.prodEndDate}</TableCell>
-                              <TableCell>{row.prodAutoExtend}</TableCell>
-                              {/* <TableCell>{row.prodDescription}</TableCell> */}
-                              <TableCell>{row.prodUpdatedDate}</TableCell>
-                              <TableCell align="center" style={{ minWidth: 150 }}>
-                                <EditIcon
-                                  onClick={() => openUpdateModalHandler(row)}
-                                  fontSize="small"
-                                  style={{ marginRight: 5, cursor: 'pointer' }}
-                                />
-                                <DeleteIcon
-                                  fontSize="small"
-                                  style={{ cursor: 'pointer' }}
-                                  onClick={() => openDeleteModalHandler(row.prodId)}
-                                />
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                    {/* <div className={`${classes.pagination} ${classes.section}`}>
-                      <Pagination
-                        count={productInfo.numPage}
-                        color="primary"
-                        variant="outlined"
-                        shape="rounded"
-                        page={page}
-                        onChange={pageChangeHandler}
-                      />
-                    </div> */}
+                    <TableBody>
+                      {productList.map((row, index) => (
+                        <TableRow key={index}>
+                          <TableCell component="th" scope="row">
+                            {index + 1 + (page - 1) * 10}
+                          </TableCell>
+                          <TableCell>{row?.prodName}</TableCell>
+                          <TableCell>
+                            <img
+                              src={row?.prodMainImage}
+                              alt={row?.prodName}
+                              onError={addDefaultSrc}
+                              style={{ width: 100, height: 80, objectFit: 'cover' }}
+                            />
+                          </TableCell>
+                          <TableCell>{row?.prodCategoryName}</TableCell>
+                          <TableCell>{row?.prodPriceStarting}</TableCell>
+                          <TableCell>{row?.prodPriceStep}</TableCell>
+                          <TableCell>{row?.prodEndDate}</TableCell>
+                          <TableCell>{row?.prodAutoExtend}</TableCell>
+                          <TableCell>{row?.prodUpdatedDate}</TableCell>
+                          <TableCell align="center" style={{ minWidth: 150 }}>
+                            <EditIcon
+                              onClick={() => openUpdateModalHandler(row)}
+                              fontSize="small"
+                              style={{ marginRight: 5, cursor: 'pointer' }}
+                            />
+                            <DeleteIcon
+                              fontSize="small"
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => openDeleteModalHandler(row.prodId)}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
                   </>
                 ) : (
                   <TableError message="No data in database" onTryAgain={getAuctionProductListHandler} />
@@ -355,7 +363,7 @@ const ProductManager = (props) => {
               </div>
 
             <div className={`${classes.pagination} ${classes.section}`}>
-                <Pagination count={productInfo.numPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+                <Pagination count={numPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
             </div>
             </Container>
           </div>

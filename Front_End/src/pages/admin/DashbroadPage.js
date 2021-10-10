@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import {
   Container,
   makeStyles,
+  Grid,
+  Typography,
 } from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,6 +63,40 @@ function Home() {
     return (
         <div className={classes.content}>
           <Container>
+          <div className={classes.section}>
+              <Typography variant="h5" className={classes.title}>
+                MANGER AREA
+              </Typography>
+              <div className={classes.managerText}>
+                <Grid container spacing={2} >
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle1" >
+                      TOTAL CATEGORIES: {3}
+                    </Typography>
+                    <Typography variant="subtitle1" >
+                      TOTAL PRODUCT: {551}
+                    </Typography>
+                    <Typography variant="subtitle1" >
+                      TOTAL ORDER CREATED: {51}
+                    </Typography>
+                    <Typography variant="subtitle1" >
+                      ORDER STATISTICS
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1" >
+                      TOTAL SUB CATEGORIES: {100}
+                    </Typography>
+                    <Typography variant="subtitle1" >
+                      TOTAL CUSTOMER: {1051}
+                    </Typography>
+                    <Typography variant="subtitle1" >
+                      TOTAL STAFF: {101}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </div>
+            </div>
           </Container>
         </div>
     );

@@ -110,14 +110,14 @@ function App() {
                     return (
                       <ProtectedRoute {...props}>
                         <CheckRole roles={route.roles}>
-                          <route.component {...route.props} />
+                          <route.component {...route.props} additional={route.additional}/>
                         </CheckRole>
                       </ProtectedRoute>
                     );
                   }
                   return (
                     <CheckRole roles={route.roles}>
-                      <route.component {...props} {...route.props} />
+                      <route.component {...props} {...route.props} additional={route.additional}/>
                     </CheckRole>
                   );
                 }}
@@ -140,7 +140,7 @@ function App() {
                           return (
                             <ProtectedRoute {...props}>
                               <CheckRole roles={route.roles}>
-                                <route.component {...props} {...route.props} />
+                                <route.component {...props} {...route.props} additional={route.additional}/>
                               </CheckRole>
                             </ProtectedRoute>
                           );
