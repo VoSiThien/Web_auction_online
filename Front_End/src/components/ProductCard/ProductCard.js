@@ -1,14 +1,10 @@
 import { CardContent, makeStyles, Typography, Card, CardMedia } from '@material-ui/core';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBasket } from '@material-ui/icons';
-import { moneyFormat, removeHtmlTag } from '../../helpers';
+import { deleteHTML } from '../../helpers/deleteHTML';
 
 const useStyles = makeStyles((theme) => ({
   card: {
-    position: 'relative',
-    width: '100%',
-    height: 'calc(100% - 2px)',
     boxShadow:
       'rgb(0 0 0 / 20%) 0px 3px 1px -2px, rgb(0 0 0 / 14%) 0px 2px 2px 0px, rgb(0 0 0 / 12%) 0px 1px 5px 0px',
     transition: 'all .5s',
@@ -24,20 +20,6 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: 'none',
   },
 
-  iconAddToCart: {
-    cursor: 'pointer',
-    position: 'absolute',
-    right: 10,
-    top: 10,
-    borderRadius: theme.shape.borderRadius,
-    padding: '2px 7px',
-    boxShadow: '0px 2px 4px rgba(0,0,0,0.4)',
-    background: '#f3f3f3',
-    transition: 'color .4s',
-    '&:hover': {
-      color: theme.palette.primary.main,
-    },
-  },
   content: {
     padding: '10px !important',
   },
@@ -54,8 +36,8 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     color: '#333',
-    fontSize: ({ size }) => (size === 'small' ? 14 : 16),
-    marginBottom: 5,
+    fontSize: ({ size }) => (size === 'small' ? 14 : 22),
+    fontFamily: "bold",
   },
   hasSale: {
     textDecoration: 'line-through',
@@ -64,39 +46,50 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '12px !important',
   },
   price: {
-    color: theme.palette.primary.main,
+    color: theme.palette.secondary.dark,//https://mui.com/customization/palette/   from '@material-ui/core'
   },
   description: {
     display: '-webkit-box',
     '-webkit-line-clamp': ({ size }) => (size === 'small' ? 2 : 4),
     '-webkit-box-orient': 'vertical',
+    //https://www.w3schools.com/cssref/tryit.asp?filename=trycss3_text-overflow basic css
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    ////////////////////////
+    fontSize: ({ size }) => (size === 'small' ? 13 : 14),
+  },
+  subInfomation: {
+    display: '-webkit-box',
+    '-webkit-line-clamp': ({ size }) => (size === 'small' ? 2 : 4),
+    '-webkit-box-orient': 'vertical',
+    //https://www.w3schools.com/cssref/tryit.asp?filename=trycss3_text-overflow basic css
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    ////////////////////////
     fontSize: ({ size }) => (size === 'small' ? 13 : 14),
   },
 }));
 
-const ProductItem = ({
+const ProductCard = ({
   id,
   title,
   image,
   price,
   salePrice,
   description,
-  onAddToCart,
-  size = 'normal',
+  endDate,
+  catName,
+  currentPrice,
+  size = 'normal'
 }) => {
   const classes = useStyles({ size });
 
   return (
     <Card className={classes.card}>
-      <div onClick={onAddToCart} className={classes.iconAddToCart}>
-        <ShoppingBasket fontSize="small" />
-      </div>
       <Link to={`/details/${id}`} className={classes.link}>
         <CardMedia
           className={classes.media}
-          image={image || process.env.PUBLIC_URL + '/img/no-product.png'}
+          image={image || 'https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg'}
           title={title}
         />
         <CardContent className={classes.content}>
@@ -106,24 +99,43 @@ const ProductItem = ({
           <Typography
             variant="body1"
             className={`${classes.price} ${salePrice ? classes.hasSale : ''}`}>
-            {price && moneyFormat(price)} VND
+            Giá : <strong>{price}</strong> VNĐ
           </Typography>
-          {salePrice && (
-            <Typography variant="body1" className={classes.price}>
-              {salePrice && moneyFormat(salePrice)} VND
-            </Typography>
-          )}
+
+
+
+          <Typography className={classes.subInfomation}
+            variant="body2"
+            color="textSecondary"// https://mui.com/api/typography/#props
+            component="p">
+            Loại sản phẩm: <strong>{catName}</strong>
+          </Typography>
+
+          <Typography className={classes.subInfomation}
+            variant="body2"
+            color="textSecondary"
+            component="p">
+            Ngày hết hạn: <strong>{endDate}</strong>
+          </Typography>
+
+          <Typography className={classes.subInfomation}
+            variant="body2"
+            color="textSecondary"
+            component="p">
+            Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : currentPrice + 'VNĐ'} </strong>
+          </Typography>
 
           <Typography
             variant="body2"
             color="textSecondary"
             component="p"
             className={classes.description}>
-            {description && removeHtmlTag(description)}
+            Mô tả: <strong>{description && deleteHTML(description)}</strong>
           </Typography>
         </CardContent>
+
       </Link>
     </Card>
   );
 };
-export default ProductItem;
+export default ProductCard;

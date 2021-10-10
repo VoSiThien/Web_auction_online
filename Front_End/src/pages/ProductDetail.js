@@ -11,7 +11,6 @@ import { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory, useParams } from "react-router-dom";
 import { getProductDetail } from '../reducers/unauthorizedProduct';
-import { Button, IconButton, Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,7 +26,6 @@ function Home() {
     //Define neccessary parameter
     const classes = useStyles();
     const dispatch = useDispatch();
-    const history = useHistory();
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);//get authenticated information from local store
     //0.get parameter from FE url, which defined on config/router
     const { productId } = useParams();

@@ -8,8 +8,36 @@ const getProductDetail = (id) => {
   let query = `/unauthorized-api/product/details/${id}`;
   return axios.get(query);
 };
+
+const listProductAboutToEnd = (page = 1, limit = 5) => {
+  let query = `unauthorized-api/home/top-product-about-to-end`;
+  return axios.post(query, {
+    page,
+    limit
+  });
+};
+
+const listProductHighestPrice = (page = 1, limit = 5) => {
+  let query = `unauthorized-api/home/top-product-have-highest-price`;
+  return axios.post(query, {
+    page,
+    limit
+  });
+};
+
+const listProductHighestBid = (page = 1, limit = 5) => {
+  let query = `unauthorized-api/home/top-product-have-highest-bids`;
+  return axios.post(query, {
+    page,
+    limit
+  });
+};
+
 const unauthorizedProduct = {
-  getProductDetail
+  getProductDetail,
+  listProductAboutToEnd,
+  listProductHighestPrice,
+  listProductHighestBid
 };
 
 export default unauthorizedProduct;

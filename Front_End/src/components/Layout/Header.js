@@ -225,7 +225,7 @@ function Header({ showMenu }) {
 					<Navbar.Collapse id="responsive-navbar-nav">
 						<Nav className="me-auto">
 							<NavDropdown title="Chuyên mục" id="collasible-nav-dropdown" menuVariant="dark">
-								{homeCatData?.paginationlist?.length > 0 &&		//want to use function of react, need to add "?"
+								{homeCatData.paginationlist?.length > 0 &&		//want to use function of react, need to add "?"
 									homeCatData.paginationlist.map((cat, index) => (
 										<CategoryItem
 											key={index}
