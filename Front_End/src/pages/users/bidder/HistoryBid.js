@@ -1,9 +1,11 @@
-import { Container, Table } from 'react-bootstrap';
+import { Container, Table, Button, Alert } from 'react-bootstrap';
 import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListHistory } from '../../../reducers/historyBid';
+import { bidAddWatchList, bidDeleteWatchList } from '../../../reducers/users/bidder';
 import Pagination from '@material-ui/lab/Pagination';
 import HeaderClear from '../../../components/Layout/HeaderClear';
+import BiddingModel from '../../../components/bidder/bidding';
 
 import {
     makeStyles
@@ -30,9 +32,32 @@ function HistoryBid() {
     var [page, setPage] = useState(1);
     var limit = 5;
     var prodId = 1;
+    var favId = 14;
     const status = 0;
     const data = useSelector((state) => state.history.data);
     const dispatch = useDispatch();
+    const [openModal, setOpenModal] = useState(false);
+
+    const [showFailed, setShowFailed] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [text, setText] = useState('');
+
+    const handleVisible = useCallback(() => {
+        if (showFailed === true || showSuccess === true) {
+            setTimeout(() => {
+                setShowFailed(false)
+                setShowSuccess(false)
+            }, 5000);
+        }
+    }, [showFailed, showSuccess]);
+
+    const handleClose = () => {
+        setOpenModal(false);
+    };
+
+    const openModalHandler = () => {
+        setOpenModal(true);
+    };
 
     const pageChangeHandler = (event, value) => {
         setPage(value);
@@ -46,9 +71,35 @@ function HistoryBid() {
         }
     }, [dispatch]);
 
+    const addWatchList = useCallback(async ({ prodId}) => {
+        try {
+            await dispatch(bidAddWatchList({ prodId})).unwrap();
+            setText('Thêm sản phẩm vào danh sách yêu thích thành công! ')
+            setShowSuccess(true)
+        } catch (err) {
+            setText(err)
+            setShowFailed(true)
+        }
+    }, [dispatch]);
+
+    const deleteWatchList = useCallback(async ({ favId}) => {
+        try {
+            await dispatch(bidDeleteWatchList({ favId })).unwrap();
+            setText('Xóa sản phẩm khỏi danh sách yêu thích thành công! ')
+            setShowSuccess(true)
+        } catch (err) {
+            setText(err)
+            setShowFailed(true)
+        }
+    }, [dispatch]);
+
     useEffect(() => {
         getListHistoryHandler({ page, limit, prodId, status });
     }, [getListHistoryHandler, page, limit, prodId, status]);
+
+    useEffect(() => {
+        handleVisible();
+    }, [handleVisible]);
 
     console.log(data)
 
@@ -56,7 +107,23 @@ function HistoryBid() {
         <div>
             <HeaderClear/>
             <Container>
+            <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
+                <Alert.Heading>{text}</Alert.Heading>
+            </Alert>
+
+            <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
+                <Alert.Heading>{text}</Alert.Heading>
+            </Alert>
+            <BiddingModel
+                    isOpen={openModal}
+                    onClose={handleClose}
+                    prod_id={prodId}
+                    getList={() => { getListHistoryHandler({ page, limit, prodId, status }) }}
+                />
                 <div>
+                <Button variant="primary" size="small" onClick={() => openModalHandler()}> đấu giá</Button>
+                <Button variant="info" size="small" onClick={() => addWatchList({ prodId})}> Thêm vào yêu thích</Button>
+                <Button variant="danger" size="small" onClick={() => deleteWatchList({favId})}> Xóa khỏi danh sách yêu thích</Button>
                     <Table responsive="sm">
                         <thead>
                             <tr>
