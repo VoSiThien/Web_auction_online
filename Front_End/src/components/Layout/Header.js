@@ -1,4 +1,4 @@
-import { Navbar, Container, Nav, NavDropdown, Form, FormControl, Button, Row, Col, Dropdown } from 'react-bootstrap';
+import { Navbar, Container, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap'; //, Row, Col, Dropdown
 import { FcShop } from 'react-icons/fc';
 
 import {
@@ -10,7 +10,7 @@ import {
 	Person,
 	ExitToApp
 } from "@material-ui/icons";
-import { useState } from "react";
+// import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 // import { getHomeCategory } from '../../reducers/homeCategory'
@@ -187,12 +187,12 @@ function Header({ showMenu }) {
 	const history = useHistory();
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 	const user = useSelector((state) => state.auth.user);
-	const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store
-	const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
+	// const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store
+	// const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
 
-	const toggleUserDropdownHandler = () => {
-		setToggleUserDropdown((prevState) => !prevState);
-	};
+	// const toggleUserDropdownHandler = () => {
+	// 	setToggleUserDropdown((prevState) => !prevState);
+	// };
 
 	const logoutHandler = () => {
 		dispatch(userAuthActions.logout());
