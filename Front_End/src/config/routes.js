@@ -4,24 +4,15 @@ import { Role } from './role';
 // const ProductDetail = lazy(() => import('../pages/ProductDetail'));
 const HomePage = lazy(() => import('../pages/HomePage'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
-
 const ProfilePage = lazy(() => import('../pages/users/Profile'));
 const ProductPage = lazy(() => import('../pages/users/product-mgt/Product'));
 const ProductDetail = lazy(() => import('../pages/ProductDetail'));
-<<<<<<< HEAD
-const ProductSearch = lazy(() => import('../pages/ProductSearch'));
-const ProductCategory = lazy(() => import('../pages/ProductCategory'));
 // const AdminLoginPage = lazy(() => import('../pages/admin/LoginPage'));
 const DashbroadPage = lazy(() => import('../pages/admin/DashbroadPage'));
-=======
-
->>>>>>> origin
 const HistoryBidBidder = lazy(() => import('../pages/users/bidder/HistoryBid'));
 const HistoryBidSeller = lazy(() => import('../pages/users/seller/HistoryBid'));
-
-const DashbroadPage = lazy(() => import('../pages/admin/DashbroadPage'));
-const UserPage = lazy(() => import('../pages/admin/user-mgt/users'));
-
+const ProductSearch = lazy(() => import('../pages/ProductSearch'));
+const ProductCategory = lazy(() => import('../pages/ProductCategory'));
 export const routes = [
   {
     path: '/',
@@ -90,42 +81,5 @@ export const adminRoutes = [
     exact: true,
     component: DashbroadPage,
     roles: [Role.Admin],
-  },
-  {
-    path: '/admin/dashboard',
-    protected: true,
-    exact: true,
-    component: DashbroadPage,
-    roles: [Role.Admin],
-  },
-  {
-    path: '/admin/user/admins',
-    protected: true,
-    exact: true,
-    component: UserPage,
-    roles: [Role.Admin],
-    additional: {
-      filter: Role.Admin,
-    }
-  },
-  {
-    path: '/admin/user/sellers',
-    protected: true,
-    exact: true,
-    component: UserPage,
-    roles: [Role.Admin],
-    additional: {
-      filter: Role.Seller,
-    }
-  },
-  {
-    path: '/admin/user/bidders',
-    protected: true,
-    exact: true,
-    component: UserPage,
-    roles: [Role.Admin],
-    additional: {
-      filter: Role.Bidder,
-    }
   },
 ];
