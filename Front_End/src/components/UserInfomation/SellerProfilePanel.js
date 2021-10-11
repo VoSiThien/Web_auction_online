@@ -26,11 +26,7 @@ const useStyles = makeStyles((theme) => ({
 const SellerProfilePanel = () => {
 	const { t } = useTranslation();
 	const classes = useStyles();
-	const [sellerInfo, setSellerInfo] = useState({
-		accExpUpgrade: 'None',
-		accLikeSeller: 0,
-		accDisLikeSeller: 0,
-	});
+	const [sellerInfo, setSellerInfo] = useState({});
 	const dispatch = useDispatch();
 
 	const sellerProfileHandler = useCallback(async () => {
@@ -54,7 +50,7 @@ const SellerProfilePanel = () => {
 				p: 1,
 			}}>
 				<Box sx={{ minWidth: 150 }}>{t('sellerProfile.expUpgrade')}</Box>
-				<Box sx={{ }}>{sellerInfo.accExpUpgrade}</Box>
+				<Box sx={{ }}>{sellerInfo?.accExpUpgrade || 'None'}</Box>
 			</Box>
 			<Box sx={{ 
           		display: 'flex',
@@ -62,7 +58,7 @@ const SellerProfilePanel = () => {
 				p: 1,
 			}}>
 				<Box sx={{ minWidth: 150  }}>{t('sellerProfile.likeSeller')}</Box>
-				<Box sx={{ }}>{sellerInfo.accLikeSeller}</Box>
+				<Box sx={{ }}>{sellerInfo?.accLikeSeller || 0}</Box>
 			</Box>
 			<Box sx={{ 
           		display: 'flex',
@@ -70,7 +66,7 @@ const SellerProfilePanel = () => {
 				p: 1,
 			}}>
 				<Box sx={{ minWidth: 150  }}>{t('sellerProfile.dislikeSeller')}</Box>
-				<Box sx={{ }}>{sellerInfo.accDisLikeSeller}</Box>
+				<Box sx={{ }}>{sellerInfo?.accDisLikeSeller || 0}</Box>
 			</Box>
 	  	</div>
 	);

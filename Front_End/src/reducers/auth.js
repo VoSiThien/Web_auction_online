@@ -35,21 +35,21 @@ export const login = createAsyncThunk( 'user/Login', async({ email, password }, 
 //     }
 //   }
 // );
-// export const resetPassword = createAsyncThunk(
-//   'user/NewPassword',
-//   async ({ userId, newPassword, code }, { rejectWithValue }) => {
-//     try {
-//       const response = await authApi.resetPassword({
-//         userId,
-//         newPassword,
-//         code,
-//       });
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(getResponseError(error));
-//     }
-//   }
-// );
+export const resetPassword = createAsyncThunk(
+  'user/NewPassword',
+  async ({ userId, newPassword, code }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.resetPassword({
+        userId,
+        newPassword,
+        code,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
 // export const verifyEmail = createAsyncThunk(
 //   'user/VerifyEmail',
 //   async ({ userId, accessToken }, { rejectWithValue }) => {

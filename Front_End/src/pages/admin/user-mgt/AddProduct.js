@@ -1,4 +1,4 @@
-import ProductModal from './ProductModal';
+import ProductModal from './UserModal';
 import {
   Box,
   Button,
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
+const AddProduct = ({ isOpen, onClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.category.data);
@@ -120,7 +120,9 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
     try {
       const page = 1;
       const limit = 10000;
+      // const repsone = 
       await dispatch(getListCategory({page, limit})).unwrap();
+      // console.log('category', repsone);
     } catch (err) {
       console.log('🚀 ~ file: Product.js ~ line 166 ~ getListCategoryHandler ~ err', err);
     }
@@ -171,8 +173,7 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
     formData.append('prodAutoExtend', enteredProdAutoExtend);
     try {
       await dispatch(postAuctionProduct(formData)).unwrap();
-      showSuccess(true);
-      textAlert('Lưu thành công!!!');
+      // toast.success('Add new product success');
     } catch (err) {
       setError(err);
       // console.log('🚀 ~ file: AddProduct.js ~ line 140 ~ addNewProductHandler ~ error', error);
@@ -191,18 +192,6 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
       setMainImageSrc(null);
     }
   }, [prodImages]);
-
-  const handleVisible = useCallback(() => {
-    if (showSuccess === true) {
-        setTimeout(() => {
-          showSuccess(false)
-        }, 5000);
-    }
-}, [showSuccess]);
-
-  useEffect(() => {
-      handleVisible();
-  }, [handleVisible]);
 
   return (
     <ProductModal isOpen={isOpen} onClose={closeModalHandler}>
@@ -241,7 +230,7 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
                   {prodImages?.length > 0 &&
                     prodImages.map((item, index) => (
                       <Box display="flex" alignItems="center" key={index}>
-                        <Typography variant="caption">{item.name}</Typography>
+                        <Typography variant="body2">{item.name}</Typography>
                         <Delete onClick={() => removeFile(item)} />
                       </Box>
                     ))}

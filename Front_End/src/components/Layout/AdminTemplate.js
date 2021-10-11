@@ -2,7 +2,7 @@ import { AdminMenu } from './AdminMenu';
 import HeaderAdmin from './HeaderAdmin';
 import { Person, Menu, Loyalty } from '@material-ui/icons';
 import SideBar from '../SideBar/SideBar';
-import UserInfomation from '../UserInfomation/UserInfomation';
+import AdminInfomation from '../UserInfomation/AdminInfomation';
 import Footer from './Footer';
 import { makeStyles } from '@material-ui/core';
 
@@ -33,7 +33,21 @@ const options = [
   {
     icon: Person,
     title: 'Users',
-    link: '/admin/profile',
+    // link: '/admin/users',
+    subItems: [
+      {
+        title: 'Admins',
+        link: '/admin/user/admins',
+      },
+      {
+        title: 'Sellers',
+        link: '/admin/user/sellers',
+      },
+      {
+        title: 'Bidders',
+        link: '/admin/user/bidders',
+      },
+    ],
   },
   // {
   //   icon: AttachMoney,
@@ -48,11 +62,13 @@ const useStyles = makeStyles((theme) => ({
   },
   main: {
     background: '#ddd',
-    minHeight: '90vh',
+    minHeight: '80vh',
+    maxHeight: 'calc(100% - 129px)',
     paddingTop: 64,
     marginBottom: 65,
     width: 'calc(100% - 300px)',
-    marginLeft: '280px',
+    marginLeft: 280,
+    marginTop: 20,
     [theme.breakpoints.down('sm')]: {
       width: '100%',
       marginLeft: 0,
@@ -71,16 +87,16 @@ export const AdminTemplate = ({children}) => {
     <>
       <HeaderAdmin showMenu />
       <SideBar>
-        <UserInfomation
-          avatar="http://themes.pixelstrap.com/multikart/assets/images/dashboard/man.png"
-          name={user.accFullName || ""}
+        <AdminInfomation
+          avatar={user?.accAvatar || "http://themes.pixelstrap.com/multikart/assets/images/dashboard/man.png"}
+          name={user?.accFullName || ""}
+          user={user || null}
           position="ADMIN"
         />
         <AdminMenu options={options} />
       </SideBar>
       <main className={classes.main}>{children}</main>
-      <Footer /> 
-      {/* hasSideBar */}
+      <Footer hasSideBar/>
     </>
   );
 };
