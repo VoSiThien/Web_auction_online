@@ -10,13 +10,13 @@ import {
 	Person,
 	ExitToApp
 } from "@material-ui/icons";
-// import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-// import { getHomeCategory } from '../../reducers/homeCategory'
+import { getHomeCategory } from '../../reducers/homeCategory';
 import { authActions as userAuthActions } from "../../reducers/auth";
 import { Role } from "../../config/role";
-// import { CategoryItem } from "../Homepage/CatogoryItem"
+import { CategoryItem } from "../Homepage/CatogoryItem"
 
 const useStyles = makeStyles((theme) => ({
 	root: {},
@@ -187,48 +187,60 @@ function Header({ showMenu }) {
 	const history = useHistory();
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 	const user = useSelector((state) => state.auth.user);
-	// const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store
-	// const [toggleUserDropdown, setToggleUserDropdown] = useState(false);
-
-	// const toggleUserDropdownHandler = () => {
-	// 	setToggleUserDropdown((prevState) => !prevState);
-	// };
+	const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store
 
 	const logoutHandler = () => {
 		dispatch(userAuthActions.logout());
 		history.push("/login");
 	};
-	
+
+	//define a handler function
+	const getListCategoryHandler = useCallback(async () => {
+		try {
+			await dispatch(getHomeCategory()).unwrap();//dispatch's used to call a function inside reducer
+		} catch (err) {
+			alert(err);
+		}
+	}, [dispatch]);
+
+	//useEffect run automatically, when data's changed, function define below it will be loaded again
+	useEffect(() => {
+		//in order to run handler function, we need to put it inside useEffect
+		getListCategoryHandler();
+	}, [getListCategoryHandler]);//followed value, when data's changed, this function defined here will be called again
+
 	const domain = window.location.origin;
     return (
+		<>
         <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
-            <Container>
-                <Navbar.Brand href="/">
-                    <FcShop className="iconhome"/> Auction Online</Navbar.Brand>
-                <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-                <Navbar.Collapse id="responsive-navbar-nav">
-                    <Nav className="me-auto">
-                        {/* <Nav.Link href="#features">Features</Nav.Link> */}
-                        <NavDropdown title="Điện tử" id="collasible-nav-dropdown">
-                            <NavDropdown.Item href="#action/3.1">Điện thoại</NavDropdown.Item>
-                            <NavDropdown.Item href="#action/3.1">Máy tính</NavDropdown.Item>
-                            {/* <NavDropdown.Divider />
-                            <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item> */}
-                        </NavDropdown>
-                        <NavDropdown title="Bếp" id="collasible-nav-dropdown">
-                            <NavDropdown.Item href="#action/3.1">Chảo chống dính</NavDropdown.Item>
-                            <NavDropdown.Item href="#action/3.1">Nồi inox</NavDropdown.Item>
-                        </NavDropdown>
-                    </Nav>
-                    <Form className="d-flex">
-                        <FormControl
-                            type="search"
-                            placeholder="Tìm kiếm"
-                            className="mr-2"
-                            aria-label="Search"
-                        />
-                        <Button variant="dark">Tìm</Button>
-                    </Form>
+				<Container>
+					<Navbar.Brand href="/">
+						<FcShop className="iconhome" /> Auction Online</Navbar.Brand>
+					<Navbar.Toggle aria-controls="responsive-navbar-nav" />
+					<Navbar.Collapse id="responsive-navbar-nav">
+						<Nav className="me-auto">
+							<NavDropdown title="Chuyên mục" id="collasible-nav-dropdown" menuVariant="dark">
+								{homeCatData.paginationlist?.length > 0 &&		//want to use function of react, need to add "?"
+									homeCatData.paginationlist.map((cat, index) => (
+										<CategoryItem
+											key={index}
+											id={cat.cateId}
+											title={cat.cateName}
+											items={cat.subCategories} //pass data between 2 components
+										/>
+									))}
+
+							</NavDropdown>
+						</Nav>
+						<Form className="d-flex">
+							<FormControl
+								type="search"
+								placeholder="Search"
+								className="mr-2"
+								aria-label="Search"
+							/>
+							<Button variant="dark">Search</Button>
+						</Form>
                     <Nav>
 					<NavDropdown title={<div style={{display: "inline-block"}}><Person style={{color: 'white'}}/></div>} id="collasible-nav-dropdown-2">
 						{user != null && isAuthenticated && (
@@ -263,6 +275,7 @@ function Header({ showMenu }) {
                 </Navbar.Collapse>
             </Container>
         </Navbar>
+		</>
     );
 }
 
