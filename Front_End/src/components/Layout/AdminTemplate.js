@@ -73,7 +73,7 @@ export const AdminTemplate = ({children}) => {
       <SideBar>
         <UserInfomation
           avatar="http://themes.pixelstrap.com/multikart/assets/images/dashboard/man.png"
-          name={user.accFullName || ""}
+          name={user?.accFullName || ""}
           position="ADMIN"
         />
         <AdminMenu options={options} />

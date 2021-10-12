@@ -18,7 +18,7 @@ import { Role }  from "../../config/role";
 import BasicProfilePanel from "../../components/Panels/BasicProfilePanel";
 import SellerProfilePanel from "../../components/UserInfomation/SellerProfilePanel";
 // import AvatarPanel from "../../components/Panels/AvatarPanel";
-// import ChangePasswordPanel from "../../components/Panels/ChangePasswordPanel";
+import ChangePasswordPanel from "../../components/Panels/ChangePasswordPanel";
 import Footer from "../../components/Layout/Footer";
 import Header from "../../components/Layout/Header";
 
@@ -151,7 +151,7 @@ const Profile = (props) => {
 							TabIndicatorProps={{ className: classes.tabActive }}
 						>
 							<Tab label={t("profilepage.tabTitle.1")} />
-							{/* <Tab label={t("profilepage.tabTitle.2")} /> */}
+							<Tab label={t("profilepage.tabTitle.2")} />
 							{/* <Tab label={t("profilepage.tabTitle.3")} /> */}
 						</Tabs>
 					</Paper>
@@ -176,7 +176,7 @@ const Profile = (props) => {
 						index={1}
 						className={classes.tabPanel}
 					>
-						{/* <ChangePasswordPanel /> */}
+						<ChangePasswordPanel />
 					</TabPanel>
 					{/* <TabPanel
 						value={tabValue}

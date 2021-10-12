@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Validate } from '../../helpers';
 import { useInput } from '../../hooks/use-input';
-import { resetPassword as userResetPassword } from '../../reducers/users/auth';
+import { resetPassword as userResetPassword } from '../../reducers/auth';
 const useStyles = makeStyles((theme) => ({
   form: {
     width: '30rem',

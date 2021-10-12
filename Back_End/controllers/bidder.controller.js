@@ -15,6 +15,8 @@ const errorCode = 1
 ///- Quản lý hồ sơ cá nhân (Bidder)
 ///- Xin được bán trong vòng 7 ngày
 
+// lấy thông tin bidder để update
+
 router.post('/allowSell', validator.updateAllowSellIn7Date, async(req, res) => {
     const { accIsUpgrade } = req.body
 

@@ -32,6 +32,13 @@ export const routes = [
     roles: [Role.Bidder, Role.Seller],
   },
   {
+    path: '/profile/password',
+    protected: true,
+    exact: true,
+    component: ProfilePage,
+    roles: [Role.Bidder, Role.Seller],
+  },
+  {
     path: '/product-mgt',
     protected: true,
     exact: true,
