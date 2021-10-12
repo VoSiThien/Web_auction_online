@@ -54,7 +54,7 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
 	var result = await knex.raw(`select * from tbl_product p join tbl_categories c
                                 on c.cate_id = p.prod_category_id 
                                 where p.prod_seller_id = ${accId}
-                                and p.acc_status != 2
+                                and p.prod_status != 2
 								order by p.prod_status offset ${offset} limit ${limit}`)
 
 	result = result.rows

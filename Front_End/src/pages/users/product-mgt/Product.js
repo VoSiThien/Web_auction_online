@@ -222,10 +222,7 @@ const ProductManager = (props) => {
     window.scrollTo(0, 0);
   }, []);
 
-  const addDefaultSrc = (e)=>{
-    const errImg = window.location.origin + '/img/no-image-available.jpg';
-    e.target.src = errImg
-  }
+  const errImg = window.location.origin + '/img/no-image-available.jpg';
 
   const handleVisible = useCallback(() => {
     if (showSuccess === true) {
@@ -327,9 +324,8 @@ const ProductManager = (props) => {
                           <TableCell>{row?.prodName}</TableCell>
                           <TableCell>
                             <img
-                              src={row?.prodMainImage}
+                              src={row?.prodMainImage || errImg}
                               alt={row?.prodName}
-                              onError={addDefaultSrc}
                               style={{ width: 100, height: 80, objectFit: 'cover' }}
                             />
                           </TableCell>

@@ -10,12 +10,17 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import { Add, Delete } from '@material-ui/icons';
+import { Edit, Add, Delete } from '@material-ui/icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListCategory } from '../../../reducers/category';
 import { postAuctionProduct } from '../../../reducers/users/product';
-// import { toast } from 'react-toastify';
+import { KeyboardDateTimePicker, MuiPickersUtilsProvider  } from "@material-ui/pickers";
+import MomentUtils from '@date-io/moment';
+import { format } from 'date-fns';
+import DescriptionProduct from './DescriptionModel';
+import { EditorState } from 'draft-js';
+import { convertToHTML } from 'draft-convert';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
@@ -86,14 +91,24 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
   const [mainImageSrc, setMainImageSrc] = useState(null);
   const [submitIsValid, setSubmitIsValid] = useState(true);
   const [error, setError] = useState('');
+  const [prodEndDate, setProdEndDate] = useState('');
+  const [prodDescription, setProdDescription] = useState(() => EditorState.createEmpty());
+  const [openDescriptionModal, setOpenDescriptionModal] = useState(false);
   const prodNameRef = useRef('');
   const prodCategoryIdRef = useRef(0);
   const prodPriceStartingRef = useRef(0);
   const prodPriceStepRef = useRef(0);
   const prodPriceRef = useRef(0);
-  const prodDescriptionRef = useRef('');
-  const prodEndDateRef = useRef('');
+  // const prodDescriptionRef = useRef('');
   const prodAutoExtendRef = useRef(0);
+
+  const openDescriptionModalHandler = () => {
+    setOpenDescriptionModal(true);
+  };
+
+  const closeDescriptionModalHandler = () => {
+    setOpenDescriptionModal(false);
+  };
   
   const fileChangeHandler = (file) => {
     if (file) {
@@ -131,6 +146,10 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
     onClose();
   };
 
+  const convertContentToHTML = () => {
+    return convertToHTML(prodDescription.getCurrentContent());
+  }
+
   const addNewProductHandler = async () => {
     setError('');
 
@@ -139,27 +158,30 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
     const enteredProdPriceStarting = prodPriceStartingRef.current.value;
     const enteredProdPriceStep = prodPriceStepRef.current.value;
     const enteredProdPrice = prodPriceRef.current.value;
-    const enteredProdDescription = prodDescriptionRef.current.value;
-    const enteredProdEndDate = prodEndDateRef.current.value;
+    const enteredProdDescription = convertContentToHTML;//prodDescriptionRef.current.value;
+    // const enteredProdEndDate = prodEndDateRef.current.value;
     const enteredProdAutoExtend = prodAutoExtendRef.current.value;
     let formData = new FormData();
-
-    if (
-      enteredProdName?.length > 0 &&
-      enteredProdCategoryId?.length > 0 &&
-      enteredProdPriceStarting?.length > 0 &&
-      enteredProdPriceStep?.length > 0 &&
-      enteredProdEndDate?.length > 0
-    ) {
-      setSubmitIsValid(true);
-    } else {
-      setSubmitIsValid(false);
-      return;
-    }
+    console.log(prodEndDate)
+    // if (
+    //   enteredProdName?.length > 0 &&
+    //   enteredProdCategoryId?.length > 0 &&
+    //   enteredProdPriceStarting?.length > 0 &&
+    //   enteredProdPriceStep?.length > 0 &&
+    //   prodEndDate?.length > 0
+    // ) {
+    //   setSubmitIsValid(true);
+    // } else {
+    //   setSubmitIsValid(false);
+    //   return;
+    // }
 
     for (let i = 0; i < prodImages.length; i++) {
       formData.append('prodImages', prodImages[i]);
     }
+
+    // if(prodImages.length < 3)
+    //   return;
 
     formData.append('prodName', enteredProdName);
     formData.append('prodCategoryId', enteredProdCategoryId);
@@ -167,16 +189,17 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
     formData.append('prodPriceStep', enteredProdPriceStep);
     formData.append('prodPrice', enteredProdPrice);
     formData.append('prodDescription', enteredProdDescription);
-    formData.append('prodEndDate', enteredProdEndDate);
+    formData.append('prodEndDate', prodEndDate);
     formData.append('prodAutoExtend', enteredProdAutoExtend);
-    try {
-      await dispatch(postAuctionProduct(formData)).unwrap();
-      showSuccess(true);
-      textAlert('Lưu thành công!!!');
-    } catch (err) {
-      setError(err);
-      // console.log('🚀 ~ file: AddProduct.js ~ line 140 ~ addNewProductHandler ~ error', error);
-    }
+    console.log(formData)
+    // try {
+    //   await dispatch(postAuctionProduct(formData)).unwrap();
+    //   showSuccess(true);
+    //   textAlert('Lưu thành công!!!');
+    // } catch (err) {
+    //   setError(err);
+    //   // console.log('🚀 ~ file: AddProduct.js ~ line 140 ~ addNewProductHandler ~ error', error);
+    // }
     onClose();
   };
   
@@ -198,7 +221,7 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
           showSuccess(false)
         }, 5000);
     }
-}, [showSuccess]);
+  }, [showSuccess]);
 
   useEffect(() => {
       handleVisible();
@@ -207,14 +230,17 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
   return (
     <ProductModal isOpen={isOpen} onClose={closeModalHandler}>
       <div className={classes.root}>
+        <DescriptionProduct 
+          isOpen={openDescriptionModal} 
+          onClose={closeDescriptionModalHandler}
+          prodDescription={prodDescription}
+          setProdDescription={setProdDescription}
+        />
         <Box borderRadius={6} className={classes.content}>
           <Box marginBottom={4} marginTop={2}>
             <Typography variant="h5" className={classes.title}>
-              Thêm mới sản Phẩm
+              Thêm Sản Phẩm mới
             </Typography>
-            {/* <Typography variant="caption" className={classes.subTitle}>
-              Family Admin Panel
-            </Typography> */}
           </Box>
           <form encType="multipart/form-data" className={classes.section}>
             <Box marginBottom={2} className={classes.image}>
@@ -331,25 +357,41 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
                 <Typography variant="caption" component="p">
                 Ngày hết hạn
                 </Typography>
-                <TextField
-                  defaultValue={Date.now()}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  inputProps={{ type: 'date' }}
-                  // minDate={Date.now()}
-                  fullWidth
-                  inputRef={prodEndDateRef}
-                />
+                <MuiPickersUtilsProvider utils={MomentUtils}>
+                <KeyboardDateTimePicker
+                    variant="standard"
+                    ampm={false}
+                    defaultValue={format(new Date(Date.now()), 'yyyy/MM/dd kk:mm')}
+                    // minDate={(new Date(Date.now()))}
+                    value={prodEndDate}
+                    onChange={(date)=>setProdEndDate(date)}
+                    // onError={console.log}
+                    disablePast
+                    format="yyyy/MM/DD HH:mm"
+                  />
+                </MuiPickersUtilsProvider>
               </div>
               <div className={classes.textField}>
                 <Typography variant="caption" component="p">
-                  Danh mục
+                  Mô tả
+                </Typography>
+                <Button
+                      startIcon={<Edit />}
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={openDescriptionModalHandler}>
+                      Chỉnh sửa mô tả
+                </Button>
+              </div>
+              <div className={classes.textField}>
+                <Typography variant="caption" component="p">
+                  Gia hạn
                 </Typography>
                 <FormControl variant="standard" size="small" fullWidth>
                   <Select
                     native
-                    defaultValue=""
+                    defaultValue="0"
                     MenuProps={{ classes: { paper: classes.menuPaper } }}
                     inputRef={prodAutoExtendRef}>
                     <option value="0">Không gia hạn</option>
@@ -357,29 +399,16 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
                   </Select>
                 </FormControl>
               </div>
-              <div className={classes.textField}>
-                <Typography variant="caption" component="p">
-                  Mô tả
-                </Typography>
-                <TextField
-                  variant="standard"
-                  size="small"
-                  multiline
-                  rows={4}
-                  fullWidth
-                  inputRef={prodDescriptionRef}
-                />
-              </div>
-              {!submitIsValid && (
+              {/* {!submitIsValid && (
                 <FormHelperText error style={{ marginBottom: 8 }}>
                   Tất cả các ô không được bỏ trống
                 </FormHelperText>
-              )}
-              {error.length > 0 && (
+              )} */}
+              {/* {error.length > 0 && (
                 <FormHelperText error style={{ marginBottom: 8 }}>
                   {error}
                 </FormHelperText>
-              )}
+              )} */}
 
               <Box>
                 <Button
