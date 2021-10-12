@@ -39,7 +39,7 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
 	}
 
 	var total = await knex.raw(`select count(distinct prod_id) 
-	from tbl_product where prod_seller_id = ${accId}`)
+	from tbl_product where prod_seller_id = ${accId} and prod_status = 0`)
 
 
 	total = Number(total.rows[0].count)
@@ -52,8 +52,10 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
 	}
 
 	var result = await knex.raw(`select * from tbl_product p join tbl_categories c
-                                on c.cate_id = p.prod_category_id where p.prod_seller_id = ${accId}
-								 order by p.prod_status offset ${offset} limit ${limit}`)
+                                on c.cate_id = p.prod_category_id 
+                                where p.prod_seller_id = ${accId}
+                                and p.prod_status != 2
+								order by p.prod_status offset ${offset} limit ${limit}`)
 
 	result = result.rows
 
@@ -66,7 +68,8 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
 			prodName: result[index].prod_name,
 			prodPrice: result[index].prod_price,
 
-            prodCategoryName: result[index].prod_category_name,
+            prodCategoryName: result[index].cate_name,
+            prodCategoryId: result[index].prod_category_id,
             prodPrice: result[index].prod_price,
             prodPriceStarting: result[index].prod_price_starting,
             prodPriceStep: result[index].prod_price_step,
@@ -187,10 +190,10 @@ router.post('/updateAuctionProductDescription', validator.updateAuctionProductDe
     })
 })
 
-router.put('/deleteAuctionProduct', validator.deleteAuctionProduct, async(req, res) => {
+router.post('/deleteAuctionProduct', validator.deleteAuctionProduct, async(req, res) => {
     const { prodId } = req.body
     const now = Date.now()
-    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_status: 2, prod_update_date: now })
+    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_status: 2, prod_updated_date: now })
     return res.status(200).json({
         data: true,
         statusCode: successCode

@@ -1,5 +1,8 @@
+//Component
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
+import ProductCard from '../components/ProductCard/ProductCard';
+//Library
 import { mainColor } from '../utils';
 import {
   Container,
@@ -7,10 +10,12 @@ import {
 } from '@material-ui/core';
 import { Card, Row, Col, Alert, Carousel } from 'react-bootstrap';
 import { FcAlarmClock, FcDebt, FcCurrencyExchange } from 'react-icons/fc';
-import iphone1 from '../images/iphone1.jpg';
-import iphone2 from '../images/iphone2.jpg';
-import iphone3 from '../images/iphone3.jpg';
 import '../index.css';
+import { useState, useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { listProductAboutToEnd, listProductHighestPrice, listProductHighestBid } from '../reducers/unauthorizedProduct';
+import { Link, useHistory } from "react-router-dom";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,354 +25,116 @@ const useStyles = makeStyles((theme) => ({
   content: {
     padding: '5vh 0',
   },
-  title: {
-    marginBottom: 25,
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 25,
-    },
-  },
-  form: {
-    width: '30rem',
-    background: '#fff',
-    maxWidth: '100%',
-    margin: '0 auto',
-    borderRadius: theme.shape.borderRadius,
-    padding: '50px 25px',
-    [theme.breakpoints.down('xs')]: {
-      padding: '35px 15px',
-    },
-  },
-  formControl: {
-    display: 'block',
-    marginBottom: 15,
-  },
-  button: {
-    '&:disabled': {
-      cursor: 'not-allowed',
-      pointerEvents: 'all !important',
-    },
-  },
-  actions: {
-    marginTop: 10,
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    '& a': {
-      color: mainColor,
-    },
-  },
 }));
 
 function Home() {
   const classes = useStyles()
+  const dispatch = useDispatch();
+  const [productAboutToEnd, setProductAboutToEnd] = useState({});//{} is the initial value
+  const [productHighestPrice, setProductHighestPrice] = useState({});//{} is the initial value
+  const [productHighestBids, setProductHighestBids] = useState({});//{} is the initial value
+
+  const getHomePageProductHandler = useCallback(async () => {
+    try {
+      //use reducer function to get data and put it into local store
+      const responseAboutToEnd = await dispatch(listProductAboutToEnd()).unwrap();
+      const responseHighestPrice = await dispatch(listProductHighestPrice()).unwrap();
+      const responseHighestBids = await dispatch(listProductHighestBid()).unwrap();
+      setProductAboutToEnd(responseAboutToEnd.productAboutToEndList);//set new state for productAboutToEnd with the returned data from BE when user change value
+      setProductHighestPrice(responseHighestPrice.productHighestPriceList);//set new state for productHighestPrice with the returned data from BE when user change value
+      setProductHighestBids(responseHighestBids.productHighestBidList);//set new state for productHighestBids with the returned data from BE when user change value
+    } catch (err) {
+      alert(err);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {//this function always run first
+    getHomePageProductHandler();
+  }, [getHomePageProductHandler]);//followed value, when data's changed, this function defined here will be called again
+
   return (
     <>
+
       <div className={classes.root}>
         <Header />
         <div className={classes.content}>
-          <Container>
+          <Container bg="primary">
+
             <div className="container">
-              <div>
+              <div style={{ backgroundColor: '#e8e4da' }} className="mb-3">
                 <Carousel className="center">
-                  <Carousel.Item>
-                    <img
-                      className="d-block w-100 photo"
-                      src={iphone1}
-                      alt="First slide"
-                    />
-                    <Carousel.Caption>
-                      <h3>First slide label</h3>
-                      <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                    </Carousel.Caption>
-                  </Carousel.Item>
-                  <Carousel.Item>
-                    <img
-                      className="d-block w-100 photo"
-                      src={iphone2}
-                      alt="Second slide"
-                    />
-
-                    <Carousel.Caption>
-                      <h3>Second slide label</h3>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </Carousel.Caption>
-                  </Carousel.Item>
-                  <Carousel.Item>
-                    <img
-                      className="d-block w-100 photo"
-                      src={iphone3}
-                      alt="Third slide"
-                    />
-
-                    <Carousel.Caption>
-                      <h3>Third slide label</h3>
-                      <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-                    </Carousel.Caption>
-                  </Carousel.Item>
+                  {productAboutToEnd?.length > 0 &&		//want to use function of react, need to add "?"
+                    productAboutToEnd.map((prod, index) => (
+                      <Carousel.Item>
+                        <img
+                          className="d-block w-100 photo"
+                          src={prod.prod_main_image || 'https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg'}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption >
+                          <Link to={`/details/${prod.prod_id}`} style={{ textDecoration: "none", color: "white" }}>
+                            <h3>{prod.prod_name}</h3>
+                            <p>Loại sản phẩm: <strong>{prod.cate_name}</strong></p>
+                            <p style={{ color: "light" }}>Ngày hết hạn: <strong>{prod.prod_end_date}</strong> </p>
+                            <p style={{ color: "light" }}>Giá hiện tại: <strong>{prod.prod_price_current == null ? 'Chưa có thông tin' : prod.prod_price_current + 'VNĐ'} </strong> </p>
+                          </Link>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                    ))}
                 </Carousel>
               </div>
 
-              <Alert variant="warning"><FcAlarmClock className="iconaler" /> 5 sản phẩm gần kết thúc!</Alert>
 
-              <div>
-                <Row xs={1} md={2} className="g-2">
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone1} className="subphotorow1" />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This content is a little bit longer.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone1} className="subphotorow1" />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This content is a little bit longer.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                </Row>
-                <Row xs={1} md={3} className="g-2">
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone2} />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This card has even longer content than the first to
-                          show that equal height action.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone2} />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This card has even longer content than the first to
-                          show that equal height action.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone2} />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This card has even longer content than the first to
-                          show that equal height action.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                </Row>
-              </div>
 
-              <Alert variant="success"><FcDebt className="iconaler" /> 5 sản phẩm có nhiều lượt ra giá nhất!</Alert>
 
-              <div>
-                <Row xs={1} md={2} className="g-2">
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone1} className="subphotorow1" />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This content is a little bit longer.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone1} className="subphotorow1" />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This content is a little bit longer.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                </Row>
-                <Row xs={1} md={3} className="g-2">
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone2} />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This card has even longer content than the first to
-                          show that equal height action.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone2} />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This card has even longer content than the first to
-                          show that equal height action.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone2} />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This card has even longer content than the first to
-                          show that equal height action.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                </Row>
-              </div>
+              <Row xs={1} md={2} className="g-2">
+                <Col>
+                  <Alert variant="success" style={{ marginBlock: "-3px" }}><FcDebt className="iconaler" /> 5 sản phẩm có nhiều lượt ra giá nhất!</Alert>
+                  <div style={{ backgroundColor: '#e8e4da' }} className="p-3">
+                    {productHighestPrice?.length > 0 &&		//want to use function of react, need to add "?"
+                      productHighestPrice.map((prod, index) => (
+                        <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }}>
+                          <Card.Body>
+                            <ProductCard
+                              id={prod.prod_id}
+                              title={prod.prod_name}
+                              description={prod.prod_description}
+                              image={prod.prod_main_image}
+                              price={prod.prod_price}
+                              endDate = {prod.prod_end_date}
+                              currentPrice = {prod.prod_price_current}
+                              catName = {prod.cate_name}
+                            />
+                          </Card.Body>
+                        </Card>
+                      ))}
+                  </div>
+                </Col>
+                <Col >
+                  <Alert variant="primary" style={{ marginBlock: "-2px" }}><FcCurrencyExchange className="iconaler" /> 5 sản phẩm có giá cao nhất!</Alert>
+                  <div style={{ backgroundColor: '#e8e4da' }} className="p-3">
+                    {productHighestBids?.length > 0 &&		//want to use function of react, need to add "?"
+                      productHighestBids.map((prod, index) => (
 
-              <Alert variant="primary"><FcCurrencyExchange className="iconaler" /> 5 sản phẩm có giá cao nhất!</Alert>
+                        <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }}>
+                          <Card.Body>
+                          <ProductCard
+                              id={prod.prod_id}
+                              title={prod.prod_name}
+                              description={prod.prod_description}
+                              image={prod.prod_main_image}
+                              price={prod.prod_price}
+                              endDate = {prod.prod_end_date}
+                              currentPrice = {prod.prod_price_current}
+                              catName = {prod.cate_name}
+                            />
+                          </Card.Body>
+                        </Card>
 
-              <div>
-                <Row xs={1} md={2} className="g-2">
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone1} className="subphotorow1" />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This content is a little bit longer.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone1} className="subphotorow1" />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This content is a little bit longer.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                </Row>
-                <Row xs={1} md={3} className="g-2">
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone2} />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This card has even longer content than the first to
-                          show that equal height action.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone2} />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This card has even longer content than the first to
-                          show that equal height action.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card>
-                      <Card.Img variant="top" src={iphone2} />
-                      <Card.Body>
-                        <Card.Title>Card title</Card.Title>
-                        <Card.Text>
-                          This is a wider card with supporting text below as a natural lead-in to
-                          additional content. This card has even longer content than the first to
-                          show that equal height action.
-                        </Card.Text>
-                      </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">Last updated 3 mins ago</small>
-                      </Card.Footer>
-                    </Card>
-                  </Col>
-                </Row>
-              </div>
+                      ))}
+                  </div>
+                </Col>
+              </Row>
             </div>
           </Container>
         </div>

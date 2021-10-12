@@ -292,7 +292,7 @@ ALTER TABLE public.tbl_roles OWNER TO postgres;
 
 COPY public.tbl_account (acc_id, acc_password, acc_token, acc_email, acc_phone_number, acc_full_name, acc_role, acc_avatar, acc_status, acc_created_date, acc_updated_date, acc_token_forgot, acc_refresh_token, acc_rating_score, acc_is_upgrade, acc_birthday, acc_like_bidder, acc_dis_like_bidder, acc_like_seller, acc_dis_like_seller) FROM stdin;
 1	$2b$04$fAkkyELf9a./G2jjbKqO.e9u8p9G5hvtpBaSRymPvuT1Mnp9nLbVK		vosithien1234@gmail.com	012345678	Lên Văn Toàn	ADM	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
-2	$2b$04$fAkkyELf9a./G2jjbKqO.e9u8p9G5hvtpBaSRymPvuT1Mnp9nLbVK		vosithien1551999@gmail.com	012345678	Lên Văn Tính	Bid	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
+2	$2b$04$fAkkyELf9a./G2jjbKqO.e9u8p9G5hvtpBaSRymPvuT1Mnp9nLbVK		vosithien1551999@gmail.com	012345678	Lên Văn Tính	BID	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -371,8 +371,8 @@ COPY public.tbl_product_images (prod_img_id, prod_img_product_id, prod_img_data,
 
 COPY public.tbl_roles (rol_id, rol_name, rol_status, rol_create_date, rol_update_date) FROM stdin;
 ADM	Admin	0	2021-10-09	\N
-Bid	Bidder	0	2021-10-09	\N
-Sel	Seller	0	2021-10-09	\N
+BID	Bidder	0	2021-10-09	\N
+SEL	Seller	0	2021-10-09	\N
 \.
 
 

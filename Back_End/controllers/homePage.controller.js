@@ -16,7 +16,7 @@ router.get('/list-cat-home', async (req, res) => {
 
 	var listHomePage = await catModel.getHomePageList(listCategory, listAllChild, listAllParent)
 
-	listHomePage = pagingService.pagingation(listHomePage, page, limit)
+	//listHomePage = pagingService.pagingation(listHomePage, page, limit)
 
 	return res.status(200).json({
 		paginationlist: listHomePage,
@@ -39,7 +39,7 @@ router.post('/top-product-about-to-end', async (req, res) => {
 	*/
 	var productAboutToEndList = await knex.raw(`select *
 	from tbl_product pr left join tbl_categories cat on pr.prod_category_id = cat.cate_id
-	${whereClause}
+	where to_timestamp(prod_end_date, 'YYYY/MM/DD HH24:MI:SS') > CURRENT_TIMESTAMP
 	order by pr.prod_end_date::timestamp desc
 	offset 0
 	limit 5`)
@@ -71,7 +71,7 @@ router.post('/top-product-have-highest-price', async (req, res) => {
 	limit 5`)
 	
 	return res.status(200).json({
-		productAboutToEndList: productHighestPriceList.rows,
+		productHighestPriceList: productHighestPriceList.rows,
 		statusCode: successCode
 	})
 })
@@ -89,7 +89,7 @@ router.post('/top-product-have-highest-bids', async (req, res) => {
 		}
 	}
 	*/
-	var productHighestPriceList = await knex.raw(`select *
+	var productHighestBidList = await knex.raw(`select *
 	from tbl_product pr left join tbl_categories cat on pr.prod_category_id = cat.cate_id
 	${whereClause}
 	order by pr.prod_price::integer desc
@@ -97,7 +97,7 @@ router.post('/top-product-have-highest-bids', async (req, res) => {
 	limit 5`)
 	
 	return res.status(200).json({
-		productAboutToEndList: productHighestPriceList.rows,
+		productHighestBidList: productHighestBidList.rows,
 		statusCode: successCode
 	})
 })

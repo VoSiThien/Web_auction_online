@@ -57,7 +57,35 @@ const updateInfo = (req, res, next) => {
 	next()
 }
 
+const addFavoriteProduct = (req, res, next) => {
+	const shema = {
+		type: 'object',
+		properties: {
+			prodId: { type: 'integer' }
+		},
+		required: ["prodId"],
+		additionalProperties: true
+	}
+
+	const ajv = new ajvLib({
+		allErrors: true
+	})
+
+	const validator = ajv.compile(shema)
+	const valid = validator(req.body)
+
+	if (!valid) {
+		return res.status(400).json({
+			errorMessage: validator.errors[0].message,
+			statusCode: errorCode
+		})
+	}
+
+	next()
+}
+
 module.exports = {
     updateAllowSellIn7Date,
-    updateInfo
+    updateInfo,
+    addFavoriteProduct
 }

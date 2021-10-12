@@ -11,10 +11,23 @@ const bidAllow = ({ accIsUpgrade }) => {
   let query = `/api/bid/allowSell`;
   return axios.post(query, { accIsUpgrade });
 };
+const bidAddWatchList = ({ prodId }) => {
+
+  let query = `/api/bidder/favorite-product/add`;
+  return axios.post(query, { prodId });
+};
+
+const bidDeleteWatchList = ({ favId }) => {
+
+  let query = `/api/bidder/favorite-product/delete/${favId}`;
+  return axios.post(query);
+};
 
 const bidderApi = {
     bidProduct,
-    bidAllow
+    bidAllow,
+    bidAddWatchList,
+    bidDeleteWatchList
 };
 
 export default bidderApi;

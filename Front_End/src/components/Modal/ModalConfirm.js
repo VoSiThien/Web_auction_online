@@ -31,7 +31,7 @@ const ModalConfirm = ({ title, isOpen, onClose, onConfirm }) => {
             {title}
           </Typography>
           <Typography variant="body2" component="p" style={{ textAlign: 'center' }}>
-            Are you sure to delete it?
+            Bạn có muốn xoá?
           </Typography>
         </Box>
         <Box display="flex" className={classes.actions}>
@@ -45,7 +45,7 @@ const ModalConfirm = ({ title, isOpen, onClose, onConfirm }) => {
               color: '#B51200',
               fontWeight: 'bold',
             }}>
-            Delete
+            Xác nhận
           </Button>
           <Button
             onClick={onClose}
@@ -53,7 +53,7 @@ const ModalConfirm = ({ title, isOpen, onClose, onConfirm }) => {
             variant="contained"
             color="primary"
             style={{ fontWeight: 'bold' }}>
-            Cancel
+            Huỷ
           </Button>
         </Box>
       </Box>
