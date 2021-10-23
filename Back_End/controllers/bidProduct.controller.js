@@ -245,7 +245,7 @@ router.post('/cancel-bid/:id', async (req, res) => {
             await knex.raw(`update tbl_product_history set his_status = 1 where his_id = ${hisProductAccount[0].his_id};
                             update tbl_product set prod_price_holder = ${hisProductAccount[0].his_account_id}, prod_price_highest = ${hisProductAccount[0].his_price} where prod_id = ${hisProductAccount[0].his_product_id}`)
 
-            const checkmailInher = await mailService.sendMailTran(mailOptions.notifyCancelToBidderInheritance(hisProductAccount, hisProductAccount, hisProductAccount[0].his_price))
+            const checkmailInher = await mailService.sendMail(mailOptions.notifyCancelToBidderInheritance(hisProductAccount, hisProductAccount, hisProductAccount[0].his_price))
 
             if (checkmailInher === false) {
                 return {
@@ -258,7 +258,7 @@ router.post('/cancel-bid/:id', async (req, res) => {
 
     await knex('tbl_product_history').where("his_id", id).update({ his_status: 3 })
 
-    const checkmailCancel = await mailService.sendMailTran(mailOptions.notifyCancelToBidder(hisProduct, product, hisProduct[0].his_price))
+    const checkmailCancel = await mailService.sendMail(mailOptions.notifyCancelToBidder(hisProduct, product, hisProduct[0].his_price))
 
     if (checkmailCancel === false) {
         return {

@@ -11,8 +11,8 @@ const bidding = async (priceBid, product, prodId, account) => {
 
 			product[0].prod_price_current = product[0].prod_price_starting
 
-			const checkmailBid = await mailService.sendMailTran(mailOptions.notifyBidSuccessToBidder(account, product, priceBid))
-			const checkmailSeller = await mailService.sendMailTran(mailOptions.notifyBidSuccessToSeller(account, product, priceBid))
+			const checkmailBid = await mailService.sendMail(mailOptions.notifyBidSuccessToBidder(account, product, priceBid))
+			const checkmailSeller = await mailService.sendMail(mailOptions.notifyBidSuccessToSeller(account, product, priceBid))
 			
 			if(checkmailBid === false || checkmailSeller === false){
 				return {
@@ -39,13 +39,13 @@ const bidding = async (priceBid, product, prodId, account) => {
 
 		product[0].prod_price_current = priceSS.toString()
 
-		var checkmailBid = await mailService.sendMailTran(mailOptions.notifyBidSuccessToBidder(account, product, priceBid))
-		var checkmailSeller = await mailService.sendMailTran(mailOptions.notifyBidSuccessToSeller(account, product, priceBid))
+		var checkmailBid = await mailService.sendMail(mailOptions.notifyBidSuccessToBidder(account, product, priceBid))
+		var checkmailSeller = await mailService.sendMail(mailOptions.notifyBidSuccessToSeller(account, product, priceBid))
 		var checkmailBidOld = true
 
 		if(account[0].acc_id !== product[0].prod_price_holder){
 			var accountHolder = await knex('tbl_account').where("acc_id", product[0].prod_price_holder)
-			checkmailBidOld = await mailService.sendMailTran(mailOptions.notifyBidSuccessToOldBidder(account, product, accountHolder))
+			checkmailBidOld = await mailService.sendMail(mailOptions.notifyBidSuccessToOldBidder(account, product, accountHolder))
 		}
 
 		if (checkmailBid === false || checkmailSeller === false || checkmailBidOld === false){
