@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { bidProduct } from '../../reducers/users/bidder';
 
 
-function ConfirmModel({ isOpen, onClose, prod_id, getList, price_bid }) {
+function ConfirmModel({ isOpen, onClose, prod_id, price_bid }) {
     var priceBid = price_bid;
     var prodId = prod_id;
     const dispatch = useDispatch();
@@ -27,13 +27,13 @@ function ConfirmModel({ isOpen, onClose, prod_id, getList, price_bid }) {
             const check = await dispatch(bidProduct({ priceBid, prodId })).unwrap();
             setText(check.message)
             onClose();
-            getList();
+            
             setShowSuccess(true);
         } catch (error) {
             setText(error)
             setShowFailed(true);
             onClose();
-            getList();
+            
         }
     };
 

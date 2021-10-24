@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback } from 'react';
 import ConfirmModel from './confirm';
 
 
-function Bidding({ isOpen, onClose, prod_id, getList }) {
+function Bidding({ isOpen, onClose, prod_id }) {
     var [priceBid, setPriceBid] = useState(0);
     var prodId = prod_id;
     const [openModal, setOpenModal] = useState(false);
@@ -28,7 +28,7 @@ function Bidding({ isOpen, onClose, prod_id, getList }) {
             isOpen={openModal}
             onClose={handleClose}
             prod_id={prodId}
-            getList={() => { getList() }}
+            
             price_bid = {priceBid}
             />
 

@@ -1,7 +1,11 @@
 import { CardContent, makeStyles, Typography, Card, CardMedia } from '@material-ui/core';
-import React from 'react';
+import { Button, Toast, ToastContainer } from 'react-bootstrap';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { deleteHTML } from '../../helpers/deleteHTML';
+import { useDispatch, useSelector } from 'react-redux';
+import { bidAddWatchList } from '../../reducers/users/bidder';
+import { FcLike } from "react-icons/fc";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -83,59 +87,107 @@ const ProductCard = ({
   size = 'normal'
 }) => {
   const classes = useStyles({ size });
+  const dispatch = useDispatch();
+  const [text, setText] = useState('');
+  const [show, setShow] = useState(false);
+  const [isButtonWat, setIsButtonWat] = useState(false);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  const addWatchList = useCallback(async ({ prodId }) => {
+    try {
+      console.log(prodId)
+      await dispatch(bidAddWatchList({ prodId })).unwrap();
+      setText('Thêm sản phẩm vào danh sách yêu thích thành công! ')
+      setShow(true)
+    } catch (err) {
+      setText(err)
+      setShow(true)
+
+    }
+  }, [dispatch]);
+  const toggleShowA = () => setShow(false);
+
+  const handleVisible = useCallback(() => {
+    if (show === true) {
+      setTimeout(() => {
+        setShow(false)
+      }, 3000);
+    }
+  }, [show])
+
+  useEffect(() => {
+    if(!isAuthenticated){
+      setIsButtonWat(true);
+    }
+    handleVisible();
+  }, [handleVisible]);
 
   return (
-    <Card className={classes.card}>
-      <Link to={`/details/${id}`} className={classes.link}>
-        <CardMedia
-          className={classes.media}
-          image={image || 'https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg'}
-          title={title}
-        />
-        <CardContent className={classes.content}>
-          <Typography className={classes.title} variant="body1">
-            {title}
-          </Typography>
-          <Typography
-            variant="body1"
-            className={`${classes.price} ${salePrice ? classes.hasSale : ''}`}>
-            Giá : <strong>{price}</strong> VNĐ
-          </Typography>
+    <div>
+      <Card className={classes.card}>
+        
+        <Link to={`/details/${id}`} className={classes.link}>
+          <CardMedia
+            className={classes.media}
+            image={image || 'https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg'}
+            title={title}
+          />
+          <CardContent className={classes.content}>
+
+            <Typography className={classes.title} variant="body1">
+              {title}
+            </Typography>
+            <Typography
+              variant="body1"
+              className={`${classes.price} ${salePrice ? classes.hasSale : ''}`}>
+              Giá : <strong>{price}</strong> VNĐ
+            </Typography>
 
 
 
-          <Typography className={classes.subInfomation}
-            variant="body2"
-            color="textSecondary"// https://mui.com/api/typography/#props
-            component="p">
-            Loại sản phẩm: <strong>{catName}</strong>
-          </Typography>
+            <Typography className={classes.subInfomation}
+              variant="body2"
+              color="textSecondary"// https://mui.com/api/typography/#props
+              component="p">
+              Loại sản phẩm: <strong>{catName}</strong>
+            </Typography>
 
-          <Typography className={classes.subInfomation}
-            variant="body2"
-            color="textSecondary"
-            component="p">
-            Ngày hết hạn: <strong>{endDate}</strong>
-          </Typography>
+            <Typography className={classes.subInfomation}
+              variant="body2"
+              color="textSecondary"
+              component="p">
+              Ngày hết hạn: <strong>{endDate}</strong>
+            </Typography>
 
-          <Typography className={classes.subInfomation}
-            variant="body2"
-            color="textSecondary"
-            component="p">
-            Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : currentPrice + 'VNĐ'} </strong>
-          </Typography>
+            <Typography className={classes.subInfomation}
+              variant="body2"
+              color="textSecondary"
+              component="p">
+              Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : currentPrice + 'VNĐ'} </strong>
+            </Typography>
 
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            component="p"
-            className={classes.description}>
-            Mô tả: <strong>{description && deleteHTML(description)}</strong>
-          </Typography>
-        </CardContent>
-
-      </Link>
-    </Card>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              className={classes.description}>
+              Mô tả: <strong>{description && deleteHTML(description)}</strong>
+            </Typography>
+          </CardContent>
+        </Link>
+        <Typography variant="body1">
+          <Button hidden={isButtonWat} variant="outline-light" onClick={() => addWatchList({ prodId: id })}><FcLike className="iconaler" /></Button>
+          <ToastContainer position="top-end" className="p-3">
+            <Toast show={show} onClose={toggleShowA} bg="primary">
+              <Toast.Header>
+                <strong className="me-auto">thông báo</strong>
+              </Toast.Header>
+              <Toast.Body className="text-white">{text}</Toast.Body>
+            </Toast>
+            </ToastContainer>
+        </Typography>
+      </Card>
+    </div>
   );
 };
 export default ProductCard;

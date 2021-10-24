@@ -93,7 +93,7 @@ function Home() {
                   <div style={{ backgroundColor: '#e8e4da' }} className="p-3">
                     {productHighestPrice?.length > 0 &&		//want to use function of react, need to add "?"
                       productHighestPrice.map((prod, index) => (
-                        <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }}>
+                        <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }} key={index}>
                           <Card.Body>
                             <ProductCard
                               id={prod.prod_id}
@@ -116,7 +116,7 @@ function Home() {
                     {productHighestBids?.length > 0 &&		//want to use function of react, need to add "?"
                       productHighestBids.map((prod, index) => (
 
-                        <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }}>
+                        <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }} key={index*2}>
                           <Card.Body>
                           <ProductCard
                               id={prod.prod_id}
