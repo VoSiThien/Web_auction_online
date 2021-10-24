@@ -137,7 +137,7 @@ function HistoryBid() {
                             {data.historyList?.length > 0 &&
                                 data.historyList.map((row, index) => (
                                     <tr key={index}>
-                                        <td>{index + 1}</td>
+                                        <td>{index + 1 + (page - 1) * 10}</td>
                                         <td>{row.his_created_date}</td>
                                         <td>{row.acc_full_name}</td>
                                         <td>{row.his_price}</td>

@@ -4,13 +4,20 @@ import {
     Container,
     makeStyles,
 } from '@material-ui/core';
-import { Card, Row, Col, Alert, Carousel } from 'react-bootstrap';
+import { Card, Row, Col, Alert, Carousel, Button, Toast, ToastContainer } from 'react-bootstrap';
 import iphone2 from '../images/iphone2.jpg';
 import '../index.css';
 import { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory, useParams } from "react-router-dom";
 import { getProductDetail } from '../reducers/unauthorizedProduct';
+import BiddingModel from '../components/bidder/bidding';
+import { bidAddWatchList } from '../reducers/users/bidder';
+import { FcLike } from "react-icons/fc";
+import HistoryProductBid from "../components/bidder/historyProduct";
+import HistoryProductSel from "../components/seller/historyProduct";
+import { getListHistory } from '../reducers/historyBid';
+import { Role } from '../config/role';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -23,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Home() {
+
     //Define neccessary parameter
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -33,6 +41,15 @@ function Home() {
     //2.Define use state
     //in the beginning, productDetails will be blank, when data loaded, we set the new data to this variable, we cannot use useSelector here
     const [productDetails, setProductDetails] = useState({});//{} is the initial value
+    const [openModalbid, setOpenModalbid] = useState(false);
+    const [openModalHisBid, setOpenModalHisBid] = useState(false);
+    const [openModalHisSel, setOpenModalHisSel] = useState(false);
+    const [text, setText] = useState('');
+    const [show, setShow] = useState(false);
+    const [isShowButtonBid, setisShowButtonBid] = useState(false);
+    const [isShowButtonHis, setisShowButtonHis] = useState(false);
+    const [isShowButtonWat, setisShowButtonWat] = useState(false);
+    const user = useSelector((state) => state.auth.user);
     //3.create handler
     const getProductDetailHandler = useCallback(async () => {
         try {
@@ -43,10 +60,79 @@ function Home() {
             alert(err);
         }
     }, [dispatch]);
+
+
+    const handleCloseBid = () => {
+        setOpenModalbid(false);
+    };
+
+    const openModalHandlerBid = () => {
+        setOpenModalbid(true);
+    };
+
+    const handleCloseHis = () => {
+        setOpenModalHisBid(false);
+        setOpenModalHisSel(false);
+    };
+
+    const openModalHandlerHis = () => {
+        getListHistoryHandler({ page:1, limit:5, prodId: productDetails.prod_id, status:0 });
+        if (isAuthenticated) {
+            if (user.role === Role.Bidder) {
+                setOpenModalHisBid(true);
+            }
+            else{
+                setOpenModalHisSel(true);
+            }
+        }
+    };
+
+    const getListHistoryHandler = useCallback(async ({ page, limit, prodId, status }) => {
+        try {
+            await dispatch(getListHistory({ page, limit, prodId, status })).unwrap();
+        } catch (err) {
+            alert(err);
+        }
+    }, [dispatch]);
+  
+    const addWatchList = useCallback(async ({ prodId }) => {
+      try {
+        await dispatch(bidAddWatchList({ prodId })).unwrap();
+        setText('Thêm sản phẩm vào danh sách yêu thích thành công! ')
+        setShow(true)
+      } catch (err) {
+        setText(err)
+        setShow(true)
+  
+      }
+    }, [dispatch]);
+    const toggleShowA = () => setShow(false);
+  
+    const handleVisible = useCallback(() => {
+      if (show === true) {
+        setTimeout(() => {
+          setShow(false)
+        }, 3000);
+      }
+    }, [show])
+  
+    useEffect(() => {
+      handleVisible();
+    }, [handleVisible]);
     //4.use effect
     useEffect(() => {//this function always run first
         if (productId) {
             getProductDetailHandler(productId);
+        }
+        if (isAuthenticated) {
+            if (user.role === Role.Seller) {
+                setisShowButtonBid(true);
+            }
+        }
+        else{
+            setisShowButtonBid(true);
+            setisShowButtonHis(true);
+            setisShowButtonWat(true);
         }
     }, [productId]);//when product ID change, use effect will catch it and set new data for product detail, productID must define here
 
@@ -56,7 +142,21 @@ function Home() {
 
             <div className={classes.root} >
                 <Header />
-
+                <BiddingModel
+                    isOpen={openModalbid}
+                    onClose={handleCloseBid}
+                    prod_id={productDetails.prod_id}
+                />
+                <HistoryProductBid
+                    isOpen={openModalHisBid}
+                    onClose={handleCloseHis}
+                    prod_id={productDetails.prod_id}
+                />
+                <HistoryProductSel
+                    isOpen={openModalHisSel}
+                    onClose={handleCloseHis}
+                    prod_id={productDetails.prod_id}
+                />
                 <div className={classes.content} >
                     <Container>
                         {/*                         
@@ -112,6 +212,17 @@ function Home() {
                                             </tr>
                                         </tbody>
                                     </table>
+                                    <div>
+                                        <Button hidden={isShowButtonBid} variant="outline-primary" onClick={() => openModalHandlerBid()}>Đấu giá</Button>
+                                        <Button hidden={isShowButtonHis} variant="outline-info" onClick={() => openModalHandlerHis()}>Xem lịch sử</Button>
+                                        <Button hidden={isShowButtonWat} variant="outline-light" onClick={() => addWatchList({ prodId: productDetails.prod_id })}><FcLike className="iconaler" /></Button>
+                                        <Toast show={show} onClose={toggleShowA} className="d-inline-block m-1" bg="primary">
+                                            <Toast.Header>
+                                                <strong className="me-auto">thông báo</strong>
+                                            </Toast.Header>
+                                            <Toast.Body className="text-white">{text}</Toast.Body>
+                                        </Toast>
+                                    </div>
                                 </div>
                                 <hr />
                                 <div className="table-responsive mb-2">
@@ -155,7 +266,7 @@ function Home() {
 
 
                         {/* Classic tabs */}
-                        <div className="classic-tabs border rounded px-4 pt-1 mt-5"  style = {{backgroundColor:"#d9d5d0"}}>
+                        <div className="classic-tabs border rounded px-4 pt-1 mt-5" style={{ backgroundColor: "#d9d5d0" }}>
                             <ul className="nav nav-tabs" id="advancedTab" role="tablist">
                                 <li className="nav-item active">
                                     <a className="nav-link active show" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">Description</a>
@@ -164,7 +275,7 @@ function Home() {
                                     <a className="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Reviews (1)</a>
                                 </li>
                             </ul>
-                            <div className="tab-content p-5 mb-5" id="advancedTabContent" style = {{backgroundColor:"#ebe9e6"}}>
+                            <div className="tab-content p-5 mb-5" id="advancedTabContent" style={{ backgroundColor: "#ebe9e6" }}>
                                 <div className="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
                                     <h5>Mô tả sản phẩm</h5>
                                     <p className="pt-1">{productDetails.prod_description}</p>
