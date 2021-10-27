@@ -103,29 +103,68 @@ router.post('/bid-product', validator.bidProduct, async (req, res) => {
 })
 
 router.post('/history-product', validator.historyProduct, async (req, res) => {
-    const { page, limit, prodId, status } = req.body
+    const { page, limit, prodId, status, sortByPrice } = req.body
     const offset = limit * (page - 1)
     const accRole = req.account['accRole']
+    const accId = req.account['accId']
 
     var numberPage = 1;
+    if(!(sortByPrice === 'NON' || sortByPrice === 'ASC' || sortByPrice === 'DESC')){
+        return res.status(400).json({
+            errorMessage: "sortByPrice phải thuộc 3 giá trị: NON, ASC, DESC",
+            statusCode: errorCode
+        })
+    }
 
     if (accRole === 'SEL') {
         var result
-        if (status === 2 || status === 3) {
-            numberPage = await knex.raw(`select count(distinct his_id) 
-	        from tbl_product_history where his_product_id = ${prodId} and his_status = ${status}`)
+        var checkSeller = await knex('tbl_product').where("prod_seller_id", accId).andWhere("prod_id", prodId)
+        if (checkSeller.length !== 0) {
+            if (status === 2 || status === 3) {
+                numberPage = await knex.raw(`select count(distinct his_id) 
+                from tbl_product_history where his_product_id = ${prodId} and his_status = ${status}`)
 
-            numberPage = Number(numberPage.rows[0].count)
-            if (numberPage > limit) {
-                numberPage = Math.ceil(numberPage / limit)
+                numberPage = Number(numberPage.rows[0].count)
+                if (numberPage > limit) {
+                    numberPage = Math.ceil(numberPage / limit)
+                }
+                else {
+                    numberPage = 1
+                }
+                if(sortByPrice === 'NON'){
+                    result = await knex.raw(`select * from tbl_product_history h join tbl_account a
+                                        on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status = ${status}
+                                        order by h.his_created_date desc offset ${offset} limit ${limit}`)
+                }
+                else{
+                    result = await knex.raw(`select * from tbl_product_history h join tbl_account a
+                                        on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status = ${status}
+                                        order by h.his_price::integer ${sortByPrice} offset ${offset} limit ${limit}`)
+                }
             }
             else {
-                numberPage = 1
-            }
+                numberPage = await knex.raw(`select count(distinct his_id) 
+                from tbl_product_history where his_product_id = ${prodId} and his_status != 2 and his_status != 3`)
 
-            result = await knex.raw(`select * from tbl_product_history h join tbl_account a
-                                on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status = ${status}
-								 order by h.his_created_date desc offset ${offset} limit ${limit}`)
+                numberPage = Number(numberPage.rows[0].count)
+                if (numberPage > limit) {
+                    numberPage = Math.ceil(numberPage / limit)
+                }
+                else {
+                    numberPage = 1
+                }
+                if(sortByPrice === 'NON'){
+                    result = await knex.raw(`select * from tbl_product_history h join tbl_account a
+                                        on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
+                                        order by h.his_created_date desc offset ${offset} limit ${limit}`)
+                }
+                else{
+                    result = await knex.raw(`select * from tbl_product_history h join tbl_account a
+                                        on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
+                                        order by h.his_price::integer ${sortByPrice} offset ${offset} limit ${limit}`)
+                }
+            }
+            result = result.rows
         }
         else {
             numberPage = await knex.raw(`select count(distinct his_id) 
@@ -139,28 +178,44 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
                 numberPage = 1
             }
 
-            result = await knex.raw(`select * from tbl_product_history h join tbl_account a
-                                on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
-								 order by h.his_status desc, h.his_created_date desc offset ${offset} limit ${limit}`)
-        }
-
-        result = result.rows
-
-        var listHistory = []
-        var index = 0
-
-        while (index < result.length) {
-            var fullName = result[index].acc_full_name
-            let item = {
-                his_id: result[index].his_id,
-                his_created_date: result[index].his_created_date,
-                acc_full_name: fullName,
-                his_price: result[index].his_price
+            if(sortByPrice === 'NON'){
+                var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
+                                    on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
+                                    order by h.his_created_date desc offset ${offset} limit ${limit}`)
             }
-            listHistory.push(item)
-            index++
-        }
+            else{
+                var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
+                                    on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
+                                    order by h.his_price::integer ${sortByPrice} offset ${offset} limit ${limit}`)
+            }
 
+            result = result.rows
+
+            var listHistory = []
+            var index = 0
+
+            while (index < result.length) {
+                var name = result[index].acc_full_name.split(' ');
+                var fullName = "****" + name[name.length - 1]
+                let item = {
+                    his_id: result[index].his_id,
+                    his_created_date: result[index].his_created_date,
+                    acc_full_name: fullName,
+                    his_price: result[index].his_price
+                }
+                listHistory.push(item)
+                index++
+            }
+
+            return res.status(200).json({
+                numberOfPage: numberPage,
+                historyList: listHistory,
+                statusCode: 3
+            })
+        }
+        
+
+        var listHistory = result
 
         return res.status(200).json({
             numberOfPage: numberPage,
@@ -179,10 +234,16 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
     else {
         numberPage = 1
     }
-
-    var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
+    if(sortByPrice === 'NON'){
+        var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
+                                    on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
+                                    order by h.his_created_date desc offset ${offset} limit ${limit}`)
+    }
+    else{
+        var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
                                 on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
-								 order by h.his_status desc, h.his_created_date desc offset ${offset} limit ${limit}`)
+								 order by h.his_price::integer ${sortByPrice} offset ${offset} limit ${limit}`)
+    }
 
     result = result.rows
 

@@ -176,7 +176,8 @@ const ProductCard = ({
           </CardContent>
         </Link>
         <Typography variant="body1">
-          <Button hidden={isButtonWat} variant="outline-light" onClick={() => addWatchList({ prodId: id })}><FcLike className="iconaler" /></Button>
+          {/* <Button hidden={isButtonWat} variant="outline-light" onClick={() => addWatchList({ prodId: id })}><FcLike className="iconaler" /></Button> */}
+          <button hidden={isButtonWat} onClick={() => addWatchList({ prodId: id })} type="button" className="btn btn-danger btn-sm px-2 mb-2 ml-2 material-tooltip-main" data-toggle="tooltip" data-placement="top" title="Add to wishlist"><i className="far fa-heart" /></button>
           <ToastContainer position="top-end" className="p-3">
             <Toast show={show} onClose={toggleShowA} bg="primary">
               <Toast.Header>

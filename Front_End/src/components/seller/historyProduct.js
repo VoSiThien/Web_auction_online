@@ -1,4 +1,4 @@
-import { Modal, Container, Button, Tabs, Tab, Table, Alert } from 'react-bootstrap';
+import { Modal, Container, Button, Tabs, Tab, Table, Alert, DropdownButton, Dropdown } from 'react-bootstrap';
 import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListHistory, cancelHistory, confirmHistory } from '../../reducers/historyBid';
@@ -38,24 +38,32 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
     const [showFailed, setShowFailed] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [text, setText] = useState('');
+    const [sortByPrice, setSortByPrice] = useState('NON');
+    const [isActiveSort1, setIsActiveSort1] = useState(false);
+    const [isActiveSort2, setIsActiveSort2] = useState(false);
+    const [isActiveSort3, setIsActiveSort3] = useState(false);
+    const [hiddenText, setHiddenText] = useState(false);
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
     
     const pageChangeHandler = (event, value) => {
         setPage(value);
     };
 
-    const getListHistoryHandler = useCallback(async ({ page, limit, prodId, status }) => {
+    const getListHistoryHandler = useCallback(async ({ page, limit, prodId, status, sortByPrice }) => {
         try {
-            await dispatch(getListHistory({ page, limit, prodId, status })).unwrap();
+            var result = await dispatch(getListHistory({ page, limit, prodId, status, sortByPrice })).unwrap();
+            if(result.statusCode === 3){
+                setHiddenText(true);
+            }
         } catch (err) {
             alert(err);
         }
     }, [dispatch]);
 
-    const ConfirmHandler = async (hisId, { page, limit, prodId, status }) => {
+    const ConfirmHandler = async (hisId, { page, limit, prodId, status, sortByPrice }) => {
         try {
             await dispatch(confirmHistory({ hisId })).unwrap();
-            getListHistoryHandler({ page, limit, prodId, status: 2 });
+            getListHistoryHandler({ page, limit, prodId, status: 2, sortByPrice });
             setText('Xác nhận lượt đấu giá thành công!!!');
             setShowSuccess(true);
         } catch (err) {
@@ -64,10 +72,10 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
         }
     };
 
-    const CancelStatus2Handler = async (hisId, { page, limit, prodId, status }) => {
+    const CancelStatus2Handler = async (hisId, { page, limit, prodId, status, sortByPrice }) => {
         try {
             await dispatch(cancelHistory({ hisId })).unwrap();
-            getListHistoryHandler({ page, limit, prodId, status: 2 });
+            getListHistoryHandler({ page, limit, prodId, status: 2, sortByPrice });
             setText('Từ chối lượt đấu giá thành công!!!');
             setShowSuccess(true);
         } catch (err) {
@@ -76,10 +84,10 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
         }
     };
 
-    const CancelStatus0Handler = async (hisId, { page, limit, prodId, status }) => {
+    const CancelStatus0Handler = async (hisId, { page, limit, prodId, status, sortByPrice }) => {
         try {
             await dispatch(cancelHistory({ hisId })).unwrap();
-            getListHistoryHandler({ page, limit, prodId, status: 0 });
+            getListHistoryHandler({ page, limit, prodId, status: 0, sortByPrice });
             setText('Từ chối lượt đấu giá thành công!!!');
             setShowSuccess(true);
         } catch (err) {
@@ -87,6 +95,26 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
             setShowFailed(true);
         }
     };
+    const handleSelectSort = (event, eventKey) =>{
+        if(Number(event) === 1){
+            setSortByPrice('ASC');
+            setIsActiveSort1(true);
+            setIsActiveSort2(false);
+            setIsActiveSort3(false);
+        }
+        else if(Number(event) === 2){
+            setSortByPrice('DESC');
+            setIsActiveSort1(false);
+            setIsActiveSort2(true);
+            setIsActiveSort3(false);
+        }
+        else{
+            setSortByPrice('NON');
+            setIsActiveSort1(false);
+            setIsActiveSort2(false);
+            setIsActiveSort3(true);
+        }
+    }
 
     useEffect(() => {
         if (keys === 'bid') {
@@ -99,9 +127,10 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
             setStatus(3)
         }
         if (prodId !== undefined && isAuthenticated) {
-            getListHistoryHandler({ page, limit, prodId, status });
+            getListHistoryHandler({ page, limit, prodId, status, sortByPrice });
         }
-    }, [getListHistoryHandler, page, limit, prodId, status, keys]);
+        
+    }, [getListHistoryHandler, page, limit, prodId, status, sortByPrice, keys, isOpen]);
 
     const handleVisible = useCallback(() => {
         if (showFailed === true || showSuccess === true) {
@@ -131,17 +160,29 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
-                        <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
+                         <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
                             <Alert.Heading>{text}</Alert.Heading>
                         </Alert>
-
                         <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
                             <Alert.Heading>{text}</Alert.Heading>
                         </Alert>
+                        <div><h3 hidden={!hiddenText}>Sản phẩm này không thuộc quyền sở hữu của bạn!!!</h3></div>
+                        <DropdownButton
+                            id={`dropdown-variants-primary`}
+                            variant={"outline-primary"}
+                            title={"Sắp xếp"}
+                            size="sm"
+                            onSelect={handleSelectSort}
+                            style={{marginLeft: '80%', marginBottom:'-2%'}}
+                        >
+                            <Dropdown.Item eventKey="1"active={isActiveSort1}>Giá tăng dần</Dropdown.Item>
+                            <Dropdown.Item eventKey="2"active={isActiveSort2}>Giá giảm dần</Dropdown.Item>
+                            <Dropdown.Item eventKey="3" active={isActiveSort3}>Mặt định</Dropdown.Item>
+                        </DropdownButton>
                         <Tabs id="controlled-tab-example"
                             activeKey={keys}
                             onSelect={(k) => setKeys(k)}
-                            className="mb-3">
+                            className="mb-2">
                             <Tab eventKey="bid" title="Đấu giá">
                                 <div>
                                     <Table responsive="sm">
@@ -163,7 +204,7 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                                                         <td>{row.acc_full_name}</td>
                                                         <td>{row.his_price} VNĐ</td>
                                                         <td>
-                                                            <Button variant="danger" size="small" onClick={() => CancelStatus0Handler(row.his_id, { page, limit, prodId, status })}><BsXLg /> Từ chối</Button>
+                                                            <Button size="sm" variant="danger" disabled={hiddenText} onClick={() => CancelStatus0Handler(row.his_id, { page, limit, prodId, status, sortByPrice })}><BsXLg /> Từ chối</Button>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -174,7 +215,7 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                                     <Pagination count={data.numberOfPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
                                 </div>
                             </Tab>
-                            <Tab eventKey="confirm" title="Xác nhận">
+                            <Tab eventKey="confirm" title="Xác nhận" disabled={hiddenText}>
                                 <div>
                                     <Table responsive="sm">
                                         <thead>
@@ -195,8 +236,8 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                                                         <td>{row.acc_full_name}</td>
                                                         <td>{row.his_price} VNĐ</td>
                                                         <td>
-                                                            <Button variant="primary" size="small" onClick={() => ConfirmHandler(row.his_id, { page, limit, prodId, status })}><BsCheckLg /> Xác nhận</Button>
-                                                            <Button variant="danger" size="small" onClick={() => CancelStatus2Handler(row.his_id, { page, limit, prodId, status })}><BsXLg /> Từ chối</Button>
+                                                            <Button size="sm" variant="primary" onClick={() => ConfirmHandler(row.his_id, { page, limit, prodId, status, sortByPrice })}><BsCheckLg /> Xác nhận</Button>
+                                                            <Button size="sm" className="ml-1" variant="danger" onClick={() => CancelStatus2Handler(row.his_id, { page, limit, prodId, status, sortByPrice })}><BsXLg /> Từ chối</Button>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -207,7 +248,7 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                                     <Pagination count={data.numberOfPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
                                 </div>
                             </Tab>
-                            <Tab eventKey="cancel" title="Bị từ chối">
+                            <Tab eventKey="cancel" title="Bị từ chối" disabled={hiddenText}>
                                 <div>
                                     <Table responsive="sm">
                                         <thead>

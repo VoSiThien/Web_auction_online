@@ -16,7 +16,6 @@ import { bidAddWatchList } from '../reducers/users/bidder';
 import { FcLike } from "react-icons/fc";
 import HistoryProductBid from "../components/bidder/historyProduct";
 import HistoryProductSel from "../components/seller/historyProduct";
-import { getListHistory } from '../reducers/historyBid';
 import { Role } from '../config/role';
 
 const useStyles = makeStyles((theme) => ({
@@ -76,7 +75,6 @@ function Home() {
     };
 
     const openModalHandlerHis = () => {
-        getListHistoryHandler({ page:1, limit:5, prodId: productDetails.prod_id, status:0 });
         if (isAuthenticated) {
             if (user.role === Role.Bidder) {
                 setOpenModalHisBid(true);
@@ -87,13 +85,6 @@ function Home() {
         }
     };
 
-    const getListHistoryHandler = useCallback(async ({ page, limit, prodId, status }) => {
-        try {
-            await dispatch(getListHistory({ page, limit, prodId, status })).unwrap();
-        } catch (err) {
-            alert(err);
-        }
-    }, [dispatch]);
   
     const addWatchList = useCallback(async ({ prodId }) => {
       try {
@@ -213,9 +204,10 @@ function Home() {
                                         </tbody>
                                     </table>
                                     <div>
-                                        <Button hidden={isShowButtonBid} variant="outline-primary" onClick={() => openModalHandlerBid()}>Đấu giá</Button>
-                                        <Button hidden={isShowButtonHis} variant="outline-info" onClick={() => openModalHandlerHis()}>Xem lịch sử</Button>
-                                        <Button hidden={isShowButtonWat} variant="outline-light" onClick={() => addWatchList({ prodId: productDetails.prod_id })}><FcLike className="iconaler" /></Button>
+                                        <Button className="ml-2" size="sm" hidden={isShowButtonBid} variant="outline-primary" onClick={() => openModalHandlerBid()}>Đấu giá</Button>
+                                        <Button className="ml-2" size="sm" hidden={isShowButtonHis} variant="outline-info" onClick={() => openModalHandlerHis()}>Xem lịch sử</Button>
+                                        {/* <Button hidden={isShowButtonWat} variant="outline-light" onClick={() => addWatchList({ prodId: productDetails.prod_id })}><FcLike className="iconaler" /></Button> */}
+                                        <button hidden={isShowButtonWat} onClick={() => addWatchList({ prodId: productDetails.prod_id })} type="button" className="btn btn-danger btn-sm px-3 mb-0.5 ml-2 material-tooltip-main" data-toggle="tooltip" data-placement="top" title="Add to wishlist"><i className="far fa-heart" /></button>
                                         <Toast show={show} onClose={toggleShowA} className="d-inline-block m-1" bg="primary">
                                             <Toast.Header>
                                                 <strong className="me-auto">thông báo</strong>
