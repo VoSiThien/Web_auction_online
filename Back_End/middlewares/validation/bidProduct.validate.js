@@ -36,9 +36,10 @@ const historyProduct = (req, res, next) => {
 			page: { type: 'integer' },
 			limit: { type: 'integer' },
             prodId: { type: 'integer' },
-			status: {type: 'integer'}
+			status: {type: 'integer'},
+			sortByPrice: {type: 'string'}
 		},
-		required: ["page", "limit", "prodId", "status"],
+		required: ["page", "limit", "prodId", "status", "sortByPrice"],
 		additionalProperties: true
 	}
 

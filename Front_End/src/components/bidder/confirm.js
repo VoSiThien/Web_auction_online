@@ -27,7 +27,6 @@ function ConfirmModel({ isOpen, onClose, prod_id, price_bid }) {
             const check = await dispatch(bidProduct({ priceBid, prodId })).unwrap();
             setText(check.message)
             onClose();
-            
             setShowSuccess(true);
         } catch (error) {
             setText(error)
