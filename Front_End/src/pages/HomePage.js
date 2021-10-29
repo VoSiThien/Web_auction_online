@@ -68,7 +68,7 @@ function Home() {
                       <Carousel.Item>
                         <img
                           className="d-block w-100 photo"
-                          src={prod.prod_main_image || 'https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg'}
+                          src={prod.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'}
                           alt="Third slide"
                         />
                         <Carousel.Caption >

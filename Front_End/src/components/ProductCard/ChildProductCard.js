@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '10px !important',
   },
   display_image: {
-    height: 0,
+    height: "100%",
     paddingTop: '56.25%',
     
   },
@@ -77,11 +77,7 @@ const ProductCard = ({
   id,
   title,
   image,
-  price,
-  salePrice,
-  description,
   endDate,
-  catName,
   currentPrice,
   size = 'normal'
 }) => {
@@ -132,25 +128,9 @@ const ProductCard = ({
             title={title}
           />
           <CardContent className={classes.content}>
-
-            <Typography className={classes.title} variant="body1">
+          <Typography className={classes.title} variant="body1">
               {title}
             </Typography>
-            <Typography
-              variant="body1"
-              className={`${classes.price} ${salePrice ? classes.hasSale : ''}`}>
-              Giá : <strong>{price}</strong> VNĐ
-            </Typography>
-
-
-
-            <Typography className={classes.subInfomation}
-              variant="body2"
-              color="textSecondary"// https://mui.com/api/typography/#props
-              component="p">
-              Loại sản phẩm: <strong>{catName}</strong>
-            </Typography>
-
             <Typography className={classes.subInfomation}
               variant="body2"
               color="textSecondary"
@@ -165,13 +145,6 @@ const ProductCard = ({
               Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : currentPrice + 'VNĐ'} </strong>
             </Typography>
 
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              component="p"
-              className={classes.description}>
-              Mô tả: <strong>{description && deleteHTML(description)}</strong>
-            </Typography>
           </CardContent>
         </Link>
         <Typography variant="body1">
