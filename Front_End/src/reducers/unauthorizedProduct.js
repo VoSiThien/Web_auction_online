@@ -19,6 +19,20 @@ export const getProductDetail = createAsyncThunk(
   }
 );
 
+
+export const getProductByCategory = createAsyncThunk(
+  'userProduct/GetProductByCat',
+  async ({ page, limit, catID, prodID}, { rejectWithValue }) => {
+    try {
+      console.log(prodID);
+      var value = (await unauthorizedProductApi.getProductByCategory(page, limit, catID, prodID)).data;
+      return value;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
 export const listProductAboutToEnd = createAsyncThunk(
   'userProduct/listProductAboutToEnd',
   async (_, { rejectWithValue }) => {//no parameter in reducer, put "_"
@@ -65,6 +79,15 @@ const unauthorizedProductSlice = createSlice({
       state.loading = false;
     },
     [getProductDetail.fulfilled]: (state, action) => {
+      state.loading = false;
+    },
+    [getProductByCategory.pending]: (state) => {
+      state.loading = true;
+    },
+    [getProductByCategory.rejected]: (state) => {
+      state.loading = false;
+    },
+    [getProductByCategory.fulfilled]: (state, action) => {
       state.loading = false;
     },
     [listProductAboutToEnd.pending]: (state) => {

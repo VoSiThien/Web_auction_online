@@ -1,5 +1,6 @@
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
+import ChildProductCard from '../components/ProductCard/ChildProductCard';
 import {
     Container,
     makeStyles,
@@ -10,7 +11,7 @@ import '../index.css';
 import { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory, useParams } from "react-router-dom";
-import { getProductDetail } from '../reducers/unauthorizedProduct';
+import { getProductDetail, getProductByCategory } from '../reducers/unauthorizedProduct';
 import BiddingModel from '../components/bidder/bidding';
 import { bidAddWatchList } from '../reducers/users/bidder';
 import { FcLike } from "react-icons/fc";
@@ -25,6 +26,15 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         padding: '5vh 0',
+    },
+    display_image: {
+        width: "100%",
+        height: "14vw",
+        objectFit: "cover"
+    },
+    card: {
+        width: "100%",
+        height: "100%"
     }
 }));
 
@@ -40,6 +50,7 @@ function Home() {
     //2.Define use state
     //in the beginning, productDetails will be blank, when data loaded, we set the new data to this variable, we cannot use useSelector here
     const [productDetails, setProductDetails] = useState({});//{} is the initial value
+    const [productCategory, setProductCategory] = useState({});
     const [openModalbid, setOpenModalbid] = useState(false);
     const [openModalHisBid, setOpenModalHisBid] = useState(false);
     const [openModalHisSel, setOpenModalHisSel] = useState(false);
@@ -53,13 +64,23 @@ function Home() {
     const getProductDetailHandler = useCallback(async () => {
         try {
             //use reducer function to get data and put it into local store
-            const response = await dispatch(getProductDetail({ id: +productId })).unwrap();
+            var response = await dispatch(getProductDetail({ id: +productId })).unwrap();
             setProductDetails(response.productDetail);//set new state for productDetail with the returned data from BE when user change value
+            //get 5 product in the same category
+            const payload = {
+                catID: response.productDetail.prod_category_id,
+                page: 1,
+                limit: 5,
+                prodID: response.productDetail.prod_id
+            }
+            if (payload.catID && payload.prodID) {
+                response = await dispatch(getProductByCategory(payload)).unwrap();
+                setProductCategory(response.listProduct);
+            }
         } catch (err) {
             alert(err);
         }
     }, [dispatch]);
-
 
     const handleCloseBid = () => {
         setOpenModalbid(false);
@@ -79,36 +100,35 @@ function Home() {
             if (user.role === Role.Bidder) {
                 setOpenModalHisBid(true);
             }
-            else{
+            else {
                 setOpenModalHisSel(true);
             }
         }
     };
 
-  
+
     const addWatchList = useCallback(async ({ prodId }) => {
-      try {
-        await dispatch(bidAddWatchList({ prodId })).unwrap();
-        setText('Thêm sản phẩm vào danh sách yêu thích thành công! ')
-        setShow(true)
-      } catch (err) {
-        setText(err)
-        setShow(true)
-  
-      }
+        try {
+            await dispatch(bidAddWatchList({ prodId })).unwrap();
+            setText('Thêm sản phẩm vào danh sách yêu thích thành công! ')
+            setShow(true)
+        } catch (err) {
+            setText(err)
+            setShow(true)
+
+        }
     }, [dispatch]);
     const toggleShowA = () => setShow(false);
-  
+
     const handleVisible = useCallback(() => {
-      if (show === true) {
-        setTimeout(() => {
-          setShow(false)
-        }, 3000);
-      }
+        if (show === true) {
+            setTimeout(() => {
+                setShow(false)
+            }, 3000);
+        }
     }, [show])
-  
     useEffect(() => {
-      handleVisible();
+        handleVisible();
     }, [handleVisible]);
     //4.use effect
     useEffect(() => {//this function always run first
@@ -120,11 +140,12 @@ function Home() {
                 setisShowButtonBid(true);
             }
         }
-        else{
+        else {
             setisShowButtonBid(true);
             setisShowButtonHis(true);
             setisShowButtonWat(true);
         }
+
     }, [productId]);//when product ID change, use effect will catch it and set new data for product detail, productID must define here
 
     //5. display data onto the view
@@ -155,16 +176,8 @@ function Home() {
                             {productDetails.prod_name}
                         </div> */}
                         <div className="row">
-                            <div className="col-md-6 mb-4 mb-md-0">
-                                <div id="mdb-lightbox-ui" />
-                                <div className="mdb-lightbox">
-                                    <div className="row product-gallery mx-1">
-                                        <div className="col-12 mb-0 mt-2">
-                                            <img src="https://vtitech.vn/wp-content/uploads/2020/10/test-100.png" alt="Italian Trulli" />
-                                        </div>
-
-                                    </div>
-                                </div>
+                            <div className="col-md-6 mb-4 mb-md-0" >
+                                <img className={classes.display_image} style={{ height: "100%" }} src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} alt="Product main image" />
                             </div>
                             <div className="col-md-6 mt-2">
                                 <h2>{productDetails.prod_name}</h2>
@@ -318,78 +331,38 @@ function Home() {
 
 
 
-                        <section className="text-center mt-5" >
-                            <h4>Sản phẩm cùng chuyên mục</h4>
-                            {/* Grid row */}
-                            <div className="row">
-                                <div className="col-md-6 col-lg mb-5">
-                                    <Card>
-                                        <Card.Img variant="top" src={iphone2} />
-                                        <Card.Body>
-                                            <Card.Title>Card title</Card.Title>
-                                        </Card.Body>
-                                        <Card.Footer>
-                                            <small className="text-muted">Last updated 3 mins ago</small>
-                                        </Card.Footer>
-                                    </Card>
-                                    {/* Card */}
-                                </div>
 
-
-                                <div className="col-md-6 col-lg mb-5">
-                                    <Card>
-                                        <Card.Img variant="top" src={iphone2} />
-                                        <Card.Body>
-                                            <Card.Title>Card title</Card.Title>
-                                        </Card.Body>
-                                        <Card.Footer>
-                                            <small className="text-muted">Last updated 3 mins ago</small>
-                                        </Card.Footer>
-                                    </Card>
-                                    {/* Card */}
-                                </div>
-
-                                <div className="col-md-6 col-lg mb-5">
-                                    <Card>
-                                        <Card.Img variant="top" src={iphone2} />
-                                        <Card.Body>
-                                            <Card.Title>Card title</Card.Title>
-                                        </Card.Body>
-                                        <Card.Footer>
-                                            <small className="text-muted">Last updated 3 mins ago</small>
-                                        </Card.Footer>
-                                    </Card>
-                                    {/* Card */}
-                                </div>
-
-                                <div className="col-md-6 col-lg mb-5">
-                                    <Card>
-                                        <Card.Img variant="top" src={iphone2} />
-                                        <Card.Body>
-                                            <Card.Title>Card title</Card.Title>
-                                        </Card.Body>
-                                        <Card.Footer>
-                                            <small className="text-muted">Last updated 3 mins ago</small>
-                                        </Card.Footer>
-                                    </Card>
-                                    {/* Card */}
-                                </div>
-
-                                <div className="col-md-6 col-lg mb-5">
-                                    <Card>
-                                        <Card.Img variant="top" src={iphone2} />
-                                        <Card.Body>
-                                            <Card.Title>Card title</Card.Title>
-                                        </Card.Body>
-                                        <Card.Footer>
-                                            <small className="text-muted">Last updated 3 mins ago</small>
-                                        </Card.Footer>
-                                    </Card>
-                                    {/* Card */}
-                                </div>
-                            </div>
-                        </section>
                     </Container>
+                    <section className="text-center mt-5" >
+                        <h4>Sản phẩm cùng chuyên mục</h4>
+                        {/* Grid row */}
+                        <div className="row justify-content-center flex-fill">
+                            {productCategory?.length > 0 &&
+                                productCategory.map((prod, index) => (
+                                    <div key={prod.prod_id} className="col-2">
+                                        <Card className="h-100">
+                                            <Card.Body>
+                                                <ChildProductCard
+                                                    id={prod.prod_id}
+                                                    title={prod.prod_name}
+                                                    description={prod.prod_description}
+                                                    image={prod.prod_main_image}
+                                                    price={prod.prod_price}
+                                                    endDate={prod.prod_end_date}
+                                                    currentPrice={prod.prod_price_current}
+                                                    catName={prod.cate_name}
+                                                />
+                                            </Card.Body>
+
+                                        </Card>
+                                        {/* Card */}
+                                    </div>
+
+                                ))}
+                           
+                           
+                        </div>
+                    </section>
                 </div>
             </div>
             <div className={classes.content}>

@@ -232,14 +232,14 @@ function Header({ showMenu }) {
 
 							</NavDropdown>
 						</Nav>
-						<Form className="d-flex">
+						<Form className="d-flex" action="details/3">
 							<FormControl
 								type="search"
 								placeholder="Search"
 								className="mr-2"
 								aria-label="Search"
 							/>
-							<Button variant="dark">Search</Button>
+							<Button variant="dark" type="submit">Search</Button>
 						</Form>
                     <Nav>
 					<NavDropdown title={<div style={{display: "inline-block"}}><Person style={{color: 'white'}}/></div>} id="collasible-nav-dropdown-2">
