@@ -49,6 +49,7 @@ function Home() {
     const [isShowButtonHis, setisShowButtonHis] = useState(false);
     const [isShowButtonWat, setisShowButtonWat] = useState(false);
     const user = useSelector((state) => state.auth.user);
+    const Socket = useSelector((state) => state.unauthorizedProduct.Socket);
     //3.create handler
     const getProductDetailHandler = useCallback(async () => {
         try {
@@ -125,7 +126,7 @@ function Home() {
             setisShowButtonHis(true);
             setisShowButtonWat(true);
         }
-    }, [productId]);//when product ID change, use effect will catch it and set new data for product detail, productID must define here
+    }, [productId, Socket]);//when product ID change, use effect will catch it and set new data for product detail, productID must define here
 
     //5. display data onto the view
     return (

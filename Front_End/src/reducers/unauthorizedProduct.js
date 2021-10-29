@@ -2,9 +2,11 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import unauthorizedProductApi from '../apis/unauthorizedProduct';
 import { getResponseError } from '../helpers';
 
-const initialState = {//default state, this value will be gotten from use selector
+let initialState = {//default state, this value will be gotten from use selector
   loading: false,
-  data: []
+  data: [],
+  dataProductDetail: [],
+  Socket: 0
 };
 
 export const getProductDetail = createAsyncThunk(
@@ -57,6 +59,11 @@ export const listProductHighestBid = createAsyncThunk(
 const unauthorizedProductSlice = createSlice({
   name: 'userProduct',
   initialState,
+  reducers: {
+    EditSocket(state) {
+        state.Socket += 1
+    }
+},
   extraReducers: {
     [getProductDetail.pending]: (state) => {
       state.loading = true;
@@ -66,6 +73,7 @@ const unauthorizedProductSlice = createSlice({
     },
     [getProductDetail.fulfilled]: (state, action) => {
       state.loading = false;
+      state.dataProductDetail = action.payload
     },
     [listProductAboutToEnd.pending]: (state) => {
       state.loading = true;

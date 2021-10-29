@@ -2,7 +2,7 @@ import { createTheme, ThemeProvider } from '@material-ui/core';
 // import {  } from 'react';
 // import 'react-toastify/dist/ReactToastify.css';
 import { Suspense, useEffect } from 'react';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector} from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { langActions } from './reducers/lang';
 import { authActions as userAuthActions } from './reducers/auth';
@@ -15,6 +15,8 @@ import Loading from './components/Loading/Loading';
 import { CheckRole } from './components/Common/CheckRole';
 import { mainColor } from './utils/colors';
 import { AdminTemplate } from './components/Layout/AdminTemplate';
+import { w3cwebsocket as W3CWebSocket } from "websocket";
+import { unauthorizedProduct as unauProduct } from "./reducers/unauthorizedProduct";
 // const AdminLoginPage = lazy(() => import('./components/LoginPage'));
 
 //authentication route
@@ -49,6 +51,23 @@ const theme = createTheme({
 function App() {
   const dispatch = useDispatch();
   const { i18n } = useTranslation();
+
+  const client = new W3CWebSocket('ws://localhost:45678')
+  const dataProductDetail = useSelector((state) => state.unauthorizedProduct.dataProductDetail);
+
+  client.onopen = function () {
+    console.log('connected');
+    //client.send('Hello server');
+  }
+  client.onmessage = (e) => {
+    console.log(e.data);
+    let result = (e.data.toString()).split("|")
+    if (dataProductDetail.productDetail) {
+      if (dataProductDetail.productDetail.prod_id === Number(result[0])) {
+        dispatch(unauProduct.EditSocket())
+      }
+    }
+  }
 
   useEffect(() => {
     const existingLang = localStorage.getItem('lang');

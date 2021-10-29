@@ -1,6 +1,7 @@
 const knex = require('../utils/dbConnection')
 const mailService = require('../services/mailService')
 const mailOptions = require('../template/mailOptions')
+const ws = require('../ws')
 
 const bidding = async (priceBid, product, prodId, account) => {
 	//-------================ bidding
@@ -20,6 +21,8 @@ const bidding = async (priceBid, product, prodId, account) => {
 					statusCode: 2
 				}
 			}
+			const msgBroadCast = prodId + '|' + product[0].prod_price_current
+			ws.broadCastAll(msgBroadCast)
 			return {
 				message: "Đấu giá thành công !",
 				statusCode: 0
@@ -54,6 +57,8 @@ const bidding = async (priceBid, product, prodId, account) => {
 				statusCode: 2
 			}
 		}
+		const msgBroadCast = prodId + '|' + product[0].prod_price_current
+		ws.broadCastAll(msgBroadCast)
 		return {
 			message: "Đấu giá thành công !",
 			statusCode: 0
