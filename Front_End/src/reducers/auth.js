@@ -82,6 +82,7 @@ const authSlice = createSlice({
             state.user = null;
             localStorage.removeItem('accessToken');
             localStorage.removeItem('user');
+            localStorage.removeItem('TextNotifyBid');
         },
         loginVerified(state, action) {
             const { accessToken, user } = action.payload;

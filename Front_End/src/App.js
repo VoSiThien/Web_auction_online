@@ -1,7 +1,7 @@
 import { createTheme, ThemeProvider } from '@material-ui/core';
 // import 'react-toastify/dist/ReactToastify.css';
 import { Suspense, useEffect, useState } from 'react';
-import { useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { langActions } from './reducers/lang';
 import { authActions as userAuthActions } from './reducers/auth';
@@ -49,7 +49,7 @@ const theme = createTheme({
 //the main component of ReactJS is App component
 function App() {
   const dispatch = useDispatch();
-  const { i18n } = useTranslation()  
+  const { i18n } = useTranslation()
   const client = new W3CWebSocket('ws://localhost:45678')
   const dataProductDetail = useSelector((state) => state.unauthorizedProduct.dataProductDetail);
 
@@ -61,14 +61,15 @@ function App() {
     //console.log(e.data);
 
     let result = (e.data.toString()).split("|")
+
     localStorage.setItem('TextNotifyBid', e.data)
 
     const userLocal = localStorage.getItem('user') && JSON.parse(localStorage.getItem('user'));
     let check = false;
 
-    if(userLocal){
-      for(var i = 3; i< result.length; i++){
-        if(userLocal.accId === Number(result[i])){
+    if (userLocal) {
+      for (var i = 3; i < result.length; i++) {
+        if (userLocal.accId === Number(result[i])) {
           check = true;
           break;
         }
@@ -77,24 +78,25 @@ function App() {
       if (dataProductDetail.productDetail) {
         if (dataProductDetail.productDetail.prod_id === Number(result[0])) {
           dispatch(unauProduct.EditSocketInDetail())
-          if(check === true){
+          if (check === true) {
             dispatch(unauProduct.EditSocketInNotify())
           }
         }
-        else{
+        else {
           dispatch(unauProduct.EditSocketInHome())
-          if(check === true){
+          if (check === true) {
             dispatch(unauProduct.EditSocketInNotify())
           }
         }
       }
-      else{
+      else {
         dispatch(unauProduct.EditSocketInHome())
-        if(check === true){
+        if (check === true) {
           dispatch(unauProduct.EditSocketInNotify())
         }
       }
     }
+
   }
 
   useEffect(() => {
@@ -122,22 +124,22 @@ function App() {
 
 
   return (
-//     <div>
-//       <Switch>
-//         <Route exact path="/" render = {() =>{return <HomePage />}} />
+    //     <div>
+    //       <Switch>
+    //         <Route exact path="/" render = {() =>{return <HomePage />}} />
 
-//         <Route exact path="/seller/History-bid" render = {() =>{return <HistoryBidSeller />}} />
-//         <Route exact path="/bidder/History-bid" render = {() =>{return <HistoryBidBidder />}} />
+    //         <Route exact path="/seller/History-bid" render = {() =>{return <HistoryBidSeller />}} />
+    //         <Route exact path="/bidder/History-bid" render = {() =>{return <HistoryBidBidder />}} />
 
-//         <PrivateRouter path="/category">
-//           <Category />
-//         </PrivateRouter>
+    //         <PrivateRouter path="/category">
+    //           <Category />
+    //         </PrivateRouter>
 
-//         <Route path="*">
-//           <PageNotFound />
-//         </Route>
-//       </Switch>
-//     </div>
+    //         <Route path="*">
+    //           <PageNotFound />
+    //         </Route>
+    //       </Switch>
+    //     </div>
     <ThemeProvider theme={theme}>
       <ToastContainer
         autoClose={5000}
@@ -157,49 +159,49 @@ function App() {
                     return (
                       <ProtectedRoute {...props}>
                         <CheckRole roles={route.roles}>
-                          <route.component {...route.props} additional={route?.additional}/>
+                          <route.component {...route.props} additional={route?.additional} />
                         </CheckRole>
                       </ProtectedRoute>
                     );
                   }
                   return (
                     <CheckRole roles={route.roles}>
-                      <route.component {...props} {...route.props} additional={route?.additional}/>
+                      <route.component {...props} {...route.props} additional={route?.additional} />
                     </CheckRole>
                   );
                 }}
               />
             );
           })}
-          
+
           <Route
             path="/admin"
             render={(props) => {
               return (
-                  <AdminTemplate>
-                      {adminRoutes.map((route, index) => {
-                        return (
-                        <Route
-                          key={index}
-                          path={route.path}
-                          exact={route.exact}
-                          render={(props) => {
+                <AdminTemplate>
+                  {adminRoutes.map((route, index) => {
+                    return (
+                      <Route
+                        key={index}
+                        path={route.path}
+                        exact={route.exact}
+                        render={(props) => {
                           return (
                             <ProtectedRoute {...props}>
                               <CheckRole roles={route.roles}>
-                                <route.component {...props} {...route.props} additional={route?.additional}/>
+                                <route.component {...props} {...route.props} additional={route?.additional} />
                               </CheckRole>
                             </ProtectedRoute>
                           );
-                          }}
-                        />
-                        );
-                      })}
-                  </AdminTemplate>
+                        }}
+                      />
+                    );
+                  })}
+                </AdminTemplate>
               );
             }}
-            />
-            <Route path="*">
+          />
+          <Route path="*">
             <PageNotFound />
           </Route>
         </Switch>
