@@ -1,7 +1,6 @@
 import { createTheme, ThemeProvider } from '@material-ui/core';
-// import {  } from 'react';
 // import 'react-toastify/dist/ReactToastify.css';
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useDispatch, useSelector} from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { langActions } from './reducers/lang';
@@ -50,8 +49,7 @@ const theme = createTheme({
 //the main component of ReactJS is App component
 function App() {
   const dispatch = useDispatch();
-  const { i18n } = useTranslation();
-
+  const { i18n } = useTranslation()  
   const client = new W3CWebSocket('ws://localhost:45678')
   const dataProductDetail = useSelector((state) => state.unauthorizedProduct.dataProductDetail);
 
@@ -60,11 +58,41 @@ function App() {
     //client.send('Hello server');
   }
   client.onmessage = (e) => {
-    console.log(e.data);
+    //console.log(e.data);
+
     let result = (e.data.toString()).split("|")
-    if (dataProductDetail.productDetail) {
-      if (dataProductDetail.productDetail.prod_id === Number(result[0])) {
-        dispatch(unauProduct.EditSocket())
+    localStorage.setItem('TextNotifyBid', e.data)
+
+    const userLocal = localStorage.getItem('user') && JSON.parse(localStorage.getItem('user'));
+    let check = false;
+
+    if(userLocal){
+      for(var i = 3; i< result.length; i++){
+        if(userLocal.accId === Number(result[i])){
+          check = true;
+          break;
+        }
+      }
+
+      if (dataProductDetail.productDetail) {
+        if (dataProductDetail.productDetail.prod_id === Number(result[0])) {
+          dispatch(unauProduct.EditSocketInDetail())
+          if(check === true){
+            dispatch(unauProduct.EditSocketInNotify())
+          }
+        }
+        else{
+          dispatch(unauProduct.EditSocketInHome())
+          if(check === true){
+            dispatch(unauProduct.EditSocketInNotify())
+          }
+        }
+      }
+      else{
+        dispatch(unauProduct.EditSocketInHome())
+        if(check === true){
+          dispatch(unauProduct.EditSocketInNotify())
+        }
       }
     }
   }

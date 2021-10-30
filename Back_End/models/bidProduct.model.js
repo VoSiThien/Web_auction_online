@@ -6,6 +6,15 @@ const ws = require('../ws')
 const bidding = async (priceBid, product, prodId, account) => {
 	//-------================ bidding
     //bidder first
+	let ListAccount = await knex.raw(`select distinct his_account_id from tbl_product_history where his_product_id = ${prodId} and his_account_id != ${account[0].acc_id} and his_status != 2 and his_status != 3`)
+	ListAccount = ListAccount.rows
+	const ConverListToString = (ListAccount) =>{
+		let StringId = ''
+		for(const la of ListAccount){
+			StringId += '|' + la.his_account_id
+		}
+		return StringId
+	}
 	if(product[0].prod_price_holder === null){
 		if(Number(priceBid) >= Number(product[0].prod_price_starting)){
 			await knex('tbl_product').where("prod_id", prodId).update({prod_price_highest: priceBid, prod_price_holder: account[0].acc_id, prod_price_current: product[0].prod_price_starting})
@@ -21,7 +30,8 @@ const bidding = async (priceBid, product, prodId, account) => {
 					statusCode: 2
 				}
 			}
-			const msgBroadCast = prodId + '|' + product[0].prod_price_current
+			let msgBroadCast = prodId + '|' + product[0].prod_price_current + '|' + product[0].prod_name
+			msgBroadCast += ConverListToString(ListAccount)
 			ws.broadCastAll(msgBroadCast)
 			return {
 				message: "Đấu giá thành công !",
@@ -57,8 +67,11 @@ const bidding = async (priceBid, product, prodId, account) => {
 				statusCode: 2
 			}
 		}
-		const msgBroadCast = prodId + '|' + product[0].prod_price_current
+
+		let msgBroadCast = prodId + '|' + product[0].prod_price_current + '|' + product[0].prod_name
+		msgBroadCast += ConverListToString(ListAccount)
 		ws.broadCastAll(msgBroadCast)
+
 		return {
 			message: "Đấu giá thành công !",
 			statusCode: 0

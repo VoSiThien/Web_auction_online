@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '10px !important',
   },
   display_image: {
-    height: 0,
+    height: "100%",
     paddingTop: '56.25%',
     
   },
@@ -77,15 +77,8 @@ const ProductCard = ({
   id,
   title,
   image,
-  price,
-  salePrice,
-  description,
   endDate,
-  catName,
   currentPrice,
-  startDate,
-  numberBid,
-  priceHolder,
   size = 'normal'
 }) => {
   const classes = useStyles({ size });
@@ -135,47 +128,9 @@ const ProductCard = ({
             title={title}
           />
           <CardContent className={classes.content}>
-
-            <Typography className={classes.title} variant="body1">
+          <Typography className={classes.title} variant="body1">
               {title}
             </Typography>
-            
-            <Typography className={classes.subInfomation}
-              variant="body2"
-              color="textSecondary"
-              component="p">
-              Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : currentPrice + 'VNĐ'} </strong>
-            </Typography>
-
-
-            <Typography className={classes.subInfomation}
-              variant="body2"
-              color="textSecondary"// https://mui.com/api/typography/#props
-              component="p">
-              Người giữ giá: <strong>{priceHolder}</strong>
-            </Typography>
-
-            <Typography className={classes.subInfomation}
-              variant="body2"
-              color="textSecondary"
-              component="p">
-              Giá mua ngay: <strong>{price == null ? 'Chưa có thông tin' : price + 'VNĐ'} </strong>
-            </Typography>
-
-            <Typography className={classes.subInfomation}
-              variant="body2"
-              color="textSecondary"// https://mui.com/api/typography/#props
-              component="p">
-              Loại sản phẩm: <strong>{catName}</strong>
-            </Typography>
-
-            <Typography className={classes.subInfomation}
-              variant="body2"
-              color="textSecondary"
-              component="p">
-              Ngày đăng: <strong>{startDate}</strong>
-            </Typography>
-
             <Typography className={classes.subInfomation}
               variant="body2"
               color="textSecondary"
@@ -183,15 +138,13 @@ const ProductCard = ({
               Ngày hết hạn: <strong>{endDate}</strong>
             </Typography>
 
-            
-
-            <Typography
+            <Typography className={classes.subInfomation}
               variant="body2"
               color="textSecondary"
-              component="p"
-              className={classes.description}>
-              Số lượt ra giá: <strong>{numberBid} lượt</strong>
+              component="p">
+              Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : currentPrice + 'VNĐ'} </strong>
             </Typography>
+
           </CardContent>
         </Link>
         <Typography variant="body1">

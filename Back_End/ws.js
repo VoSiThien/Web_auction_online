@@ -8,13 +8,13 @@ if(!socketServer){
         port:WS_PORT
     })
 
-    // socketServer.on('connection', function(client){
-    //     console.log('client connect successfully')
-    //     client.on('message', function(msg){
-    //         console.log(`message: ${msg}`)
-    //         client.send('hello client')
-    //     })
-    // })
+    socketServer.on('connection', function(client){
+        console.log('client connect successfully')
+        // client.on('message', function(msg){
+        //     console.log(`message: ${msg}`)
+        //     client.send('hello client')
+        // })
+    })
     console.log('websocket server running')
 }
 function broadCastAll(msg){

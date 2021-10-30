@@ -1,5 +1,6 @@
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
+import ChildProductCard from '../components/ProductCard/ChildProductCard';
 import {
     Container,
     makeStyles,
@@ -10,13 +11,14 @@ import '../index.css';
 import { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory, useParams } from "react-router-dom";
-import { getProductDetail } from '../reducers/unauthorizedProduct';
+import { getProductDetail, getProductByCategory } from '../reducers/unauthorizedProduct';
 import BiddingModel from '../components/bidder/bidding';
 import { bidAddWatchList } from '../reducers/users/bidder';
 import { FcLike } from "react-icons/fc";
 import HistoryProductBid from "../components/bidder/historyProduct";
 import HistoryProductSel from "../components/seller/historyProduct";
 import { Role } from '../config/role';
+import { invalid } from 'moment';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -25,6 +27,15 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         padding: '5vh 0',
+    },
+    display_image: {
+        width: "100%",
+        height: "14vw",
+        objectFit: "cover"
+    },
+    card: {
+        width: "100%",
+        height: "100%"
     }
 }));
 
@@ -40,6 +51,8 @@ function Home() {
     //2.Define use state
     //in the beginning, productDetails will be blank, when data loaded, we set the new data to this variable, we cannot use useSelector here
     const [productDetails, setProductDetails] = useState({});//{} is the initial value
+    const [ratingAccount, setRatingAccount] = useState({});//{} is the initial value
+    const [productCategory, setProductCategory] = useState({});
     const [openModalbid, setOpenModalbid] = useState(false);
     const [openModalHisBid, setOpenModalHisBid] = useState(false);
     const [openModalHisSel, setOpenModalHisSel] = useState(false);
@@ -49,18 +62,29 @@ function Home() {
     const [isShowButtonHis, setisShowButtonHis] = useState(false);
     const [isShowButtonWat, setisShowButtonWat] = useState(false);
     const user = useSelector((state) => state.auth.user);
-    const Socket = useSelector((state) => state.unauthorizedProduct.Socket);
+    const Socket = useSelector((state) => state.unauthorizedProduct.SocketInProductDetail);    
     //3.create handler
     const getProductDetailHandler = useCallback(async () => {
         try {
             //use reducer function to get data and put it into local store
-            const response = await dispatch(getProductDetail({ id: +productId })).unwrap();
+            var response = await dispatch(getProductDetail({ id: +productId })).unwrap();
             setProductDetails(response.productDetail);//set new state for productDetail with the returned data from BE when user change value
+            setRatingAccount(response.rating);
+            //get 5 product in the same category
+            const payload = {
+                catID: response.productDetail.prod_category_id,
+                page: 1,
+                limit: 5,
+                prodID: response.productDetail.prod_id
+            }
+            if (payload.catID && payload.prodID) {
+                response = await dispatch(getProductByCategory(payload)).unwrap();
+                setProductCategory(response.listProduct);
+            }
         } catch (err) {
             alert(err);
         }
     }, [dispatch]);
-
 
     const handleCloseBid = () => {
         setOpenModalbid(false);
@@ -80,36 +104,35 @@ function Home() {
             if (user.role === Role.Bidder) {
                 setOpenModalHisBid(true);
             }
-            else{
+            else {
                 setOpenModalHisSel(true);
             }
         }
     };
 
-  
+
     const addWatchList = useCallback(async ({ prodId }) => {
-      try {
-        await dispatch(bidAddWatchList({ prodId })).unwrap();
-        setText('Thêm sản phẩm vào danh sách yêu thích thành công! ')
-        setShow(true)
-      } catch (err) {
-        setText(err)
-        setShow(true)
-  
-      }
+        try {
+            await dispatch(bidAddWatchList({ prodId })).unwrap();
+            setText('Thêm sản phẩm vào danh sách yêu thích thành công! ')
+            setShow(true)
+        } catch (err) {
+            setText(err)
+            setShow(true)
+
+        }
     }, [dispatch]);
     const toggleShowA = () => setShow(false);
-  
+
     const handleVisible = useCallback(() => {
-      if (show === true) {
-        setTimeout(() => {
-          setShow(false)
-        }, 3000);
-      }
+        if (show === true) {
+            setTimeout(() => {
+                setShow(false)
+            }, 3000);
+        }
     }, [show])
-  
     useEffect(() => {
-      handleVisible();
+        handleVisible();
     }, [handleVisible]);
     //4.use effect
     useEffect(() => {//this function always run first
@@ -121,7 +144,7 @@ function Home() {
                 setisShowButtonBid(true);
             }
         }
-        else{
+        else {
             setisShowButtonBid(true);
             setisShowButtonHis(true);
             setisShowButtonWat(true);
@@ -156,51 +179,58 @@ function Home() {
                             {productDetails.prod_name}
                         </div> */}
                         <div className="row">
-                            <div className="col-md-6 mb-4 mb-md-0">
-                                <div id="mdb-lightbox-ui" />
-                                <div className="mdb-lightbox">
-                                    <div className="row product-gallery mx-1">
-                                        <div className="col-12 mb-0 mt-2">
-                                            <img src="https://vtitech.vn/wp-content/uploads/2020/10/test-100.png" alt="Italian Trulli" />
-                                        </div>
-
-                                    </div>
-                                </div>
+                            <div className="col-md-6 mb-4 mb-md-0" >
+                                <img className={classes.display_image} style={{ height: "100%" }} src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} alt="Product main image" />
                             </div>
                             <div className="col-md-6 mt-2">
                                 <h2>{productDetails.prod_name}</h2>
                                 <p className="mb-2 text-muted text-uppercase small">Loại sản phẩm : <b>{productDetails.prod_categoryName}</b></p>
                                 <ul className="rating">
                                     <li>
-                                        <p>Giá thành : {productDetails.prod_price == null ? 0 : productDetails.prod_price} VNĐ</p>
-                                    </li>
-                                    <li>
-                                        <p>Giá khởi điểm : {productDetails.prod_price_starting == null ? 0 : productDetails.prod_price_starting} VNĐ</p>
-                                    </li>
-                                    <li>
                                         <p>Giá hiện tại : {productDetails.prod_price_current == null ? 0 : productDetails.prod_price_current} VNĐ</p>
                                     </li>
                                     <li>
-                                        <p>Giá cao nhất : {productDetails.prod_price_highest == null ? 0 : productDetails.prod_price_highest} VNĐ</p>
-                                    </li>
-                                    <li>
-                                        <p>Bước giá : {productDetails.prod_price_step == null ? 0 : productDetails.prod_price_step} VNĐ</p>
+                                        <p>Giá mua ngay : {productDetails.prod_price == null ? 0 : productDetails.prod_price} VNĐ</p>
                                     </li>
                                 </ul>
                                 <div className="table-responsive">
                                     <table className="table table-sm table-borderless mb-0">
                                         <tbody>
-                                            <tr>
-                                                <th className="pl-0 w-25" scope="row"><strong>Người bán: </strong></th>
-                                                <td><p>{productDetails.prod_seller_id == null ? 'Chưa có thông tin' : productDetails.prod_seller_id} </p></td>
+                                            <tr >
+                                                <th className="pl-0 w-25" scope="row" style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><strong>Người bán: </strong></th>
+                                                <td style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_seller_id == null ? 'Chưa có thông tin' : productDetails.prod_seller_id} </p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong></strong></th>
                                             </tr>
                                             <tr>
-                                                <th className="pl-0 w-25" scope="row"><strong>Người giữ giá:</strong></th>
-                                                <td><p>{productDetails.prod_price_holder == null ? 'Chưa có thông tin' : productDetails.prod_price_holder} </p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong><li>Điểm cộng:</li></strong></th>
+                                                <td><p>{ratingAccount.acc_like_seller == null ? 0 : ratingAccount.acc_like_seller} </p></td>
                                             </tr>
                                             <tr>
-                                                <th className="pl-0 w-25" scope="row"><strong>Ngày hết hạn: </strong></th>
-                                                <td><p>{productDetails.prod_end_date == null ? 'Chưa có thông tin' : productDetails.prod_end_date}</p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong><li>Điểm trừ: </li></strong></th>
+                                                <td><p>{ratingAccount.acc_dis_like_seller == null ? 0 : ratingAccount.acc_dis_like_seller} </p></td>
+                                            </tr>
+                                            <tr>
+                                                <th style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}} className="pl-0 w-25" scope="row"><strong>Người giữ giá:</strong></th>
+                                                <td style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_price_holder == null ? 'Chưa có thông tin' : productDetails.prod_price_holder} </p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong></strong></th>
+                                            </tr>
+                                            <tr>
+                                                <th className="pl-0 w-25" scope="row"><strong><li>Điểm cộng: </li></strong></th>
+                                                <td><p>{ratingAccount.acc_like_bidder == null ? 0 : ratingAccount.acc_like_bidder} </p></td>
+                                            </tr>
+                                            <tr>
+                                                <th className="pl-0 w-25" scope="row"><strong><li>Điểm trừ: </li></strong></th>
+                                                <td><p>{ratingAccount.acc_dis_like_bidder == null ? 0 : ratingAccount.acc_dis_like_bidder} </p></td>
+                                            </tr>
+                                            <tr>
+                                                <th style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}} className="pl-0 w-25" scope="row"><strong>Thời điểm đăng: </strong></th>
+                                                <td style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_created_date == null? 'Chưa có thông tin' : productDetails.prod_created_date}</p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong></strong></th>
+                                            </tr>
+                                            <tr>
+                                                <th style={{borderTop: "0.5px solid", borderStyle: "dashed", borderColor: "#2877F5"}} className="pl-0 w-25" scope="row"><strong>Ngày hết hạn: </strong></th>
+                                                <td style={{borderTop: "0.5px solid", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_end_date == null? 'Chưa có thông tin' : productDetails.prod_end_date}</p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong></strong></th>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -319,78 +349,38 @@ function Home() {
 
 
 
-                        <section className="text-center mt-5" >
-                            <h4>Sản phẩm cùng chuyên mục</h4>
-                            {/* Grid row */}
-                            <div className="row">
-                                <div className="col-md-6 col-lg mb-5">
-                                    <Card>
-                                        <Card.Img variant="top" src={iphone2} />
-                                        <Card.Body>
-                                            <Card.Title>Card title</Card.Title>
-                                        </Card.Body>
-                                        <Card.Footer>
-                                            <small className="text-muted">Last updated 3 mins ago</small>
-                                        </Card.Footer>
-                                    </Card>
-                                    {/* Card */}
-                                </div>
 
-
-                                <div className="col-md-6 col-lg mb-5">
-                                    <Card>
-                                        <Card.Img variant="top" src={iphone2} />
-                                        <Card.Body>
-                                            <Card.Title>Card title</Card.Title>
-                                        </Card.Body>
-                                        <Card.Footer>
-                                            <small className="text-muted">Last updated 3 mins ago</small>
-                                        </Card.Footer>
-                                    </Card>
-                                    {/* Card */}
-                                </div>
-
-                                <div className="col-md-6 col-lg mb-5">
-                                    <Card>
-                                        <Card.Img variant="top" src={iphone2} />
-                                        <Card.Body>
-                                            <Card.Title>Card title</Card.Title>
-                                        </Card.Body>
-                                        <Card.Footer>
-                                            <small className="text-muted">Last updated 3 mins ago</small>
-                                        </Card.Footer>
-                                    </Card>
-                                    {/* Card */}
-                                </div>
-
-                                <div className="col-md-6 col-lg mb-5">
-                                    <Card>
-                                        <Card.Img variant="top" src={iphone2} />
-                                        <Card.Body>
-                                            <Card.Title>Card title</Card.Title>
-                                        </Card.Body>
-                                        <Card.Footer>
-                                            <small className="text-muted">Last updated 3 mins ago</small>
-                                        </Card.Footer>
-                                    </Card>
-                                    {/* Card */}
-                                </div>
-
-                                <div className="col-md-6 col-lg mb-5">
-                                    <Card>
-                                        <Card.Img variant="top" src={iphone2} />
-                                        <Card.Body>
-                                            <Card.Title>Card title</Card.Title>
-                                        </Card.Body>
-                                        <Card.Footer>
-                                            <small className="text-muted">Last updated 3 mins ago</small>
-                                        </Card.Footer>
-                                    </Card>
-                                    {/* Card */}
-                                </div>
-                            </div>
-                        </section>
                     </Container>
+                    <section className="text-center mt-5" >
+                        <h4>Sản phẩm cùng chuyên mục</h4>
+                        {/* Grid row */}
+                        <div className="row justify-content-center flex-fill">
+                            {productCategory?.length > 0 &&
+                                productCategory.map((prod, index) => (
+                                    <div key={prod.prod_id} className="col-2">
+                                        <Card className="h-100">
+                                            <Card.Body>
+                                                <ChildProductCard
+                                                    id={prod.prod_id}
+                                                    title={prod.prod_name}
+                                                    description={prod.prod_description}
+                                                    image={prod.prod_main_image}
+                                                    price={prod.prod_price}
+                                                    endDate={prod.prod_end_date}
+                                                    currentPrice={prod.prod_price_current}
+                                                    catName={prod.cate_name}
+                                                />
+                                            </Card.Body>
+
+                                        </Card>
+                                        {/* Card */}
+                                    </div>
+
+                                ))}
+                           
+                           
+                        </div>
+                    </section>
                 </div>
             </div>
             <div className={classes.content}>

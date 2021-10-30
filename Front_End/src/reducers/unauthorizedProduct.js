@@ -6,7 +6,9 @@ let initialState = {//default state, this value will be gotten from use selector
   loading: false,
   data: [],
   dataProductDetail: [],
-  Socket: 0
+  SocketInProductDetail: 0,
+  SocketInProductHome: 0,
+  SocketInNotify: 0
 };
 
 export const getProductDetail = createAsyncThunk(
@@ -14,6 +16,19 @@ export const getProductDetail = createAsyncThunk(
   async ({ id }, { rejectWithValue }) => {
     try {
       var value = (await unauthorizedProductApi.getProductDetail(id)).data;
+      return value;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
+
+export const getProductByCategory = createAsyncThunk(
+  'userProduct/GetProductByCat',
+  async ({ page, limit, catID, prodID}, { rejectWithValue }) => {
+    try {
+      var value = (await unauthorizedProductApi.getProductByCategory(page, limit, catID, prodID)).data;
       return value;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
@@ -60,10 +75,19 @@ const unauthorizedProductSlice = createSlice({
   name: 'userProduct',
   initialState,
   reducers: {
-    EditSocket(state) {
-        state.Socket += 1
+    EditSocketInDetail(state) {
+        state.SocketInProductDetail += 1
+    },
+    EditSocketInHome(state) {
+      state.SocketInProductHome += 1
+    },
+    EditSocketInNotify(state) {
+      state.SocketInNotify += 1
+    },
+    ResetSocketInNotify(state){
+      state.SocketInNotify = 0
     }
-},
+  },
   extraReducers: {
     [getProductDetail.pending]: (state) => {
       state.loading = true;
@@ -74,6 +98,15 @@ const unauthorizedProductSlice = createSlice({
     [getProductDetail.fulfilled]: (state, action) => {
       state.loading = false;
       state.dataProductDetail = action.payload
+    },
+    [getProductByCategory.pending]: (state) => {
+      state.loading = true;
+    },
+    [getProductByCategory.rejected]: (state) => {
+      state.loading = false;
+    },
+    [getProductByCategory.fulfilled]: (state, action) => {
+      state.loading = false;
     },
     [listProductAboutToEnd.pending]: (state) => {
       state.loading = true;
