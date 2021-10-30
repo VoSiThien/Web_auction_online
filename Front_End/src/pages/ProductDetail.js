@@ -18,6 +18,7 @@ import { FcLike } from "react-icons/fc";
 import HistoryProductBid from "../components/bidder/historyProduct";
 import HistoryProductSel from "../components/seller/historyProduct";
 import { Role } from '../config/role';
+import { invalid } from 'moment';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -50,6 +51,7 @@ function Home() {
     //2.Define use state
     //in the beginning, productDetails will be blank, when data loaded, we set the new data to this variable, we cannot use useSelector here
     const [productDetails, setProductDetails] = useState({});//{} is the initial value
+    const [ratingAccount, setRatingAccount] = useState({});//{} is the initial value
     const [productCategory, setProductCategory] = useState({});
     const [openModalbid, setOpenModalbid] = useState(false);
     const [openModalHisBid, setOpenModalHisBid] = useState(false);
@@ -60,12 +62,14 @@ function Home() {
     const [isShowButtonHis, setisShowButtonHis] = useState(false);
     const [isShowButtonWat, setisShowButtonWat] = useState(false);
     const user = useSelector((state) => state.auth.user);
+    const Socket = useSelector((state) => state.unauthorizedProduct.SocketInProductDetail);    
     //3.create handler
     const getProductDetailHandler = useCallback(async () => {
         try {
             //use reducer function to get data and put it into local store
             var response = await dispatch(getProductDetail({ id: +productId })).unwrap();
             setProductDetails(response.productDetail);//set new state for productDetail with the returned data from BE when user change value
+            setRatingAccount(response.rating);
             //get 5 product in the same category
             const payload = {
                 catID: response.productDetail.prod_category_id,
@@ -145,8 +149,7 @@ function Home() {
             setisShowButtonHis(true);
             setisShowButtonWat(true);
         }
-
-    }, [productId]);//when product ID change, use effect will catch it and set new data for product detail, productID must define here
+    }, [productId, Socket]);//when product ID change, use effect will catch it and set new data for product detail, productID must define here
 
     //5. display data onto the view
     return (
@@ -184,35 +187,50 @@ function Home() {
                                 <p className="mb-2 text-muted text-uppercase small">Loại sản phẩm : <b>{productDetails.prod_categoryName}</b></p>
                                 <ul className="rating">
                                     <li>
-                                        <p>Giá thành : {productDetails.prod_price == null ? 0 : productDetails.prod_price} VNĐ</p>
-                                    </li>
-                                    <li>
-                                        <p>Giá khởi điểm : {productDetails.prod_price_starting == null ? 0 : productDetails.prod_price_starting} VNĐ</p>
-                                    </li>
-                                    <li>
                                         <p>Giá hiện tại : {productDetails.prod_price_current == null ? 0 : productDetails.prod_price_current} VNĐ</p>
                                     </li>
                                     <li>
-                                        <p>Giá cao nhất : {productDetails.prod_price_highest == null ? 0 : productDetails.prod_price_highest} VNĐ</p>
-                                    </li>
-                                    <li>
-                                        <p>Bước giá : {productDetails.prod_price_step == null ? 0 : productDetails.prod_price_step} VNĐ</p>
+                                        <p>Giá mua ngay : {productDetails.prod_price == null ? 0 : productDetails.prod_price} VNĐ</p>
                                     </li>
                                 </ul>
                                 <div className="table-responsive">
                                     <table className="table table-sm table-borderless mb-0">
                                         <tbody>
-                                            <tr>
-                                                <th className="pl-0 w-25" scope="row"><strong>Người bán: </strong></th>
-                                                <td><p>{productDetails.prod_seller_id == null ? 'Chưa có thông tin' : productDetails.prod_seller_id} </p></td>
+                                            <tr >
+                                                <th className="pl-0 w-25" scope="row" style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><strong>Người bán: </strong></th>
+                                                <td style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_seller_id == null ? 'Chưa có thông tin' : productDetails.prod_seller_id} </p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong></strong></th>
                                             </tr>
                                             <tr>
-                                                <th className="pl-0 w-25" scope="row"><strong>Người giữ giá:</strong></th>
-                                                <td><p>{productDetails.prod_price_holder == null ? 'Chưa có thông tin' : productDetails.prod_price_holder} </p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong><li>Điểm cộng:</li></strong></th>
+                                                <td><p>{ratingAccount.acc_like_seller == null ? 0 : ratingAccount.acc_like_seller} </p></td>
                                             </tr>
                                             <tr>
-                                                <th className="pl-0 w-25" scope="row"><strong>Ngày hết hạn: </strong></th>
-                                                <td><p>{productDetails.prod_end_date == null ? 'Chưa có thông tin' : productDetails.prod_end_date}</p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong><li>Điểm trừ: </li></strong></th>
+                                                <td><p>{ratingAccount.acc_dis_like_seller == null ? 0 : ratingAccount.acc_dis_like_seller} </p></td>
+                                            </tr>
+                                            <tr>
+                                                <th style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}} className="pl-0 w-25" scope="row"><strong>Người giữ giá:</strong></th>
+                                                <td style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_price_holder == null ? 'Chưa có thông tin' : productDetails.prod_price_holder} </p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong></strong></th>
+                                            </tr>
+                                            <tr>
+                                                <th className="pl-0 w-25" scope="row"><strong><li>Điểm cộng: </li></strong></th>
+                                                <td><p>{ratingAccount.acc_like_bidder == null ? 0 : ratingAccount.acc_like_bidder} </p></td>
+                                            </tr>
+                                            <tr>
+                                                <th className="pl-0 w-25" scope="row"><strong><li>Điểm trừ: </li></strong></th>
+                                                <td><p>{ratingAccount.acc_dis_like_bidder == null ? 0 : ratingAccount.acc_dis_like_bidder} </p></td>
+                                            </tr>
+                                            <tr>
+                                                <th style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}} className="pl-0 w-25" scope="row"><strong>Thời điểm đăng: </strong></th>
+                                                <td style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_created_date == null? 'Chưa có thông tin' : productDetails.prod_created_date}</p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong></strong></th>
+                                            </tr>
+                                            <tr>
+                                                <th style={{borderTop: "0.5px solid", borderStyle: "dashed", borderColor: "#2877F5"}} className="pl-0 w-25" scope="row"><strong>Ngày hết hạn: </strong></th>
+                                                <td style={{borderTop: "0.5px solid", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_end_date == null? 'Chưa có thông tin' : productDetails.prod_end_date}</p></td>
+                                                <th className="pl-0 w-25" scope="row"><strong></strong></th>
                                             </tr>
                                         </tbody>
                                     </table>

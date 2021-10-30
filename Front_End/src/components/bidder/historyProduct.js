@@ -37,6 +37,7 @@ function HistoryProductBid({ isOpen, onClose, prod_id }) {
     const [isActiveSort1, setIsActiveSort1] = useState(false);
     const [isActiveSort2, setIsActiveSort2] = useState(false);
     const [isActiveSort3, setIsActiveSort3] = useState(false);
+    const [hiddenText, setHiddenText] = useState(false);
 
     const pageChangeHandler = (event, value) => {
         setPage(value);
@@ -44,7 +45,11 @@ function HistoryProductBid({ isOpen, onClose, prod_id }) {
 
     const getListHistoryHandler = useCallback(async ({ page, limit, prodId, status, sortByPrice }) => {
         try {
-            await dispatch(getListHistory({ page, limit, prodId, status, sortByPrice })).unwrap();
+            const result = await dispatch(getListHistory({ page, limit, prodId, status, sortByPrice })).unwrap();
+            
+            if(result.statusCode === 4){
+                setHiddenText(true);
+            }
         } catch (err) {
             alert(err);
         }
@@ -92,6 +97,7 @@ function HistoryProductBid({ isOpen, onClose, prod_id }) {
                 <Modal.Body>
                     <Container>
                         <div>
+                            <h4 hidden={!hiddenText}>Sản phẩm chưa kết thúc, không thể xem lịch sử.</h4>
                         <DropdownButton
                             id={`dropdown-variants-primary`}
                             variant={"outline-primary"}

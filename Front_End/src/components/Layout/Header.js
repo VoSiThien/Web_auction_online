@@ -17,6 +17,8 @@ import { getHomeCategory } from '../../reducers/homeCategory';
 import { authActions as userAuthActions } from "../../reducers/auth";
 import { Role } from "../../config/role";
 import { CategoryItem } from "../Homepage/CatogoryItem"
+import NotifyBidPriceModel from './notify';
+import { unauthorizedProduct as unauProduct } from "../../reducers/unauthorizedProduct";
 
 const useStyles = makeStyles((theme) => ({
 	root: {},
@@ -188,10 +190,23 @@ function Header({ showMenu }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 	const user = useSelector((state) => state.auth.user);
 	const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store
+	const SocketInNotify = useSelector((state) => state.unauthorizedProduct.SocketInNotify);
+  	const [openModalNotify, setOpenModalNotify] = useState(false);
 
 	const logoutHandler = () => {
 		dispatch(userAuthActions.logout());
 		history.push("/login");
+	};
+
+	useEffect(() => {
+		if(SocketInNotify !== 0){
+		  setOpenModalNotify(true);
+		  dispatch(unauProduct.ResetSocketInNotify());
+		}
+	  }, [SocketInNotify]);
+	
+	const handleCloseModelBidProduct = () => {
+		setOpenModalNotify(false);
 	};
 
 	//define a handler function
@@ -275,6 +290,11 @@ function Header({ showMenu }) {
                 </Navbar.Collapse>
             </Container>
         </Navbar>
+		<NotifyBidPriceModel
+            isOpen={openModalNotify}
+            onClose={handleCloseModelBidProduct}
+            text="Có người đấu giá"
+        />
 		</>
     );
 }

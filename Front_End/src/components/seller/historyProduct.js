@@ -43,6 +43,7 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
     const [isActiveSort2, setIsActiveSort2] = useState(false);
     const [isActiveSort3, setIsActiveSort3] = useState(false);
     const [hiddenText, setHiddenText] = useState(false);
+    const [hiddenText2, setHiddenText2] = useState(false);
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
     
     const pageChangeHandler = (event, value) => {
@@ -52,7 +53,12 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
     const getListHistoryHandler = useCallback(async ({ page, limit, prodId, status, sortByPrice }) => {
         try {
             var result = await dispatch(getListHistory({ page, limit, prodId, status, sortByPrice })).unwrap();
+            
             if(result.statusCode === 3){
+                setHiddenText(true);
+            }
+            else if(result.statusCode === 4){
+                setHiddenText2(true);
                 setHiddenText(true);
             }
         } catch (err) {
@@ -166,7 +172,10 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                         <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
                             <Alert.Heading>{text}</Alert.Heading>
                         </Alert>
-                        <div><h3 hidden={!hiddenText}>Sản phẩm này không thuộc quyền sở hữu của bạn!!!</h3></div>
+                        <div>
+                            <h3 hidden={!hiddenText}>Sản phẩm này không thuộc quyền sở hữu của bạn!!!</h3>
+                            <h4 hidden={!hiddenText2}>Sản phẩm chưa kết thúc, không thể xem lịch sử.</h4>
+                        </div>
                         <DropdownButton
                             id={`dropdown-variants-primary`}
                             variant={"outline-primary"}

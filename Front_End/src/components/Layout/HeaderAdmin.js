@@ -11,9 +11,12 @@ import {
 } from "@material-ui/icons";
 // import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { authActions as userAuthActions } from "../../reducers/auth";
 // import { Role } from "../../config/role";
+import NotifyBidPriceModel from './notify';
+import { unauthorizedProduct as unauProduct } from "../../reducers/unauthorizedProduct";
 
 const useStyles = makeStyles((theme) => ({
 	root: {},
@@ -176,7 +179,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 const HeaderAdmin = ({ showMenu }) => {
-  const classes = useStyles({ showMenu });
+	const classes = useStyles({ showMenu });
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -187,6 +190,19 @@ const HeaderAdmin = ({ showMenu }) => {
 	// const toggleUserDropdownHandler = () => {
 	// 	setToggleUserDropdown((prevState) => !prevState);
 	// };
+	const [openModalNotify, setOpenModalNotify] = useState(false);
+	const SocketInNotify = useSelector((state) => state.unauthorizedProduct.SocketInNotify);
+
+	useEffect(() => {
+		if (SocketInNotify !== 0) {
+			setOpenModalNotify(true);
+			dispatch(unauProduct.ResetSocketInNotify());
+		}
+	}, [SocketInNotify]);
+
+	const handleCloseModelBidProduct = () => {
+		setOpenModalNotify(false);
+	};
 
 	const logoutHandler = () => {
 		dispatch(userAuthActions.logout());
@@ -194,38 +210,39 @@ const HeaderAdmin = ({ showMenu }) => {
 	};
 
 
-  return (
-	<Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
-	{/* <Container> */}
-	<Navbar.Brand href="#">
-		<FcShop className="iconhome" /> Auction Online</Navbar.Brand>
-	<Navbar.Toggle aria-controls="responsive-navbar-nav" />
-	<Navbar.Collapse id="responsive-navbar-nav">
-	<Nav className="me-auto" disabled>
-					{/* <Nav.Link href="#features">Features</Nav.Link> */}
-					<NavDropdown title="Điện tử" id="collasible-nav-dropdown" hidden>
-						<NavDropdown.Item href="#action/3.1">Điện thoại</NavDropdown.Item>
-						<NavDropdown.Item href="#action/3.1">Máy tính</NavDropdown.Item>
-						{/* <NavDropdown.Divider />
+	return (
+		<>
+			<Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
+				{/* <Container> */}
+				<Navbar.Brand href="#">
+					<FcShop className="iconhome" /> Auction Online</Navbar.Brand>
+				<Navbar.Toggle aria-controls="responsive-navbar-nav" />
+				<Navbar.Collapse id="responsive-navbar-nav">
+					<Nav className="me-auto" disabled>
+						{/* <Nav.Link href="#features">Features</Nav.Link> */}
+						<NavDropdown title="Điện tử" id="collasible-nav-dropdown" hidden>
+							<NavDropdown.Item href="#action/3.1">Điện thoại</NavDropdown.Item>
+							<NavDropdown.Item href="#action/3.1">Máy tính</NavDropdown.Item>
+							{/* <NavDropdown.Divider />
 						<NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item> */}
-					</NavDropdown>
-					<NavDropdown title="Bếp" id="collasible-nav-dropdown" hidden>
-						<NavDropdown.Item href="#action/3.1">Chảo chống dính</NavDropdown.Item>
-						<NavDropdown.Item href="#action/3.1">Nồi inox</NavDropdown.Item>
-					</NavDropdown>
-				</Nav>
-				<Form className="d-flex">
-					<FormControl
-						type="search"
-						placeholder="Search"
-						className="mr-2"
-						aria-label="Search"
-			hidden
-					/>
-					<Button variant="dark" hidden>Search</Button>
-				</Form>
-		<Nav>
-		{/* <IconButton
+						</NavDropdown>
+						<NavDropdown title="Bếp" id="collasible-nav-dropdown" hidden>
+							<NavDropdown.Item href="#action/3.1">Chảo chống dính</NavDropdown.Item>
+							<NavDropdown.Item href="#action/3.1">Nồi inox</NavDropdown.Item>
+						</NavDropdown>
+					</Nav>
+					<Form className="d-flex">
+						<FormControl
+							type="search"
+							placeholder="Search"
+							className="mr-2"
+							aria-label="Search"
+							hidden
+						/>
+						<Button variant="dark" hidden>Search</Button>
+					</Form>
+					<Nav>
+						{/* <IconButton
 			aria-label="My profile"
 			color="inherit"
 			className={classes.iconButton}
@@ -250,26 +267,32 @@ const HeaderAdmin = ({ showMenu }) => {
 			)}
 			</ul>
 		</IconButton> */}
-		{user != null && isAuthenticated && (
-			<IconButton
-			aria-label="My profile"
-			color="inherit"
-			className={classes.iconButton}
-			onClick={logoutHandler}
-			>
-			<ExitToApp style={{color: 'white'}}/>
-			<Typography
-				variant="caption"
-				className={classes.iconButtonCaption}
-			>
-				Đăng xuất
-			</Typography>
-			</IconButton>
-		)}
-		</Nav>
-	</Navbar.Collapse>
-	{/* </Container> */}
-	</Navbar>
+						{user != null && isAuthenticated && (
+							<IconButton
+								aria-label="My profile"
+								color="inherit"
+								className={classes.iconButton}
+								onClick={logoutHandler}
+							>
+								<ExitToApp style={{ color: 'white' }} />
+								<Typography
+									variant="caption"
+									className={classes.iconButtonCaption}
+								>
+									Đăng xuất
+								</Typography>
+							</IconButton>
+						)}
+					</Nav>
+				</Navbar.Collapse>
+				{/* </Container> */}
+			</Navbar>
+			<NotifyBidPriceModel
+				isOpen={openModalNotify}
+				onClose={handleCloseModelBidProduct}
+				text="Có người đấu giá"
+			/>
+		</>
 	);
 };
 export default HeaderAdmin;

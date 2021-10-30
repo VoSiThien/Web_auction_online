@@ -7,7 +7,8 @@ const moment = require('moment');
 //const commonService = require('../services/commonService')
 const prodValidation = require('../middlewares/validation/product.validate')
 const productModel = require('../models/product.model')
-const accountModel = require('../models/account.model')
+const accountModel = require('../models/account.model');
+const { _ } = require('ajv');
 
 const successCode = 0
 const errorCode = 1
@@ -263,12 +264,37 @@ router.get('/details/:id', async (req, res) => {
 
 	var prodObject = {}
 	var accountList = await accountModel.findActiveUser()
+	var rating = {}
+	
 	await knex.from('tbl_product')
 		.where('prod_id', id)
 		.returning('*')
 		.then(async (rows) => {
 			prodObject = rows[0];
 			prodObject.prod_end_date = moment(prodObject.prod_end_date).format('DD/MM/YYYY HH:mm:ss')
+			prodObject.prod_created_date = moment(prodObject.prod_created_date).format('DD/MM/YYYY HH:mm:ss')
+			
+			var like_bid = 0
+			var dis_like_bid = 0
+			var like_seller = 0
+			var dis_like_seller = 0
+			for(var i = 0; i < accountList.length; i++){				
+				if(accountList[i].acc_id === prodObject.prod_price_holder){
+					like_bid = accountList[i].acc_like_bidder
+					dis_like_bid = accountList[i].acc_dis_like_bidder
+				}
+				if(accountList[i].acc_id === prodObject.prod_seller_id){
+					like_seller = accountList[i].acc_like_seller
+					dis_like_seller = accountList[i].acc_dis_like_seller
+				}
+			}
+
+			rating = {
+				acc_like_bidder: like_bid,
+				acc_dis_like_bidder: dis_like_bid,
+				acc_like_seller: like_seller,
+				acc_dis_like_seller: dis_like_seller
+			}
 			//get holder & seller information
 			if (prodObject.prod_price_holder)
 				prodObject.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == prodObject.prod_price_holder).acc_full_name
@@ -281,15 +307,18 @@ router.get('/details/:id', async (req, res) => {
 				.where('prod_img_product_id', prodObject.prod_id);
 			prodObject['prod_img'] = imageResult.map(attr => attr.prod_img_data);
 		})
+	
 	if (prodObject) {
 		return res.status(200).json({
 			productDetail: prodObject,
+			rating: rating,
 			statusCode: successCode
 		})
 	}
 
 	return res.status(200).json({
 		productDetail: [],
+		rating: {},
 		statusCode: errorCode
 	})
 })

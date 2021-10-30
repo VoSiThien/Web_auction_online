@@ -116,6 +116,53 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
         })
     }
 
+    var checkTimeOfProduct = await knex.raw(`select * from tbl_product
+                                             where to_timestamp(prod_end_date, 'YYYY/MM/DD HH24:MI:SS') > CURRENT_TIMESTAMP and prod_id = ${prodId}`)
+    checkTimeOfProduct = checkTimeOfProduct.rows
+
+    const ListHistory = async () => {
+        numberPage = await knex.raw(`select count(distinct his_id) 
+	        from tbl_product_history where his_product_id = ${prodId} and his_status != 2 and his_status != 3`)
+
+        numberPage = Number(numberPage.rows[0].count)
+        if (numberPage > limit) {
+            numberPage = Math.ceil(numberPage / limit)
+        }
+        else {
+            numberPage = 1
+        }
+
+        if (sortByPrice === 'NON') {
+            var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
+                                    on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
+                                    order by h.his_created_date desc offset ${offset} limit ${limit}`)
+        }
+        else {
+            var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
+                                    on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
+                                    order by h.his_price::integer ${sortByPrice} offset ${offset} limit ${limit}`)
+        }
+
+        result = result.rows
+
+        var listHistory = []
+        var index = 0
+
+        while (index < result.length) {
+            var name = result[index].acc_full_name.split(' ');
+            var fullName = "****" + name[name.length - 1]
+            let item = {
+                his_id: result[index].his_id,
+                his_created_date: result[index].his_created_date,
+                acc_full_name: fullName,
+                his_price: result[index].his_price
+            }
+            listHistory.push(item)
+            index++
+        }
+        return listHistory
+    }
+
     if (accRole === 'SEL') {
         var result
         var checkSeller = await knex('tbl_product').where("prod_seller_id", accId).andWhere("prod_id", prodId)
@@ -167,50 +214,20 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
             result = result.rows
         }
         else {
-            numberPage = await knex.raw(`select count(distinct his_id) 
-	        from tbl_product_history where his_product_id = ${prodId} and his_status != 2 and his_status != 3`)
-
-            numberPage = Number(numberPage.rows[0].count)
-            if (numberPage > limit) {
-                numberPage = Math.ceil(numberPage / limit)
-            }
-            else {
-                numberPage = 1
-            }
-
-            if(sortByPrice === 'NON'){
-                var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
-                                    on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
-                                    order by h.his_created_date desc offset ${offset} limit ${limit}`)
-            }
-            else{
-                var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
-                                    on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
-                                    order by h.his_price::integer ${sortByPrice} offset ${offset} limit ${limit}`)
-            }
-
-            result = result.rows
-
             var listHistory = []
-            var index = 0
-
-            while (index < result.length) {
-                var name = result[index].acc_full_name.split(' ');
-                var fullName = "****" + name[name.length - 1]
-                let item = {
-                    his_id: result[index].his_id,
-                    his_created_date: result[index].his_created_date,
-                    acc_full_name: fullName,
-                    his_price: result[index].his_price
-                }
-                listHistory.push(item)
-                index++
+            if(checkTimeOfProduct.length !== 0){
+                return res.status(200).json({
+                    numberOfPage: 1,
+                    historyList: listHistory,
+                    statusCode: 4 //là sản phẩm chưa hết thời gian đấu giá nên không được xem lịch sử
+                })
             }
+            listHistory = await ListHistory()
 
             return res.status(200).json({
                 numberOfPage: numberPage,
                 historyList: listHistory,
-                statusCode: 3
+                statusCode: 3 // được xem lịch sử nhưng sản phẩm không thuộc seller này
             })
         }
         
@@ -224,44 +241,18 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
         })
     }
 
-    numberPage = await knex.raw(`select count(distinct his_id) 
-	from tbl_product_history where his_product_id = ${prodId} and his_status != 2 and his_status != 3`)
-
-    numberPage = Number(numberPage.rows[0].count)
-    if (numberPage > limit) {
-        numberPage = Math.ceil(numberPage / limit)
-    }
-    else {
-        numberPage = 1
-    }
-    if(sortByPrice === 'NON'){
-        var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
-                                    on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
-                                    order by h.his_created_date desc offset ${offset} limit ${limit}`)
-    }
-    else{
-        var result = await knex.raw(`select * from tbl_product_history h join tbl_account a
-                                on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status != 2 and his_status != 3
-								 order by h.his_price::integer ${sortByPrice} offset ${offset} limit ${limit}`)
-    }
-
-    result = result.rows
-
     var listHistory = []
-    var index = 0
 
-    while (index < result.length) {
-        var name = result[index].acc_full_name.split(' ');
-        var fullName = "****" + name[name.length - 1]
-        let item = {
-            his_id: result[index].his_id,
-            his_created_date: result[index].his_created_date,
-            acc_full_name: fullName,
-            his_price: result[index].his_price
-        }
-        listHistory.push(item)
-        index++
+
+    if(checkTimeOfProduct.length !== 0){
+        return res.status(200).json({
+            numberOfPage: 1,
+            historyList: listHistory,
+            statusCode: 4 //là sản phẩm chưa hết thời gian đấu giá nên không được xem lịch sử
+        })
     }
+    listHistory = await ListHistory()
+    await ListHistory()
 
 
     return res.status(200).json({

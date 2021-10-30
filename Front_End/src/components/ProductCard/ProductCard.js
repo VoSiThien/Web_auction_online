@@ -83,6 +83,9 @@ const ProductCard = ({
   endDate,
   catName,
   currentPrice,
+  startDate,
+  numberBid,
+  priceHolder,
   size = 'normal'
 }) => {
   const classes = useStyles({ size });
@@ -136,13 +139,28 @@ const ProductCard = ({
             <Typography className={classes.title} variant="body1">
               {title}
             </Typography>
-            <Typography
-              variant="body1"
-              className={`${classes.price} ${salePrice ? classes.hasSale : ''}`}>
-              Giá : <strong>{price}</strong> VNĐ
+            
+            <Typography className={classes.subInfomation}
+              variant="body2"
+              color="textSecondary"
+              component="p">
+              Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : currentPrice + 'VNĐ'} </strong>
             </Typography>
 
 
+            <Typography className={classes.subInfomation}
+              variant="body2"
+              color="textSecondary"// https://mui.com/api/typography/#props
+              component="p">
+              Người giữ giá: <strong>{priceHolder}</strong>
+            </Typography>
+
+            <Typography className={classes.subInfomation}
+              variant="body2"
+              color="textSecondary"
+              component="p">
+              Giá mua ngay: <strong>{price == null ? 'Chưa có thông tin' : price + 'VNĐ'} </strong>
+            </Typography>
 
             <Typography className={classes.subInfomation}
               variant="body2"
@@ -155,22 +173,24 @@ const ProductCard = ({
               variant="body2"
               color="textSecondary"
               component="p">
-              Ngày hết hạn: <strong>{endDate}</strong>
+              Ngày đăng: <strong>{startDate}</strong>
             </Typography>
 
             <Typography className={classes.subInfomation}
               variant="body2"
               color="textSecondary"
               component="p">
-              Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : currentPrice + 'VNĐ'} </strong>
+              Ngày hết hạn: <strong>{endDate}</strong>
             </Typography>
+
+            
 
             <Typography
               variant="body2"
               color="textSecondary"
               component="p"
               className={classes.description}>
-              Mô tả: <strong>{description && deleteHTML(description)}</strong>
+              Số lượt ra giá: <strong>{numberBid} lượt</strong>
             </Typography>
           </CardContent>
         </Link>
