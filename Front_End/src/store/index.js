@@ -5,7 +5,7 @@ import historyRedu from '../reducers/historyBid';
 
 import authSlice from '../reducers/auth';
 import selProductRedu from '../reducers/users/product';
-
+import admCatoryRedu from '../reducers/admin/category';
 import admUserRedu from '../reducers/admin/user';
 
 import cartSlice from '../reducers/cart';
@@ -23,7 +23,7 @@ const store = configureStore({
     
     auth: authSlice.reducer,
     selProduct: selProductRedu.reducer,
-    
+    admCategory:admCatoryRedu.reducer,
     admUser: admUserRedu.reducer,
 
     ui: uiSlice.reducer,

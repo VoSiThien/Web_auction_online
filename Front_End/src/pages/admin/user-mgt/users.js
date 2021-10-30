@@ -162,6 +162,7 @@ const UserManager = (props) => {
   const [page, setPage] = useState(1);
   const [userInfo, setUserInfo] = useState({});
   let { loading, userList, numPage } = userInfo;
+  console.log(loading)
   const filter = props.additional.filter;
 
   const [showFailed, setShowFailed] = useState(false);
@@ -430,7 +431,7 @@ const UserManager = (props) => {
                 </TableBody>
           </>
           ) : (
-            <TableError message="No data in database" onTryAgain={getUserListHandler} />
+            <TableError message="Không có dữ liệu" onTryAgain={getUserListHandler} />
           )}
           </Table>
         </TableContainer>

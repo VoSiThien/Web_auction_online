@@ -3,13 +3,52 @@ const router = express.Router()
 const knex = require('../utils/dbConnection')
 const catValidation = require('../middlewares/validation/categories.validate')
 const catModel = require('../models/categories.model')
+const commonService = require('../services/commonService')
 const successCode = 0
 
+router.post('/list-parent', async (req, res) => {
+	const { page, limit } = req.body
+	const parentCat = await catModel.getAllParent()
+	
+	if (parentCat.length === 0) {
+		return res.status(400).json({
+			errorMessage: 'Chuyên mục không tồn tại!',
+			statusCode: errorCode
+		})
+	}
+	return res.status(200).json({
+		numberOfCat: parentCat.length,
+		CategoryList: commonService.pagingation(parentCat, page, limit),
+		totalPage: commonService.caculateNumberOfPage(parentCat, page, limit)
+	})
+})
+
+router.post('/list-child', catValidation.listChild, async (req, res) => {
+	const { page, limit, catParent } = req.body
+	const parentCat = await catModel.getById(catParent)
+	
+	if (parentCat.length === 0) {
+		return res.status(400).json({
+			errorMessage: 'Chuyên mục cha không tồn tại!',
+			statusCode: errorCode
+		})
+	}
+	const result = await knex.from('tbl_categories')
+		.where({ cate_father: catParent })
+	
+	if (result.length !== 0) {
+		return res.status(200).json({
+			numberOfSubCat: result.length,
+			subCategoryList: commonService.pagingation(result, page, limit),
+			totalPage: commonService.caculateNumberOfPage(result, page, limit)
+		})
+	}
+})
 
 
 router.post('/add-parent', catValidation.newParent, async (req, res) => {
 	const { catName } = req.body
-	
+
 	const currentStampTime = new Date()
 	const newParent = {
 		cate_name: catName,
@@ -36,7 +75,7 @@ router.post('/add-child', catValidation.newChild, async (req, res) => {
 	}
 
 	await knex('tbl_categories').insert(newChild)
-	
+
 	return res.status(200).json({
 		statusCode: successCode
 	})
@@ -44,11 +83,11 @@ router.post('/add-child', catValidation.newChild, async (req, res) => {
 
 router.post('/update', catValidation.updateCat, async (req, res) => {
 	const { catID, catName, catParentID } = req.body
-	
+
 	const result = await catModel.getById(catID)
-	
+
 	let presentDate = new Date()
-	
+
 	const newCatInfomation = {
 		cate_name: catName,
 		cate_father: catParentID ? catParentID : result[0].cate_father,
@@ -58,7 +97,7 @@ router.post('/update', catValidation.updateCat, async (req, res) => {
 	await knex('tbl_categories')
 		.where({ cate_id: catID })
 		.update(newCatInfomation)
-	
+
 	return res.status(200).json({
 		statusCode: successCode
 	})

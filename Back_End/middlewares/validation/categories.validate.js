@@ -4,6 +4,7 @@ const productModel = require('../../models/product.model')
 
 const errorCode = 1
 
+
 const newParent = async (req, res, next) => {
     const { catName } = req.body
 
