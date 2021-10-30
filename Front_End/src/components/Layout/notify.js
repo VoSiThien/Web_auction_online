@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom';
 
 function NotifyModel({ text, isOpen, onClose }) {
     var Text = text;
-    const TextInNotify = localStorage.getItem('TextNotifyBid').split("|");
-    const NameProduct = TextInNotify[2];
-    const PriceProduct = TextInNotify[1];
-    const id = TextInNotify[0];
+    var TextInNotify = []
+    if(localStorage.getItem('TextNotifyBid')){
+        TextInNotify = localStorage.getItem('TextNotifyBid').split("|");
+    }
+    const NameProduct = TextInNotify[2] || 0;
+    const PriceProduct = TextInNotify[1] || 0;
+    const id = TextInNotify[0] || 1;
 
     const onClickHandle = async () => {
         try {
