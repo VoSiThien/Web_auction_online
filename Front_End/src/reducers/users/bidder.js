@@ -52,5 +52,16 @@ const bidderSlice = createSlice({
   },
 });
 
+export const postAuctionComment = createAsyncThunk(
+  'addCommentSeller/Post',
+  async ({ accSeller, accIsLike, accComment }, { rejectWithValue }) => {
+  try {
+      const result = (await bidderApi.bidAddComment({ accSeller, accIsLike, accComment  }));
+      return result.data;
+  } catch (error) {
+    return rejectWithValue(getResponseError(error));
+  }
+});
+
 export const bidderActions = bidderSlice.actions;
 export default bidderSlice;

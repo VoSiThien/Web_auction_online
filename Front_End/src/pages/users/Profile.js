@@ -88,6 +88,7 @@ const Profile = (props) => {
 		1: "password",
 		2: "avatar",
 	};
+	
 	const tabChangeHandler = (event, newValue) => {
 		history.push(`/profile/${indexToTabName[newValue]}`);
 		setTabValue(newValue);
