@@ -11,16 +11,14 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Edit, Add, Delete } from '@material-ui/icons';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import NumberFormat from 'react-number-format';
+import React, { useCallback, useEffect, useRef, useState, createRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListCategory } from '../../../reducers/category';
 import { postAuctionProduct } from '../../../reducers/users/product';
 import { KeyboardDateTimePicker, MuiPickersUtilsProvider  } from "@material-ui/pickers";
 import MomentUtils from '@date-io/moment';
-import { format } from 'date-fns';
 import DescriptionProduct from './DescriptionModel';
-import { EditorState } from 'draft-js';
-import { convertToHTML } from 'draft-convert';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
@@ -81,6 +79,68 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
+
+  ovlContainer: {
+    "&:hover": {
+        "& $ovlOverlay": {
+          opacity: 1,
+        }
+      },
+    position: "relative",
+    width: 60,
+    height: 60,
+    padding: 5,
+  },
+  
+  ovlImage: {
+    display: "block",
+    width: "100%",
+    height: "auto",
+  },
+  
+  ovlOverlay: {
+    position: "absolute",
+    display: "block",
+    top: 0,
+    height: "100%",
+    width: "100%",
+    opacity: 0,
+    transition: ".3s ease",
+    "background-color": "rgba(0,0,0,0.3)",
+    padding: '1',
+  },
+
+  ovlAdd: {
+    opacity: 0.7,
+    "background-color": "rgba(0,0,0,0.3)",
+    "&:hover": {
+      opacity: 1,
+      transition: ".3s ease",
+      "background-color": "rgba(0,0,0,0.3)",
+    },
+  },
+  
+  ovlIcon: {
+    color: "white",
+    "font-size": 40,
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    "-ms-transform": "translate(-50%, -50%)",
+    "text-align": "center",
+  },  
+  ovlAddIcon: {
+    color: "primary",
+    "font-size": 40,
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    "-ms-transform": "translate(-50%, -50%)",
+    "text-align": "center",
+  }
+
 }));
 
 const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
@@ -91,16 +151,15 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
   const [mainImageSrc, setMainImageSrc] = useState(null);
   const [submitIsValid, setSubmitIsValid] = useState(true);
   const [error, setError] = useState('');
-  const [prodEndDate, setProdEndDate] = useState('');
-  const [prodDescription, setProdDescription] = useState(() => EditorState.createEmpty());
   const [openDescriptionModal, setOpenDescriptionModal] = useState(false);
-  const prodNameRef = useRef('');
+  const [stateDescription, setStateDescription] = useState('');
+  const prodNameRef = createRef('');
   const prodCategoryIdRef = useRef(0);
   const prodPriceStartingRef = useRef(0);
   const prodPriceStepRef = useRef(0);
   const prodPriceRef = useRef(0);
-  // const prodDescriptionRef = useRef('');
   const prodAutoExtendRef = useRef(0);
+  const prodEndDateRef = useRef('');
 
   const openDescriptionModalHandler = () => {
     setOpenDescriptionModal(true);
@@ -145,43 +204,39 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
     setError('');
     onClose();
   };
-
-  const convertContentToHTML = () => {
-    return convertToHTML(prodDescription.getCurrentContent());
-  }
-
   const addNewProductHandler = async () => {
     setError('');
-
     const enteredProdName = prodNameRef.current.value;
     const enteredProdCategoryId = prodCategoryIdRef.current.value;
-    const enteredProdPriceStarting = prodPriceStartingRef.current.value;
-    const enteredProdPriceStep = prodPriceStepRef.current.value;
-    const enteredProdPrice = prodPriceRef.current.value;
-    const enteredProdDescription = convertContentToHTML;//prodDescriptionRef.current.value;
-    // const enteredProdEndDate = prodEndDateRef.current.value;
+    const enteredProdPriceStarting = prodPriceStartingRef.current.state.numAsString;
+    const enteredProdPriceStep = prodPriceStepRef.current.state.numAsString;
+    const enteredProdPrice = prodPriceRef.current.state.numAsString;
     const enteredProdAutoExtend = prodAutoExtendRef.current.value;
+    const enteredProdEndDate = prodEndDateRef.current.value;
+    const enteredProdDescription = stateDescription;
     let formData = new FormData();
-    console.log(prodEndDate)
-    // if (
-    //   enteredProdName?.length > 0 &&
-    //   enteredProdCategoryId?.length > 0 &&
-    //   enteredProdPriceStarting?.length > 0 &&
-    //   enteredProdPriceStep?.length > 0 &&
-    //   prodEndDate?.length > 0
-    // ) {
-    //   setSubmitIsValid(true);
-    // } else {
-    //   setSubmitIsValid(false);
-    //   return;
-    // }
+    if (
+      enteredProdName?.length > 0 &&
+      enteredProdCategoryId?.length > 0 &&
+      enteredProdPriceStarting?.length > 0 &&
+      enteredProdPriceStep?.length > 0 &&
+      enteredProdDescription?.length > 0 &&
+      enteredProdEndDate?.length > 0
+    ) {
+      setSubmitIsValid(true);
+    } else {
+      setSubmitIsValid(false);
+      return;
+    }
 
     for (let i = 0; i < prodImages.length; i++) {
       formData.append('prodImages', prodImages[i]);
     }
 
-    // if(prodImages.length < 3)
-    //   return;
+    if(prodImages.length < 3){
+      setError('Vui lòng chọn tối thiểu 3 ảnh cho sản phẩm');
+      return;
+    }
 
     formData.append('prodName', enteredProdName);
     formData.append('prodCategoryId', enteredProdCategoryId);
@@ -189,17 +244,21 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
     formData.append('prodPriceStep', enteredProdPriceStep);
     formData.append('prodPrice', enteredProdPrice);
     formData.append('prodDescription', enteredProdDescription);
-    formData.append('prodEndDate', prodEndDate);
+    formData.append('prodEndDate', enteredProdEndDate);
     formData.append('prodAutoExtend', enteredProdAutoExtend);
-    console.log(formData)
-    // try {
-    //   await dispatch(postAuctionProduct(formData)).unwrap();
-    //   showSuccess(true);
-    //   textAlert('Lưu thành công!!!');
-    // } catch (err) {
-    //   setError(err);
-    //   // console.log('🚀 ~ file: AddProduct.js ~ line 140 ~ addNewProductHandler ~ error', error);
+
+    // for (var value of formData.values()) {
+    //   console.log(value);
     // }
+    
+    try {
+      await dispatch(postAuctionProduct(formData)).unwrap();
+      showSuccess(true);
+      textAlert('Lưu thành công!!!');
+    } catch (err) {
+      setError(err);
+      return;
+    }
     onClose();
   };
   
@@ -215,26 +274,13 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
     }
   }, [prodImages]);
 
-  const handleVisible = useCallback(() => {
-    if (showSuccess === true) {
-        setTimeout(() => {
-          showSuccess(false)
-        }, 5000);
-    }
-  }, [showSuccess]);
-
-  useEffect(() => {
-      handleVisible();
-  }, [handleVisible]);
-
   return (
     <ProductModal isOpen={isOpen} onClose={closeModalHandler}>
       <div className={classes.root}>
         <DescriptionProduct 
           isOpen={openDescriptionModal} 
           onClose={closeDescriptionModalHandler}
-          prodDescription={prodDescription}
-          setProdDescription={setProdDescription}
+          setStateDescription={setStateDescription}
         />
         <Box borderRadius={6} className={classes.content}>
           <Box marginBottom={4} marginTop={2}>
@@ -266,18 +312,34 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
                 <Box display="flex" flexWrap="wrap" alignItems="center">
                   {prodImages?.length > 0 &&
                     prodImages.map((item, index) => (
-                      <Box display="flex" alignItems="center" key={index}>
-                        <Typography variant="caption">{item.name}</Typography>
-                        <Delete onClick={() => removeFile(item)} />
+                      <Box display="flex" alignItems="center" key={index} marginRight={2} className={classes.ovlContainer}>
+                        {/* <Typography variant="caption">{item.name}</Typography> */}
+                        <img
+                        alt=""
+                        src={URL.createObjectURL(item)}
+                        style={{
+                          objectFit: 'cover',
+                        }}
+                        className={classes.ovlImage}
+                        />
+                        <div className={classes.ovlOverlay}>
+                          <Delete  onClick={() => removeFile(item)} className={classes.ovlIcon} placeholder="Xoá"/>
+                        </div>
                       </Box>
                     ))}
+                    <Box display="inline" alignItems="center" className={classes.ovlContainer}>
+                        <label htmlFor="img1" style={{ display: 'flex' }} className={classes.ovlAdd}>
+                          {/* <IconButton color="primary"> */}
+                              <Add className={classes.ovlAddIcon} color="primary"/>
+                          {/* </IconButton> */}
+                        </label>
+                    </Box>
                 </Box>
-
-                <IconButton color="primary" className={classes.iconAdd}>
+                {/* <IconButton color="primary" className={classes.iconAdd}>
                   <label htmlFor="img1" style={{ display: 'flex' }}>
                     <Add />
                   </label>
-                </IconButton>
+                </IconButton> */}
               </div>
             </Box>
             <Box className={classes.productInformation}>
@@ -287,8 +349,9 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
                 </Typography>
                 <TextField 
                 variant="standard" 
-                size="small" 
+                size="small"
                 fullWidth 
+                defaultValue=""
                 inputRef={prodNameRef} />
               </div>
 
@@ -321,36 +384,36 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
                 <Typography variant="caption" component="p">
                 Giá bắt đầu (VND)
                 </Typography>
-                <TextField
+                <NumberFormat
                   variant="standard"
-                  size="small"
-                  inputProps={{ type: 'number' }}
-                  fullWidth
-                  inputRef={prodPriceStartingRef}
+                  thousandSeparator={true}
+                  suffix={' VND'}
+                  customInput={TextField}
+                  ref={prodPriceStartingRef}
                 />
               </div>
               <div className={classes.textField}>
                 <Typography variant="caption" component="p">
                 Bước giá (VND)
                 </Typography>
-                <TextField
+                <NumberFormat
                   variant="standard"
-                  size="small"
-                  inputProps={{ type: 'number' }}
-                  fullWidth
-                  inputRef={prodPriceStepRef}
+                  thousandSeparator={true}
+                  suffix={' VND'}
+                  customInput={TextField}
+                  ref={prodPriceStepRef}
                 />
               </div>
               <div className={classes.textField}>
                 <Typography variant="caption" component="p">
                 Giá mua thẳng (VND)
                 </Typography>
-                <TextField
+                <NumberFormat
                   variant="standard"
-                  size="small"
-                  inputProps={{ type: 'number' }}
-                  fullWidth
-                  inputRef={prodPriceRef}
+                  thousandSeparator={true}
+                  suffix={' VND'}
+                  customInput={TextField}
+                  ref={prodPriceRef}
                 />
               </div>
               <div className={classes.textField}>
@@ -361,13 +424,9 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
                 <KeyboardDateTimePicker
                     variant="standard"
                     ampm={false}
-                    defaultValue={format(new Date(Date.now()), 'yyyy/MM/dd kk:mm')}
-                    // minDate={(new Date(Date.now()))}
-                    value={prodEndDate}
-                    onChange={(date)=>setProdEndDate(date)}
-                    // onError={console.log}
+                    inputRef={prodEndDateRef}
                     disablePast
-                    format="yyyy/MM/DD HH:mm"
+                    format="DD/MM/yyyy HH:mm"
                   />
                 </MuiPickersUtilsProvider>
               </div>
@@ -386,7 +445,7 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
               </div>
               <div className={classes.textField}>
                 <Typography variant="caption" component="p">
-                  Gia hạn
+                  Gia hạn đấu giá
                 </Typography>
                 <FormControl variant="standard" size="small" fullWidth>
                   <Select
@@ -399,16 +458,16 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
                   </Select>
                 </FormControl>
               </div>
-              {/* {!submitIsValid && (
+              {!submitIsValid && (
                 <FormHelperText error style={{ marginBottom: 8 }}>
                   Tất cả các ô không được bỏ trống
                 </FormHelperText>
-              )} */}
-              {/* {error.length > 0 && (
+              )}
+              {error.length > 0 && (
                 <FormHelperText error style={{ marginBottom: 8 }}>
                   {error}
                 </FormHelperText>
-              )} */}
+              )}
 
               <Box>
                 <Button

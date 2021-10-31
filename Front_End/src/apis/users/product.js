@@ -9,7 +9,7 @@ const postAuctionProduct = (data) => {
 };
 
 const updateAuctionProduct = (data) => {
-  return axios.post('/api/seller/updateAuctionProduct', data);
+  return axios.post('/api/seller/updateAuctionProductDescription', data);
 };
 
 const deleteAuctionProduct = (data) => {

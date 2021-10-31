@@ -1,8 +1,7 @@
 const express = require('express')
-const path = require('path');
-const fs = require('fs');
 
 const knex = require('../utils/dbConnection')
+const { uploaderImage } = require('../utils/uploader')
 const validator = require('../middlewares/validation/seller.validate')
 
 const router = express.Router()
@@ -56,12 +55,10 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
                                 where p.prod_seller_id = ${accId}
                                 and p.prod_status != 2
 								order by p.prod_status offset ${offset} limit ${limit}`)
-
 	result = result.rows
 
 	var prodList = []
 	var index = 0
-
 	while(index < result.length){
 		let probItem = {
 			prodId: result[index].prod_id,
@@ -83,18 +80,21 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
 			prodDescription: result[index].prod_description,
 			prodUpdatedDate: result[index].prod_updated_date
 		}
-
-        let imageLink = []
-		for (let i = index; i < result.length; i++) {
-			index = i + 1
-			imageLink.push(result[i].prod_img_data)
-			if ((i >= result.length - 1) || (result[index].prod_id != result[index - 1].prod_id)) {
-				break;
-			}
-		}
-		probItem['prodImages'] = imageLink
-		prodList.push(probItem)
-		index++
+        var idxImg = 0;
+        let imageLink = [];
+        try{
+            let imgs = await knex.raw(`select * from tbl_product_images where prod_img_product_id=${result[index].prod_id}`);
+            imgs = imgs.rows;
+            while(idxImg < imgs.length){
+                imageLink.push(imgs[idxImg].prod_img_data);
+                idxImg++;
+            }
+            probItem['prodImages'] = imageLink;
+        }catch(e){
+            console.log(e);
+        }
+		prodList.push(probItem);
+		index++;
 	}
 
 	return res.status(200).json({
@@ -118,7 +118,7 @@ router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res)
         prodAutoExtend
     } = req.body
     const accId = req.account.accId
-    const now = Date.now()
+    const now = new Date(Date.now())
     let prodId = null;
     try {
 
@@ -136,16 +136,11 @@ router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res)
             prod_updated_date: now,
             prod_auto_extend: prodAutoExtend
         })
-        // .returning('*')
-        // console.error(prodId)
-        // prodId = await knex.raw(`INSERT INTO public.tbl_product(prodName,prod_category_id,prod_price_starting,
-        //     prod_price_step,prod_price,prod_description,prod_end_date,prod_seller_id,
-        //     prod_create_date,prod_update_date,prod_auto_extend) VALUES(${prodName},${prodCategoryId},${prodPriceStarting},${prodPriceStep},
-        //         ${prodPrice},${prodDescription},${prodEndDate},${accId},${now},${now},${prodAutoExtend})`)
         .returning('prod_id')
         .then(function(result) {
             return result[0]
         })
+        
     } catch (error) {
         console.error(error)
         return res.status(400).json({
@@ -153,25 +148,21 @@ router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res)
             statusCode: successCode
         })
     }
-    const { prod_images } = req.files
+    const { prodImages } = req.files
     let mainImage = null;
-    prod_images.forEach(async(image) => {
-        let pathName = `/uploads/users/1/${prodId}`;
-        const dirs = path.join(__dirname, `..${pathName}`)
-        const impName = `/product_${Date.now().valueOf()}.png`
-        pathName = path.join(pathName, impName)
-        if (!fs.existsSync(dirs)) {
-            fs.mkdirSync(dirs, { recursive: true });
-        }
-        fs.writeFileSync(path.join(dirs, impName), image.data, cb => console.log('error'))
-        const prodImage = await knex('tbl_product_images').insert({
+    prodImages.forEach(async(image) => {
+
+        let url = await uploaderImage(image);
+        
+        await knex('tbl_product_images').insert({
             prod_img_product_id: prodId,
-            prod_img_data: pathName,
-            prod_img_status: 1
-        })
+            prod_img_data: url,
+            prod_img_status: 0
+        });
+
         if(mainImage == null){
-            mainImage = pathName;
-            await knex('tbl_product').where({ prod_id: prodId }).update({ prod_main_image: mainImage })
+            mainImage = url;
+            await knex('tbl_product').where({ prod_id: prodId }).update({ prod_main_image: mainImage });
         }
     })
     return res.status(200).json({
@@ -182,8 +173,16 @@ router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res)
 
 router.post('/updateAuctionProductDescription', validator.updateAuctionProductDescription, async(req, res) => {
     const { prodId, prodDescription } = req.body
-    const now = Date.now()
-    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_description: prodDescription, prod_update_date: now })
+    const now = new Date(Date.now())
+    try{
+        await knex('tbl_product').where({ prod_id: prodId }).update({ prod_description: prodDescription, prod_updated_date: now })
+    }catch(e){
+        console.log(e);
+        return res.status(400).json({
+            data: e,
+            statusCode: errorCode
+        })
+    }
     return res.status(200).json({
         data: true,
         statusCode: successCode
@@ -192,7 +191,7 @@ router.post('/updateAuctionProductDescription', validator.updateAuctionProductDe
 
 router.post('/deleteAuctionProduct', validator.deleteAuctionProduct, async(req, res) => {
     const { prodId } = req.body
-    const now = Date.now()
+    const now = new Date(Date.now())
     await knex('tbl_product').where({ prod_id: prodId }).update({ prod_status: 2, prod_updated_date: now })
     return res.status(200).json({
         data: true,

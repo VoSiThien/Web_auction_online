@@ -4,17 +4,19 @@ import {
   Button,
   FormControl,
   FormHelperText,
-  IconButton,
   makeStyles,
   Select,
   TextField,
   Typography,
 } from '@material-ui/core';
-import { Add, Close } from '@material-ui/icons';
+import { ZoomIn, Edit } from '@material-ui/icons';
+import NumberFormat from 'react-number-format';
+import moment from 'moment';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListCategory } from '../../../reducers/category';
 import { updateAuctionProduct } from '../../../reducers/users/product';
+import DescriptionProduct from './DescriptionModel';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
@@ -88,14 +90,77 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     background: '#fff',
   },
+  
+
+  ovlContainer: {
+    "&:hover": {
+        "& $ovlOverlay": {
+          opacity: 1,
+        }
+      },
+    position: "relative",
+    width: 60,
+    height: 60,
+  },
+  
+  ovlImage: {
+    display: "block",
+    width: "100%",
+    height: "auto",
+  },
+  
+  ovlOverlay: {
+    position: "absolute",
+    display: "block",
+    top: 0,
+    height: "100%",
+    width: "100%",
+    opacity: 0,
+    transition: ".3s ease",
+    "background-color": "rgba(0,0,0,0.3)",
+    padding: '1',
+  },
+
+  ovlAdd: {
+    opacity: 0.7,
+    "background-color": "rgba(0,0,0,0.3)",
+    "&:hover": {
+      opacity: 1,
+      transition: ".3s ease",
+      "background-color": "rgba(0,0,0,0.3)",
+    },
+  },
+  
+  ovlIcon: {
+    color: "white",
+    "font-size": 40,
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    "-ms-transform": "translate(-50%, -50%)",
+    "text-align": "center",
+  },  
+  ovlAddIcon: {
+    color: "primary",
+    "font-size": 40,
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    "-ms-transform": "translate(-50%, -50%)",
+    "text-align": "center",
+  }
+
 }));
 
-const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
+const UpdateProduct = ({ itemInfo, isOpen, onClose, showSuccess, textAlert }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.category.data);
   const [error, setError] = useState('');
   const [submitIsValid, setSubmitIsValid] = useState(true);
+  const [openDescriptionModal, setOpenDescriptionModal] = useState(false);
 
   const [currentProdName, setCurrentProdName] = useState('');
   const [currentProdCategoryId, setCurrentProdCategoryId] = useState(0);
@@ -107,24 +172,20 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
   const [currentProdAutoExtend, setCurrentProdAutoExtend] = useState(0);
 
   const [prodImages, setProdImages] = useState([]);
-  const [mainImageSrc, setMainImageSrc] = useState(null);
-
-  const prodNameRef = useRef('');
-  const prodCategoryIdRef = useRef(0);
-  const prodPriceStartingRef = useRef(0);
-  const prodPriceStepRef = useRef(0);
-  const prodPriceRef = useRef(0);
+  const [stateDescription, setStateDescription] = useState('');
   const prodDescriptionRef = useRef('');
-  const prodEndDateRef = useRef(Date.now());
-  const prodAutoExtendRef = useRef(0);
 
-  const [listRemoveImage, setListRemoveImage] = useState([]);
-  const [listNewImage, setListNewImage] = useState([]);
-  const [listNewImageRender, setListNewImageRender] = useState([]);
+  const openDescriptionModalHandler = () => {
+    setOpenDescriptionModal(true);
+  };
+
+  const closeDescriptionModalHandler = () => {
+    setOpenDescriptionModal(false);
+  };
 
   const fileChangeHandler = (file) => {
     if (file) {
-      setListNewImage((prevState) => [...prevState, file]);
+      // setListNewImage((prevState) => [...prevState, file]);
       getBase64(file);
     }
   };
@@ -133,18 +194,8 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
     let reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      setListNewImageRender((prevSate) => [...prevSate, { file, image: reader.result }]);
+      // setListNewImageRender((prevSate) => [...prevSate, { file, image: reader.result }]);
     };
-  };
-
-  const removeFile = (item) => {
-    // console.log(item);
-    if (prodImages.includes(item)) {
-      setProdImages((prevState) => prevState.filter((image) => image !== item));
-      setListRemoveImage((prevState) => [...prevState, item]);
-    }
-    setListNewImage((prevState) => prevState.filter((image) => image !== item?.file));
-    setListNewImageRender((prevState) => prevState.filter((image) => image !== item));
   };
 
   const getListCategoryHandler = useCallback(async () => {
@@ -154,66 +205,34 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
   }, [dispatch]);
 
   const closeModalHandler = () => {
-    if (itemInfo) {
-      setCurrentProdName(itemInfo?.prodName);
-      setCurrentProdCategoryId(itemInfo?.prodCategoryId);
-      setCurrentPriceStarting(itemInfo?.prodPriceStarting);
-      setCurrentProdPriceStep(itemInfo?.prodPriceStep);    
-      setCurrentProdPrice(itemInfo?.prodPrice);  
-      setCurrentProdDescription(itemInfo?.prodDescription);
-      setCurrentProdEndDate(itemInfo?.prodEndDate);
-      setCurrentProdAutoExtend(itemInfo?.prodAutoExtend);
-      setProdImages(itemInfo?.prodImages || []);
-    }
+    itemInfo.prodDescription = currentProdDescription + '<br>' + itemInfo?.prodDescription;
     setError('');
-    setListRemoveImage([]);
     onClose();
   };
 
   const updateProductHandler = async () => {
     setError('');
-
-    const enteredProdName = prodNameRef.current.value;
-    const enteredProdCategoryId = prodCategoryIdRef.current.value;
-    const enteredProdPriceStarting = prodPriceStartingRef.current.value;
-    const enteredProdPriceStep = prodPriceStepRef.current.value;
-    const enteredProdPrice = prodPriceRef.current.value;
-    const enteredProdDescription = prodDescriptionRef.current.value;
-    const enteredProdEndDate = prodEndDateRef.current.value;
-    const enteredProdAutoExtend = prodAutoExtendRef.current.value;
+    const enteredProdDescription = currentProdDescription +'<br>'+ stateDescription;
     let formData = new FormData();
+    if(enteredProdDescription){
+      formData.append('prodDescription', enteredProdDescription);
+      formData.append('prodId', itemInfo?.prodId);
 
-    if (
-      enteredProdName?.length > 0 &&
-      enteredProdCategoryId?.length > 0 &&
-      enteredProdPriceStarting?.length > 0 &&
-      enteredProdPriceStep?.length > 0 &&
-      enteredProdEndDate?.length > 0
-    ) {
-      setSubmitIsValid(true);
-    } else {
-      setSubmitIsValid(false);
-      return;
-    }
-
-    for (let i = 0; i < prodImages.length; i++) {
-      formData.append('prodImages', prodImages[i]);
-    }
-
-    formData.append('prodName', enteredProdName);
-    formData.append('prodCategoryId', enteredProdCategoryId);
-    formData.append('prodPriceStarting', enteredProdPriceStarting);
-    formData.append('prodPriceStep', enteredProdPriceStep);
-    formData.append('prodPrice', enteredProdPrice);
-    formData.append('prodDescription', enteredProdDescription);
-    formData.append('prodEndDate', enteredProdEndDate);
-    formData.append('prodAutoExtend', enteredProdAutoExtend);
-    try {
-      await dispatch(updateAuctionProduct(formData)).unwrap();
-      // toast.success('Add new product success');
-    } catch (err) {
-      setError(err);
-      // console.log('🚀 ~ file: AddProduct.js ~ line 140 ~ addNewProductHandler ~ error', error);
+      if ( enteredProdDescription?.length > 0 ) 
+      {
+        setSubmitIsValid(true);
+      } else {
+        setSubmitIsValid(false);
+        return;
+      }
+      try {
+        await dispatch(updateAuctionProduct(formData)).unwrap();
+        showSuccess(true);
+        textAlert('Lưu thành công!!!');
+      } catch (err) {
+        setError(err);
+        return;
+      }
     }
     onClose();
   };
@@ -223,17 +242,6 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
   }, [dispatch, getListCategoryHandler]);
 
   useEffect(() => {
-    if (prodImages.length > 0) {
-      try {
-        getBase64(prodImages[0]);
-      } catch (error) {
-      }
-    } else {
-      setMainImageSrc(null);
-    }
-  }, [prodImages]);
-
-  useEffect(() => {
     if (itemInfo) {
       setCurrentProdName(itemInfo?.prodName);
       setCurrentProdCategoryId(itemInfo?.prodCategoryId);
@@ -244,26 +252,28 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
       setCurrentProdEndDate(itemInfo?.prodEndDate);
       setCurrentProdAutoExtend(itemInfo?.prodAutoExtend);
       setProdImages(itemInfo?.prodImages || []);
-      // setMainImageSrc(itemInfo?.prodImages[0]);
     }
   }, [itemInfo]);
   return (
     <ProductModal isOpen={isOpen} onClose={closeModalHandler}>
       <div className={classes.root}>
+        <DescriptionProduct 
+          isOpen={openDescriptionModal} 
+          onClose={closeDescriptionModalHandler}
+          setStateDescription={setStateDescription}
+        />
         <Box borderRadius={6} className={classes.content}>
           <Box marginBottom={4} marginTop={2}>
             <Typography variant="h5" className={classes.title}>
               Cập nhật sản phẩm
             </Typography>
-            {/* <Typography variant="caption" className={classes.subTitle}>
-              Family Admin Panel
-            </Typography> */}
           </Box>
           <form encType="multipart/form-data" className={classes.section}>
             <Box marginBottom={2} className={classes.image}>
               <div className={classes.mainImage}>
                 <img
                   alt=""
+                  src={itemInfo?.prodMainImage}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -282,75 +292,21 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
                 <Box display="flex" flexWrap="wrap" alignItems="center">
                   {prodImages?.length > 0 &&
                     prodImages.map((item, index) => (
-                      <Box
-                        display="flex"
-                        alignItems="center"
-                        key={index}
-                        marginRight={2}
-                        className={classes.miniImage}>
+                      <Box display="flex" alignItems="center" key={index}  marginRight={2} className={classes.ovlContainer}>
                         <img
-                          src={item}
-                          alt=""
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                          }}
+                        alt=""
+                        src={item}
+                        style={{
+                          objectFit: 'cover',
+                        }}
+                        className={classes.ovlImage}
                         />
-                        <IconButton
-                          color="primary"
-                          onClick={() => removeFile(item)}
-                          className={classes.iconDel}
-                          size="small">
-                          <Close
-                            fontSize="small"
-                            style={{
-                              color: '#000',
-                              cursor: 'pointer',
-                            }}
-                          />
-                        </IconButton>
-                      </Box>
-                    ))}
-                  {listNewImageRender?.length > 0 &&
-                    listNewImageRender.map((item, index) => (
-                      <Box
-                        display="flex"
-                        alignItems="center"
-                        key={index}
-                        marginRight={2}
-                        className={classes.miniImage}>
-                        <img
-                          src={item.image}
-                          alt=""
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                          }}
-                        />
-                        <IconButton
-                          color="primary"
-                          onClick={() => removeFile(item)}
-                          className={classes.iconDel}
-                          size="small">
-                          <Close
-                            fontSize="small"
-                            style={{
-                              color: '#000',
-                              cursor: 'pointer',
-                            }}
-                          />
-                        </IconButton>
+                        <div className={classes.ovlOverlay}>
+                          <ZoomIn  onClick={()=>{}} className={classes.ovlIcon} placeholder="Phóng to"/>
+                        </div>
                       </Box>
                     ))}
                 </Box>
-
-                <IconButton color="primary" className={classes.iconAdd}>
-                  <label htmlFor="img1" style={{ display: 'flex' }}>
-                    <Add />
-                  </label>
-                </IconButton>
               </div>
             </Box>
             <Box className={classes.productInformation}>
@@ -362,8 +318,9 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
                 variant="standard" 
                 size="small" 
                 fullWidth
+                inputProps={{ readOnly: true }}
                 value={currentProdName}
-                inputRef={prodNameRef} 
+                // inputRef={prodNameRef} 
                 />
               </div>
 
@@ -376,8 +333,10 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
                     native
                     defaultValue=""
                     MenuProps={{ classes: { paper: classes.menuPaper } }}
+                    inputProps={{ readOnly: true }}
                     value={currentProdCategoryId}
-                    inputRef={prodCategoryIdRef}>
+                    // inputRef={prodCategoryIdRef}
+                    >
                     {categories?.length === 0 &&(<option aria-label="None" value="" />)}
                     {categories?.length > 0 &&
                       categories.map((cate, index) => (
@@ -397,39 +356,42 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
                 <Typography variant="caption" component="p">
                 Giá bắt đầu (VND)
                 </Typography>
-                <TextField
+                <NumberFormat
                   variant="standard"
-                  size="small"
-                  inputProps={{ type: 'number' }}
-                  fullWidth
+                  thousandSeparator={true}
+                  suffix={' VND'}
                   value={currentProdPriceStarting}
-                  inputRef={prodPriceStartingRef}
+                  inputProps={{ readOnly: true }}
+                  customInput={TextField}
+                  // ref={currentProdPriceStarting}
                 />
               </div>
               <div className={classes.textField}>
                 <Typography variant="caption" component="p">
                 Bước giá (VND)
                 </Typography>
-                <TextField
+                <NumberFormat
                   variant="standard"
-                  size="small"
-                  inputProps={{ type: 'number' }}
-                  fullWidth
+                  thousandSeparator={true}
+                  suffix={' VND'}
                   value={currentProdPriceStep}
-                  inputRef={prodPriceStepRef}
+                  inputProps={{ readOnly: true }}
+                  customInput={TextField}
+                  // ref={currentProdPriceStarting}
                 />
               </div>
               <div className={classes.textField}>
                 <Typography variant="caption" component="p">
                 Giá mua thẳng (VND)
                 </Typography>
-                <TextField
+                <NumberFormat
                   variant="standard"
-                  size="small"
-                  inputProps={{ type: 'number' }}
-                  fullWidth
+                  thousandSeparator={true}
+                  suffix={' VND'}
                   value={currentProdPrice}
-                  inputRef={prodPriceRef}
+                  inputProps={{ readOnly: true }}
+                  customInput={TextField}
+                  // ref={currentProdPriceStarting}
                 />
               </div>
               <div className={classes.textField}>
@@ -437,32 +399,16 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
                 Ngày hết hạn
                 </Typography>
                 <TextField
-                  defaultValue={Date.now()}
+                  // defaultValue={Date.now()}
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  inputProps={{ type: 'date' }}
+                  inputProps={{ readOnly: true }}
                   // minDate={Date.now()}
                   fullWidth
-                  value={currentProdEndDate}
-                  inputRef={prodEndDateRef}
+                  value={moment(new Date(currentProdEndDate)).format("DD/MM/YYYY HH:mm")}
+                  // inputRef={prodEndDateRef}
                 />
-              </div>
-              <div className={classes.textField}>
-                <Typography variant="caption" component="p">
-                  Danh mục
-                </Typography>
-                <FormControl variant="standard" size="small" fullWidth>
-                  <Select
-                    native
-                    defaultValue=""
-                    MenuProps={{ classes: { paper: classes.menuPaper } }}
-                    value={currentProdAutoExtend}
-                    inputRef={prodAutoExtendRef}>
-                    <option value="0">Không gia hạn</option>
-                    <option value="1">Gia hạn</option>
-                  </Select>
-                </FormControl>
               </div>
               <div className={classes.textField}>
                 <Typography variant="caption" component="p">
@@ -476,7 +422,34 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose }) => {
                   fullWidth
                   value={currentProdDescription}
                   inputRef={prodDescriptionRef}
-                />
+                />            
+                <Button
+                marginTop={2}
+                startIcon={<Edit />}
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick={openDescriptionModalHandler}>
+                Chỉnh sửa mô tả
+                </Button>
+              </div>
+              <div className={classes.textField}>
+                <Typography variant="caption" component="p">
+                  Gia hạn đấu giá
+                </Typography>
+                <FormControl variant="standard" size="small" fullWidth>
+                  <Select
+                    native
+                    defaultValue=""
+                    MenuProps={{ classes: { paper: classes.menuPaper } }}
+                    value={currentProdAutoExtend}
+                    inputProps={{ readOnly: true }}
+                    // inputRef={prodAutoExtendRef}
+                    >
+                    <option value="0">Không gia hạn</option>
+                    <option value="1">Gia hạn</option>
+                  </Select>
+                </FormControl>
               </div>
               {!submitIsValid && (
                 <FormHelperText error style={{ marginBottom: 8 }}>

@@ -75,7 +75,7 @@ const updateAuctionProductDescription = (req, res, next) => {
     const shema = {
         type: "object",
         properties: {
-            prodId: { type: "integer" },
+            prodId: { type: "string" },
             prodDescription: { type: "string" },
         },
         required: ["prodId", "prodDescription"],

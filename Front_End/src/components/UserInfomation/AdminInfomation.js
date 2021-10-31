@@ -1,7 +1,6 @@
 import { makeStyles, Typography } from '@material-ui/core';
-import { Image, Button, Popover, OverlayTrigger } from 'react-bootstrap';
+import { Image, Button, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import { useState } from 'react';
-import EditIcon from '@material-ui/icons/Edit';
 import UpdateProduct from '../../pages/admin/user-mgt/UpdateProduct';
 
 const useStyles = makeStyles((theme) => ({
@@ -47,23 +46,14 @@ const AdminInfomation = ({ avatar, name, position, user }) => {
         trigger={["click","hover"]}
         delay={{ show: 100, hide: 10000 }}
         placement="right"
-        overlay={
-          <Popover >
-            <Popover.Header style={{width:'50px', height:'50px', paddingTop:'10px'}}>
-              <EditIcon
-                onClick={() => openUpdateModalHandler(user)}
-                fontSize="small"
-                style={{ cursor: 'pointer' }}
-              /> 
-            </Popover.Header>
-          </Popover>
-        }
+        overlay={(props) => ( <Tooltip id="button-tooltip" {...props}> Cập nhật thông tin cá nhân </Tooltip> )}
       >
         {({ ref, ...triggerHandler }) => (
           <Button
             variant="light"
             {...triggerHandler}
             className="d-inline-flex align-items-center"
+            onClick={() => openUpdateModalHandler(user)}
           >
             <Image className={classes.avatar}
               ref={ref}

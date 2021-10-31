@@ -16,10 +16,20 @@ const deleteUser = (data) => {
   return axios.post('/api/admin/user/deleteUser', data);
 };
 
+const acceptSel = (data) => {
+  return axios.post('/api/admin/user/acceptSel', data);
+};
+
+const rejectSel = (data) => {
+  return axios.post('/api/admin/user/rejectSel', data);
+};
+
 const adminUserApi = {
   getUserList,
   // postAuctionProduct,
   // updateAuctionProduct,
+  acceptSel,
+  rejectSel,
   deleteUser,
 };
 
