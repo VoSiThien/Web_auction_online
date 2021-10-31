@@ -25,7 +25,8 @@
     "randomstring": "^1.2.1",
     "simple-oauth2": "^4.2.0",
     "streamifier": "^0.1.1",
-    "supertest": "^6.1.6"
+    "supertest": "^6.1.6",
+    "ws": "^8.2.3"
   },
   "name": "20424073",
   "description": "",

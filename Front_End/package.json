@@ -38,7 +38,8 @@
     "react-slick": "^0.28.1",
     "react-toastify": "^7.0.4",
     "slick-carousel": "^1.8.1",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "websocket": "^1.0.34"
   },
   "scripts": {
     "start": "set port=4000 & react-scripts start",

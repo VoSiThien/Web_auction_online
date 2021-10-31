@@ -9,6 +9,16 @@ const getProductDetail = (id) => {
   return axios.get(query);
 };
 
+const getProductByCategory = (page, limit, catID, prodID) => {
+  let query = `unauthorized-api/product/list-same-cat`;
+  return axios.post(query, {
+    page,
+    limit,
+    catID,
+    prodID
+  });
+}
+
 const listProductAboutToEnd = (page = 1, limit = 5) => {
   let query = `unauthorized-api/home/top-product-about-to-end`;
   return axios.post(query, {
@@ -37,7 +47,8 @@ const unauthorizedProduct = {
   getProductDetail,
   listProductAboutToEnd,
   listProductHighestPrice,
-  listProductHighestBid
+  listProductHighestBid,
+  getProductByCategory
 };
 
 export default unauthorizedProduct;

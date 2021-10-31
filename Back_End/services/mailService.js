@@ -19,7 +19,7 @@ const successCode = 0
 // 		}
 // 	})
 // }
-const sendMailTran = async (mailOptions) => {
+const sendMail = async (mailOptions) => {
 	const fromEmail = environment.mailConfig.user
 	const password = environment.mailConfig.pass
 
@@ -37,5 +37,5 @@ const sendMailTran = async (mailOptions) => {
 
 
 module.exports = {
-    sendMailTran
+    sendMail
 }

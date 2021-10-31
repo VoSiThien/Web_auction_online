@@ -9,9 +9,9 @@ const initialState = {
 
 export const getListHistory = createAsyncThunk(
   'history/Post',
-  async ({page, limit, prodId, status}, { rejectWithValue }) => {
+  async ({page, limit, prodId, status, sortByPrice}, { rejectWithValue }) => {
   try {
-    return (await historyApi.getListHistory({page, limit, prodId, status})).data;
+    return (await historyApi.getListHistory({page, limit, prodId, status, sortByPrice})).data;
   } catch (error) {
     return rejectWithValue(getResponseError(error));
   }
