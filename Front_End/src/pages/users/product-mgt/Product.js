@@ -10,12 +10,15 @@ import {
   Paper,
   Typography,
   Button,
+  Checkbox
 } from '@material-ui/core';
+import NumberFormat from 'react-number-format';
 import { Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import Pagination from '@material-ui/lab/Pagination';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import moment from 'moment';
 import { uiActions } from '../../../reducers/ui';
 import SearchInput from '../../../components/UI/SearchInput';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -26,7 +29,7 @@ import AddProduct from './AddProduct';
 import UpdateProduct from './UpdateProduct';
 import TableError from '../../../components/Table/TableError';
 import TableLoading from '../../../components/Table/TableLoading';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
+import ModalConfirmDelete from '../../../components/Modal/ModalConfirmDelete';
 import { toast } from 'react-toastify';
 import Header from '../../../components/Layout/Header';
 import Footer from '../../../components/Layout/Footer';
@@ -241,7 +244,7 @@ const ProductManager = (props) => {
       <div className={classes.root}>
         <Header />
           <div className={classes.content}>
-            <Container>
+            <Container >
               <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
                   <Alert.Heading>{text}</Alert.Heading>
               </Alert>
@@ -258,7 +261,7 @@ const ProductManager = (props) => {
                 showSuccess={setShowSuccess}
                 textAlert={setText}
               />
-              <ModalConfirm
+              <ModalConfirmDelete
                 title="Xoá sản phẩm"
                 isOpen={openDeleteModal}
                 onClose={closeModalHandler}
@@ -330,11 +333,23 @@ const ProductManager = (props) => {
                             />
                           </TableCell>
                           <TableCell>{row?.prodCategoryName}</TableCell>
-                          <TableCell>{row?.prodPriceStarting}</TableCell>
-                          <TableCell>{row?.prodPriceStep}</TableCell>
-                          <TableCell>{row?.prodEndDate}</TableCell>
-                          <TableCell>{row?.prodAutoExtend}</TableCell>
-                          <TableCell>{row?.prodUpdatedDate}</TableCell>
+                          <TableCell>
+                            <NumberFormat 
+                              value={row?.prodPriceStarting} 
+                              displayType={'text'} 
+                              thousandSeparator={true} 
+                              suffix={' VND'}/>
+                              </TableCell>
+                          <TableCell>
+                            <NumberFormat 
+                              value={row?.prodPriceStep} 
+                              displayType={'text'} 
+                              thousandSeparator={true} 
+                              suffix={' VND'}/>
+                          </TableCell>
+                          <TableCell>{moment(new Date(row?.prodEndDate)).format("DD/MM/YYYY HH:mm")}</TableCell>
+                          <TableCell><Checkbox checked={row?.prodAutoExtend===1?true:false} color="primary"/></TableCell>
+                          <TableCell>{moment(new Date(row?.prodUpdatedDate)).format("DD/MM/YYYY HH:mm")}</TableCell>
                           <TableCell align="center" style={{ minWidth: 150 }}>
                             <EditIcon
                               onClick={() => openUpdateModalHandler(row)}

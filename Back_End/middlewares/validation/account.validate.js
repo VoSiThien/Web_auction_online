@@ -66,7 +66,63 @@ const deleteUser = (req, res, next) => {
     next()
 }
 
+const acceptSel = (req, res, next) => {
+    const shema = {
+        type: "object",
+        properties: {
+            accId: { type: "integer" },
+        },
+        required: ["accId"],
+        additionalProperties: true
+    }
+
+    const ajv = new ajvLib({
+        allErrors: true
+    })
+
+    const validator = ajv.compile(shema)
+    const valid = validator(req.body)
+
+    if (!valid) {
+        return res.status(400).json({
+            errorMessage: validator.errors[0].message,
+            statusCode: errorCode
+        })
+    }
+
+    next()
+}
+
+const rejectSel = (req, res, next) => {
+    const shema = {
+        type: "object",
+        properties: {
+            accId: { type: "integer" },
+        },
+        required: ["accId"],
+        additionalProperties: true
+    }
+
+    const ajv = new ajvLib({
+        allErrors: true
+    })
+
+    const validator = ajv.compile(shema)
+    const valid = validator(req.body)
+
+    if (!valid) {
+        return res.status(400).json({
+            errorMessage: validator.errors[0].message,
+            statusCode: errorCode
+        })
+    }
+
+    next()
+}
+
 module.exports = {
 	listByRole,
 	deleteUser,
+	acceptSel,
+	rejectSel,
 }

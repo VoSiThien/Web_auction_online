@@ -87,8 +87,31 @@ router.post('/list-by-role', accValidation.listByRole, async (req, res) => {
 
 router.post('/deleteUser', accValidation.deleteUser, async(req, res) => {
     const { accId } = req.body
-    const now = Date.now()
+    const now = new Date(Date.now())
     await knex('tbl_account').where({ acc_id: accId }).update({ acc_status: 2, acc_updated_date: now })
+    return res.status(200).json({
+        data: true,
+        statusCode: successCode
+    })
+})
+
+router.post('/acceptSel', accValidation.acceptSel, async(req, res) => {
+    const { accId } = req.body
+    const now = new Date(Date.now())
+    var exp = new Date(Date.now())
+	exp.setDate(exp.getDate() + 7);
+	exp = moment(exp).format('DD/MM/YYYY')
+    await knex('tbl_account').where({ acc_id: accId }).update({ acc_is_upgrade: 0, acc_role: 'SEL', acc_exp_upgrade: exp, acc_updated_date: now })
+    return res.status(200).json({
+        data: true,
+        statusCode: successCode
+    })
+})
+
+router.post('/rejectSel', accValidation.rejectSel, async(req, res) => {
+    const { accId } = req.body
+    const now = new Date(Date.now())
+    await knex('tbl_account').where({ acc_id: accId }).update({ acc_is_upgrade: 0, acc_updated_date: now })
     return res.status(200).json({
         data: true,
         statusCode: successCode

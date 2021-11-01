@@ -4,9 +4,12 @@ import {
   Button,
   makeStyles,
   Typography,
+  TextField,
 } from '@material-ui/core';
 import { Editor } from 'react-draft-wysiwyg';
 import React, { useState } from 'react';
+import { EditorState } from 'draft-js';
+import { convertToHTML } from 'draft-convert';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,15 +68,19 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const UpdateDescription = ({ isOpen, onClose, prodDescription, setProdDescription }) => {
+const UpdateDescription = ({ isOpen, onClose, setStateDescription }) => {
   const classes = useStyles();
+  
+  const [editText, setEditText] = useState(() => EditorState.createEmpty());
 
   const closeModalHandler = () => {
     onClose();
   };
 
   const handleEditorChange = (state) => {
-    setProdDescription(state);
+    setEditText(state);
+    const a = convertToHTML(editText.getCurrentContent());
+    setStateDescription(a);
   }
 
   // const createMarkup = (html) => {
@@ -95,15 +102,15 @@ const UpdateDescription = ({ isOpen, onClose, prodDescription, setProdDescriptio
             </Box>
             <Box marginBottom={2} className={classes.section}>
                 <Editor 
-                    editorState={prodDescription}
+                    editorState={editText}
                     wrapperClassName={classes.wrapperClass}
                     editorClassName={classes.editorClass}
                     toolbarClassName={classes.toolbarClass}
-                    onEditorStateChange={handleEditorChange} //(editorState) => setProdDescription(editorState)
+                    onEditorStateChange={handleEditorChange}
                 />
                 {/* <div className={classes.preview} dangerouslySetInnerHTML={createMarkup(convertedContent)}></div> */}
             </Box>
-            <Box marginTop={2}>
+            <Box marginTop={2} alignItems="center">
                 <Button 
                 variant="contained" 
                 color="primary" 
@@ -117,8 +124,4 @@ const UpdateDescription = ({ isOpen, onClose, prodDescription, setProdDescriptio
   </ProductModal>
   );
 };
-// <textarea
-// disabled
-// value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}
-// />
 export default UpdateDescription;
