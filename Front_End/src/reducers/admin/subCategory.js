@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import categoryApi from '../../apis/admin/category';
+import subCategoryAPI from '../../apis/admin/subCategory';
 import { getResponseError } from '../../helpers';
 
 const initialState = {
@@ -11,12 +11,12 @@ const initialState = {
 
 
 
-export const getListCategory = createAsyncThunk(
+export const getListSubCategory = createAsyncThunk(
     'adminCategory/ListParent',
     async ({page, limit}, { rejectWithValue }) => {
     try {
-      const categoryList = (await categoryApi.getListCategory({page, limit})).data
-      return categoryList;
+      const subCategoryList = (await subCategoryAPI.getListCategory({page, limit})).data
+      return subCategoryList;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }
@@ -27,17 +27,17 @@ const adminUserSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [getListCategory.pending]: (state) => {
+    [getListSubCategory.pending]: (state) => {
       state.loading = true;
     },
-    [getListCategory.rejected]: (state) => {
+    [getListSubCategory.rejected]: (state) => {
       state.loading = false;
     },
-    [getListCategory.fulfilled]: (state, action) => {
+    [getListSubCategory.fulfilled]: (state, action) => {
       state.loading = false
-      const { CategoryList, totalPage  } = action.payload
+      const { subCategoryList, totalPage  } = action.payload
       state.totalPage = totalPage
-      state.CategoryList = CategoryList
+      state.subCategoryList = subCategoryList
     },
   },
 });

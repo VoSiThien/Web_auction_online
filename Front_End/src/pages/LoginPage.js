@@ -140,9 +140,9 @@ const LoginPage = () => {
 
   return (
     <>
-      <div className={classes.root}>
+      <div className={classes.root} style ={{background:"lightgrey"}}>
         <Header />
-        <div className={classes.content}>
+        <div className={classes.content} >
           <Container>
             <Box className={classes.form} boxShadow={3}>
               <Typography variant="h3" className={classes.title}>

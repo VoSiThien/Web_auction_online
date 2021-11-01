@@ -133,8 +133,7 @@ export const adminRoutes = [
     additional: {
       filter: Role.Bidder,
     }
-  }
-  /*,
+  },
   {
     path: '/admin/sub-categories',
     protected: true,
@@ -145,5 +144,5 @@ export const adminRoutes = [
       filter: Role.Bidder,
     }
   }
-  */
+  
 ];

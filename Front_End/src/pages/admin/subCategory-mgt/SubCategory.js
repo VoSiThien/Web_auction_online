@@ -1,5 +1,7 @@
-/*
+import { useLayoutEffect } from 'react';
 import {
+  makeStyles,
+  Container,
   Table,
   TableBody,
   TableCell,
@@ -7,31 +9,34 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography,
-  NativeSelect,
   InputBase,
   withStyles,
+  Typography,
+  NativeSelect,
   Button,
-  Fade,
-  Backdrop,
-  Modal,
-  Box,
 } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { uiActions } from '../../../../reducers/ui';
-import AddComponent from './AddSubCategory';
-import { Add, Delete, Edit } from '@material-ui/icons';
-import { getListCategory } from '../../../../reducers/category';
-import TableError from '../../../../components/TableError/TableError';
-import { toast } from 'react-toastify';
-import TableLoading from '../../../../components/TableLoading/TableLoading';
-import { getListSubCategory, deleteCategory } from '../../../../reducers/sub-category';
-import ModalConfirm from '../../../../components/ModalConfirm/ModalConfirm';
-import SearchInputV2 from '../../../../components/UI/SearchInputV2';
-import CustomTablePagination from '../../../../components/CustomTablePagination/CustomTablePagination';
-import useStyles from './SubCategory.styles';
+import { uiActions } from '../../../reducers/ui';
+import SearchInput from '../../../components/UI/SearchInput';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CancelIcon from '@material-ui/icons/Cancel';
+import { Add } from '@material-ui/icons';
+import { getListCategory } from '../../../reducers/admin/category'
+import { getListSubCategory } from '../../../reducers/admin/subCategory'
+/*
+import AddProduct from './AddProduct';
+import UpdateProduct from './UpdateProduct';
+*/
+import TableError from '../../../components/Table/TableError';
+import TableLoading from '../../../components/Table/TableLoading';
+import ModalConfirm from '../../../components/Modal/ModalConfirm';
+import Pagination from '@material-ui/lab/Pagination';
+import { Role } from '../../../config/role';
+
 
 const BootstrapInput = withStyles((theme) => ({
   root: {
@@ -58,16 +63,132 @@ const BootstrapInput = withStyles((theme) => ({
   },
 }))(InputBase);
 
-const SubCateManager = (props) => {
-  const { t } = useTranslation();
+const useStyles = makeStyles((theme) => ({
+  root: {
+    // padding: theme.spacing(2),
+    // minHeight: '100vh',
+    // maxHeight: '-webkit-fill-available',
+  },
+  content: {
+    padding: '10vh 0',
+  },
+  section: {
+    borderRadius: theme.shape.borderRadius,
+    background: 'white',
+    boxShadow: '0px 2px 8px rgba(0,0,0,.1)',
+    padding: theme.spacing(2),
+    // marginBottom: theme.spacing(2),
+    margin: theme.spacing(2),
+    marginLeft: theme.spacing(6),
+    marginRight: theme.spacing(6),
+  },
+
+  bodytable: {
+    borderRadius: theme.shape.borderRadius,
+    background: 'white',
+    boxShadow: '0px 2px 8px rgba(0,0,0,.1)',
+    padding: theme.spacing(2),
+    margin: theme.spacing(2),
+    marginLeft: theme.spacing(6),
+    marginRight: theme.spacing(6),
+    minHeight: '40vh',
+    maxHeight: '40vh',
+    // maxHeight: '-webkit-fill-available',
+  },
+  title: {
+    marginBottom: theme.spacing(3),
+    textAlign: 'center',
+    color: theme.palette.primary.main,
+  },
+  topContent: {
+    borderRadius: theme.shape.borderRadius,
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  listItem: {
+    background: '#fff',
+    borderRadius: theme.shape.borderRadius,
+    width: '100%',
+    margin: 0,
+    padding: theme.spacing(1),
+  },
+  filter: {
+    marginTop: theme.spacing(2),
+    marginBottom: '12px',
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+  filterItem: {
+    display: 'flex',
+    alignItems: 'center',
+    '&:not(:last-child)': {
+      marginRight: theme.spacing(2),
+    },
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: theme.spacing(1),
+      width: '100%',
+      justifyContent: 'space-between',
+      '&:not(:last-child)': {
+        marginRight: 0,
+      },
+    },
+  },
+  label: {
+    [theme.breakpoints.down('xs')]: {
+      minWidth: 70,
+    },
+  },
+  select: {
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: '#F39148',
+    marginLeft: theme.spacing(1),
+    '& svg': {
+      color: theme.palette.common.white,
+    },
+  },
+  addButton: {
+    marginLeft: 'auto',
+    [theme.breakpoints.down('sm')]: {
+      marginLeft: 0,
+    },
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: theme.spacing(1),
+    },
+  },
+  search: {
+    border: '1px solid #ddd',
+    borderRadius: theme.shape.borderRadius,
+    marginRight: theme.spacing(2),
+    width: '20%',
+    [theme.breakpoints.down('xs')]: {
+      marginRight: 0,
+      marginBottom: theme.spacing(1),
+      width: '100%',
+      justifyContent: 'space-between',
+    },
+  },
+  pagination: {
+    '& > *': {
+      justifyContent: 'center',
+      display: 'flex',
+    },
+  },
+  tableHead: {
+    fontWeight: 'bold',
+    color: 'red',
+  },
+}));
+const CategoryManager = (props) => {//the first character of function always in upper case
   const dispatch = useDispatch();
   const classes = useStyles();
   const [error, setError] = useState('');
-  const [open, setOpen] = useState(false);
-  const [close, setClose] = useState(false);
   const [detail, setDetail] = useState({});
   const [action, setAction] = useState('insert');
-  const totalPage = useSelector((state) => state.subCategory.totalPage);
+  //const totalPage = useSelector((state) => state.subCategory.totalPage);
   const [limit, setLimit] = useState(10);
   const [sub, setSub] = useState([]);
   const [page, setPage] = useState(0);
@@ -85,39 +206,10 @@ const SubCateManager = (props) => {
     getListChildCategoryHandler(optionFather, value + 1, limit);
   };
 
-  const editSubCategory = (item) => {
-    setAction('update');
-    setDetail(item);
-    setOpen(true);
-  };
 
-  const handleOpen = () => {
-    setAction('insert');
-    setOpen(true);
-  };
+  console.log(sub);
 
-  const handleClose = () => {
-    setOpen(false);
-    setClose(false);
-  };
-
-  const subCateDeleteHandler = (e, item) => {
-    e.stopPropagation();
-    setClose(true);
-    setDetail(item);
-  };
-
-  const subCateDeleteConfirm = async () => {
-    try {
-      setClose(false);
-      await dispatch(deleteCategory(detail.cateId)).unwrap();
-      reloadData();
-      toast.success(t('toastMessages.admin.subCategory.deleteSuccess'));
-    } catch (err) {
-      toast.error(err);
-      console.log('🚀 ~ file: SubCategory.js ~ line 199 ~ subCateDeleteConfirm ~ err', err);
-    }
-  };
+  console.log(fatherCategory)
 
   const getListChildCategoryHandler = useCallback(
     async (cateFather, page, limit) => {
@@ -152,9 +244,9 @@ const SubCateManager = (props) => {
   const getListFatherCategoryHandler = useCallback(async () => {
     try {
       const response = await dispatch(getListCategory({ page: 1, limit: 9999 })).unwrap();
-      setFatherCategory(response.paginationResult);
-      if (response.paginationResult.length > 0) {
-        fatherCategoryChangeHandler(response.paginationResult[0].cateId);
+      setFatherCategory(response.CategoryList);
+      if (response.CategoryList.length > 0) {
+        fatherCategoryChangeHandler(response.CategoryList[0].cate_id);
       } else {
         setPageLoading(false);
       }
@@ -162,19 +254,13 @@ const SubCateManager = (props) => {
       setError(err);
       setPageLoading(false);
     }
-  }, [dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   const reloadData = () => {
     setPage(0);
     getListChildCategoryHandler(optionFather, 0, limit);
   };
 
-  const limitPerPageChangeHandler = (event) => {
-    const newLimit = +event.target.value;
-    setLimit(newLimit);
-    setPage(0);
-    getListChildCategoryHandler(optionFather, 0, newLimit);
-  };
 
   useEffect(() => {
     dispatch(uiActions.hideModal());
@@ -182,166 +268,59 @@ const SubCateManager = (props) => {
   }, [dispatch, getListFatherCategoryHandler]);
 
   useEffect(() => {
-    document.title = t('pagesTitle.admin.subCategory');
-  }, [t]);
-
+    document.title = "Quản lý chuyên mục con"
+  });
   return (
-    <div className={classes.root}>
-      <div className={classes.section}>
-        <Typography variant="h5" className={classes.title}>
-          {t('adminPage.subCategory.title')}
-        </Typography>
-        <div className={classes.filter}>
-          <div className={classes.search}>
-            <SearchInputV2
-              placeholder={t('adminPage.subCategory.searchPlaceHolder')}
-              initialValue={search}
-              onChange={searchChangeHandler}
-            />
-          </div>
-          <div className={classes.filterItem}>
-            <Typography variant="subtitle2" className={classes.label}>
-              {t('adminPage.subCategory.fatherCatetory')}
-            </Typography>
-            <NativeSelect
-              value={optionFather}
-              className={classes.select}
-              onChange={(e) => fatherCategoryChangeHandler(e.target?.value)}
-              name="price"
-              input={<BootstrapInput />}>
-              <option aria-label="None" value="" />
-              {fatherCategory &&
-                fatherCategory.length > 0 &&
-                fatherCategory.map((row, index) => (
-                  <option style={{ color: '#F39148' }} value={row.cateId} key={index}>
-                    {row.cateName}
-                  </option>
-                ))}
-            </NativeSelect>
-          </div>
-          <div className={classes.addButton}>
-            <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<Add />}>
-              {t('generalButtons.add')}
-            </Button>
+    <>
+      <div className={classes.root}>
+        <div className={classes.section}>
+          <Typography variant="h5" className={classes.title}>
+            Quản lý chuyên mục con
+          </Typography>
+
+          <div className={classes.filter}>
+            <div className={classes.search}>
+              {/*
+              <SearchInput
+                placeholder= "Nhập chuyên mục con cần tìm"
+                initialValue={search}
+                onChange={searchChangeHandler}
+              />
+              */}
+            </div>
+            <div className={classes.filterItem}>
+              <Typography variant="subtitle2" className={classes.label}>
+                Chuyên mục cha:
+              </Typography>
+              <NativeSelect
+                value={optionFather}
+                className={classes.select}
+                onChange={(e) => fatherCategoryChangeHandler(e.target?.value)}
+                name="price"
+                input={<BootstrapInput />}>
+                <option aria-label="None" value="" />
+                {fatherCategory &&
+                  fatherCategory.length > 0 &&
+                  fatherCategory.map((row, index) => (
+                    <option style={{ color: '#F39148' }} value={row.cate_id} key={index}>
+                      {row.cate_name}
+                    </option>
+                  ))}
+              </NativeSelect>
+            </div>
+            <div className={classes.addButton}>
+              {/*
+              <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<Add />}>
+                
+              </Button>
+            */}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className={`${classes.tableSection} `}>
-        {pageLoading ? (
-          <TableLoading />
-        ) : error?.length > 0 ? (
-          <TableError
-            message={error}
-            onTryAgain={getListChildCategoryHandler.bind(null, optionFather, page, limit)}
-          />
-        ) : sub?.length > 0 ? (
-          <Paper className={classes.section}>
-            <TableContainer>
-              <Table aria-label="a dense table">
-                <TableHead>
-                  <TableRow className={classes.tableHead}>
-                    <TableCell style={{ width: 20, textAlign: 'center', fontWeight: 'bold' }}>
-                      #
-                    </TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>
-                      {' '}
-                      {t('adminPage.subCategory.table.subCategoryId')}{' '}
-                    </TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>
-                      {' '}
-                      {t('adminPage.subCategory.table.subCategoryName')}{' '}
-                    </TableCell>
-                    <TableCell> {t('generalTable.lastModified')} </TableCell>
-                    <TableCell> {t('generalTable.options')} </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sub?.length > 0 &&
-                    sub
-                      .filter((subcategory) =>
-                        subcategory.cateName.toLowerCase().includes(search.toLowerCase())
-                      )
-                      .map((row, index) => (
-                        <TableRow
-                          key={index}
-                          onClick={() => editSubCategory(row)}
-                          className={classes.tableRow}>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            style={{ width: 20, textAlign: 'center', fontWeight: 'bold' }}>
-                            {page * 10 + index + 1}
-                          </TableCell>
-                          <TableCell style={{ textAlign: 'center' }}>{row.cateId}</TableCell>
-                          <TableCell style={{ textAlign: 'center' }}>{row.cateName}</TableCell>
-                          <TableCell> {row.createDate || t('generalTable.unknown')} </TableCell>
-                          <TableCell>
-                            <Box display="flex">
-                              <Edit
-                                className={classes.actionIcon}
-                                onClick={() => editSubCategory(row)}
-                              />
-                              <Delete
-                                className={classes.actionIcon}
-                                onClick={(e) => subCateDeleteHandler(e, row)}
-                              />
-                            </Box>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <CustomTablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={totalPage * limit}
-              rowsPerPage={limit}
-              page={page}
-              onPageChange={pageChangeHandler}
-              onRowsPerPageChange={limitPerPageChangeHandler}
-            />
-          </Paper>
-        ) : (
-          <TableError
-            message={t('generalTable.emptyData')}
-            onTryAgain={getListChildCategoryHandler.bind(null, optionFather, page, limit)}
-          />
-        )}
       </div>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        className={classes.modal}
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}>
-        <Fade in={open}>
-          <Box className={classes.content}>
-            <AddComponent
-              cateFather={optionFather}
-              action={action}
-              cate={detail}
-              father={fatherCategory}
-              parentHandleClose={handleClose}
-              getList={reloadData}
-            />
-          </Box>
-        </Fade>
-      </Modal>
-
-      <ModalConfirm
-        isOpen={close}
-        onConfirm={subCateDeleteConfirm}
-        onClose={handleClose}
-        title={t('deleteModal.subCategory')}
-      />
-    </div>
+    </>
   );
 };
-export default SubCateManager;
-*/
+
+export default CategoryManager;

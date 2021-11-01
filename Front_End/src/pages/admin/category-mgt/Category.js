@@ -165,7 +165,7 @@ const CategoryManager = (props) => {//the first character of function always in 
   const [categoryInfo, setCategoryInfo] = useState({});
   let { loading, CategoryList, totalPage } = categoryInfo;
   const filter = props.additional.filter;
-  console.log(categoryInfo)
+
   const [showFailed, setShowFailed] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [text, setText] = useState('');
