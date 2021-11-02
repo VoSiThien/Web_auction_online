@@ -111,7 +111,7 @@ router.post('/acceptSel', accValidation.acceptSel, async(req, res) => {
 router.post('/rejectSel', accValidation.rejectSel, async(req, res) => {
     const { accId } = req.body
     const now = new Date(Date.now())
-    await knex('tbl_account').where({ acc_id: accId }).update({ acc_is_upgrade: 0, acc_updated_date: now })
+    await knex('tbl_account').where({ acc_id: accId }).update({ acc_is_upgrade: 0, acc_role: 'BID', acc_updated_date: now })
     return res.status(200).json({
         data: true,
         statusCode: successCode
