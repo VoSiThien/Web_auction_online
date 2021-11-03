@@ -247,7 +247,7 @@ function Header({ showMenu }) {
 
 							</NavDropdown>
 						</Nav>
-						<Form className="d-flex" action="details/3">
+						<Form className="d-flex" action="details" method="post">
 							<FormControl
 								type="search"
 								placeholder="Search"

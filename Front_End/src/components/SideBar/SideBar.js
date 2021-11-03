@@ -45,19 +45,7 @@ const SideBar = ({ children }) => {
   return (
     <>
       <div className={classes.cateDesktop}>{children}</div>
-      {isOpenSideBar && (
-        <SideBarTablet onClose={toggleSideBarHandler}>
-          <div className={classes.cateTablet}>
-            <IconButton className={classes.iconClose} onClick={toggleSideBarHandler}>
-              <Close fontSize="large" />
-            </IconButton>
-            <div className={classes.search}>
-              <SearchInput border={true} />
-            </div>
-            {children}
-          </div>
-        </SideBarTablet>
-      )}
+      
     </>
   );
 };

@@ -61,6 +61,46 @@ const useStyles = makeStyles((theme) => ({
 
 function Home() {
     const classes = useStyles()
+    /*
+     const classes = useStyles()
+    const dispatch = useDispatch();
+    const { catID } = useParams();
+    const [productCatInfo, setProductCatInfo] = useState({});
+
+    let { loading, listProduct, numberProduct, numberOfPage } = productCatInfo;
+    const [page, setPage] = useState(1);
+    const [error, setError] = useState('');
+    const getProductByCategoryListHandler = useCallback(
+        async (page = 1, catID) => {
+            try {
+                
+                const limit = 10;
+
+                const response = await dispatch(getProductByCategory({ page, limit, catID: +catID })).unwrap();
+                
+                setProductCatInfo(response);
+            } catch (err) {
+                setError(err);
+            }
+        },
+        [dispatch]
+    );
+
+    useEffect(() => {
+        if(catID)
+            getProductByCategoryListHandler(page, catID)
+    }, [dispatch, getProductByCategoryListHandler, page, catID]);//when page change, get the new list
+
+    useEffect(() => {
+        document.title = 'Sản phẩm theo chuyên mục';
+    }, []);
+
+    return (
+        <>
+            
+        </>
+    );
+    */
     return (
         <>
             <div className={classes.root}>

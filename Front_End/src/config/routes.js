@@ -15,6 +15,9 @@ const ProductCategory = lazy(() => import('../pages/ProductCategory'));
 
 const DashbroadPage = lazy(() => import('../pages/admin/DashbroadPage'));
 const UserPage = lazy(() => import('../pages/admin/user-mgt/users'));
+
+const AdminCategoryPage = lazy(() => import('../pages/admin/category-mgt/Category'));
+const AdminSubCategoryPage = lazy(() => import('../pages/admin/subCategory-mgt/SubCategory'));
 export const routes = [
   {
     path: '/',
@@ -121,4 +124,25 @@ export const adminRoutes = [
       filter: Role.Bidder,
     }
   },
+  {
+    path: '/admin/categories',
+    protected: true,
+    exact: true,
+    component: AdminCategoryPage,
+    roles: [Role.Admin],
+    additional: {
+      filter: Role.Bidder,
+    }
+  },
+  {
+    path: '/admin/sub-categories',
+    protected: true,
+    exact: true,
+    component: AdminSubCategoryPage,
+    roles: [Role.Admin],
+    additional: {
+      filter: Role.Bidder,
+    }
+  }
+  
 ];
