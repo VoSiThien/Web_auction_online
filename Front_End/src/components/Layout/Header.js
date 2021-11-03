@@ -5,6 +5,7 @@ import {
 	Typography,
 	makeStyles,
 	IconButton,
+	TextField
 } from "@material-ui/core";
 import {
 	Person,
@@ -189,9 +190,14 @@ function Header({ showMenu }) {
 	const history = useHistory();
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 	const user = useSelector((state) => state.auth.user);
-	const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store
+	//state : all data in local store
+	//state.homeCategory : data from homeCategory reducer
+	//state.homeCategory.data: data from data variable of homeCategory reducer
+	const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store, can get at all pages, 
 	const SocketInNotify = useSelector((state) => state.unauthorizedProduct.SocketInNotify);
-  	const [openModalNotify, setOpenModalNotify] = useState(false);
+	const [openModalNotify, setOpenModalNotify] = useState(false);//initialize data for local variable of this page
+	const [searchKey, setSearchKey] = useState('');
+
 
 	const logoutHandler = () => {
 		dispatch(userAuthActions.logout());
@@ -199,12 +205,12 @@ function Header({ showMenu }) {
 	};
 
 	useEffect(() => {
-		if(SocketInNotify !== 0){
-		  setOpenModalNotify(true);
-		  dispatch(unauProduct.ResetSocketInNotify());
+		if (SocketInNotify !== 0) {
+			setOpenModalNotify(true);
+			dispatch(unauProduct.ResetSocketInNotify());
 		}
-	  }, [SocketInNotify]);
-	
+	}, [SocketInNotify]);
+
 	const handleCloseModelBidProduct = () => {
 		setOpenModalNotify(false);
 	};
@@ -218,6 +224,17 @@ function Header({ showMenu }) {
 		}
 	}, [dispatch]);
 
+	//searching
+	const searchSubmitHandler = async (e) => {
+		e.preventDefault();
+
+
+	};
+
+	const searchKeyChangeHandler = (e) => {
+		setSearchKey(e.target.value)
+	};
+	console.log(searchKey)
 	//useEffect run automatically, when data's changed, function define below it will be loaded again
 	useEffect(() => {
 		//in order to run handler function, we need to put it inside useEffect
@@ -225,9 +242,9 @@ function Header({ showMenu }) {
 	}, [getListCategoryHandler]);//followed value, when data's changed, this function defined here will be called again
 
 	const domain = window.location.origin;
-    return (
+	return (
 		<>
-        <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
+			<Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
 				<Container>
 					<Navbar.Brand href="/">
 						<FcShop className="iconhome" /> Auction Online</Navbar.Brand>
@@ -247,56 +264,65 @@ function Header({ showMenu }) {
 
 							</NavDropdown>
 						</Nav>
-						<Form className="d-flex" action="details" method="post">
-							<FormControl
-								type="search"
-								placeholder="Search"
-								className="mr-2"
-								aria-label="Search"
-							/>
-							<Button variant="dark" type="submit">Search</Button>
-						</Form>
-                    <Nav>
-					<NavDropdown title={<div style={{display: "inline-block"}}><Person style={{color: 'white'}}/></div>} id="collasible-nav-dropdown-2">
-						{user != null && isAuthenticated && (
-							<>
-								<NavDropdown.Item href={domain +'/profile'} >Trang cá nhân</NavDropdown.Item>
-								{(user.role === Role.Seller) && (
-									<NavDropdown.Item href={domain +'/product-mgt'} >Quản lý sản phẩm</NavDropdown.Item>
-								)}
-							</>
-						)}
-						{(user == null || !isAuthenticated) && (
-							<NavDropdown.Item href={domain +'/login'} >Đăng nhập</NavDropdown.Item>
-						)}
-					</NavDropdown>
-					{user != null && isAuthenticated && (
-						<IconButton
-							aria-label="My profile"
-							color="inherit"
-							className={classes.iconButton}
-							onClick={logoutHandler}
-						>
-							<ExitToApp style={{color: 'white'}}/>
-							<Typography
-								variant="caption"
-								className={classes.iconButtonCaption}
+						{/* <Form className="d-flex" action="details" method="post">
+							<FormControl className={classes.form} fullWidth size="small">
+								<TextField
+									label="Tên chuyên mục"
+									variant="outlined"
+									
+									// onChange={catNameChangeHandler}
+									size="small"
+								/>
+							</FormControl>
+							<Button
+								variant="dark"
+								type="submit"
+								onClick={searchSubmitHandler}
 							>
-								Đăng xuất
-							</Typography>
-						</IconButton>
-					)}
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
-		<NotifyBidPriceModel
-            isOpen={openModalNotify}
-            onClose={handleCloseModelBidProduct}
-            text="Có người đấu giá"
-        />
+								Search
+							</Button>
+						</Form> */}
+						<Nav>
+							<NavDropdown title={<div style={{ display: "inline-block" }}><Person style={{ color: 'white' }} /></div>} id="collasible-nav-dropdown-2">
+								{user != null && isAuthenticated && (
+									<>
+										<NavDropdown.Item href={domain + '/profile'} >Trang cá nhân</NavDropdown.Item>
+										{(user.role === Role.Seller) && (
+											<NavDropdown.Item href={domain + '/product-mgt'} >Quản lý sản phẩm</NavDropdown.Item>
+										)}
+									</>
+								)}
+								{(user == null || !isAuthenticated) && (
+									<NavDropdown.Item href={domain + '/login'} >Đăng nhập</NavDropdown.Item>
+								)}
+							</NavDropdown>
+							{user != null && isAuthenticated && (
+								<IconButton
+									aria-label="My profile"
+									color="inherit"
+									className={classes.iconButton}
+									onClick={logoutHandler}
+								>
+									<ExitToApp style={{ color: 'white' }} />
+									<Typography
+										variant="caption"
+										className={classes.iconButtonCaption}
+									>
+										Đăng xuất
+									</Typography>
+								</IconButton>
+							)}
+						</Nav>
+					</Navbar.Collapse>
+				</Container>
+			</Navbar>
+			<NotifyBidPriceModel
+				isOpen={openModalNotify}
+				onClose={handleCloseModelBidProduct}
+				text="Có người đấu giá"
+			/>
 		</>
-    );
+	);
 }
 
 export default Header;

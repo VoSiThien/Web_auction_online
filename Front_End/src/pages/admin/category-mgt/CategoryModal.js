@@ -1,11 +1,9 @@
-import { makeStyles, TextField, Typography, FormControl, Modal } from '@material-ui/core';
-import { useInput } from '../../../../hooks/use-input';
-import * as Validate from '../../../../helpers/validate';
+import { makeStyles, TextField, Typography, FormControl, Modal, Button } from '@material-ui/core';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addCategory, updateSubCategory } from '../../../../reducers/category';
-import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next';
-import ButtonWithLoading from '../../../../components/UI/ButtonWithLoading/ButtonWithLoading';
+import { addCategory, updateCategory } from '../../../reducers/admin/category';
+
+import { Alert } from 'react-bootstrap';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -31,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     right: '0px',
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: '#F39148',
+    backgroundColor: '#2d51a6',
     width: '113px',
     height: '27px',
     '& svg': {
@@ -42,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     color: '#fff',
     marginTop: theme.spacing(2),
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: '#F39148',
+    backgroundColor: '#2d51a6',
   },
   autoComplete: {
     marginTop: theme.spacing(2),
@@ -52,87 +50,89 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CategoryModal = ({ item, title, type, isOpen, onClose, getList }) => {
-	const { t } = useTranslation();
+const CategoryModal = ({ CatItem, action, reloadTable, isOpenModal, closeModalHandler }) => {
+
   const dispatch = useDispatch();
   const classes = useStyles();
-  const modifyLoading = useSelector((state) => state.category.modifyLoading);
+  const [catName, setCatName] = useState(CatItem?.cate_name || '')
+  const [showFailed, setShowFailed] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [text, setText] = useState('');
 
-  const {
-    enteredInput: cateName,
-    hasError: cateNameHasError,
-    inputBlurHandler: cateNameBlurHandler,
-    inputChangeHandler: cateNameChangeHandler,
-    inputIsValid: cateNameIsValid,
-    inputReset: cateReset,
-  } = useInput(Validate.isNotEmpty, item?.cateName || '');
+
+  const catNameChangeHandler = (e) => {
+    //get value when the input changed, and set into cat name
+    setCatName(e.target.value);
+  };
 
   const formSubmitHandler = async (event) => {
     event.preventDefault();
 
-    if (!cateNameIsValid) return;
+    if (catName.trim().length === 0) {
+      setText('Tên chuyên mục không được rỗng!');
+      setShowFailed(true);
+      return;
+    }
 
-    if (type === 'UPDATE') {
+    if (action === 'UPDATE') {
       try {
-        await dispatch(updateSubCategory({ cateName, cateId: item?.cateId })).unwrap();
-        // toast.success(`Update category id ${item?.cateId} successfully`);
-				toast.success(t('toastMessages.admin.category.updateSuccess'));
-        getList();
-        onClose();
-        cateReset();
+        await dispatch(updateCategory({ catName, catID: CatItem?.cate_id })).unwrap();
+
+        setText('Cập nhật thành công!');
+        setShowSuccess(true);
+        reloadTable();
       } catch (error) {
-        toast.error(error);
+        setShowFailed(true);
+        setText(error);
       }
-    } else {
+    } else if (action === "INSERT") {
       try {
-        await dispatch(addCategory({ cateName })).unwrap();
-        toast.success(t('toastMessages.admin.category.addSuccess'));
-        getList();
-        onClose();
-        cateReset();
+        await dispatch(addCategory({ catName })).unwrap();
+        setText('Thêm thành công!');
+        reloadTable();
       } catch (error) {
-        toast.error(error);
+        setShowFailed(true);
+        setText(error);
       }
     }
   };
 
-  const closeHandler = () => {
-    onClose();
-    cateReset();
-  };
-
   return (
     <Modal
-      open={isOpen}
-      onClose={closeHandler}
+      open={isOpenModal}
+      onClose={closeModalHandler}
       aria-labelledby="simple-modal-title"
       aria-describedby="simple-modal-description">
       <div className={classes.paper}>
         <Typography
           variant="h5"
-          style={{ textAlign: 'center', color: '#F39148' }}
+          style={{ textAlign: 'center', color: '#2d51a6' }}
           className={classes.modalTitle}>
-          {title}
+          {action == "INSERT" ? 'Thêm chuyên mục mới' : 'Cập nhật chuyên mục'}
         </Typography>
-        <form noValidate autoComplete="off" onSubmit={formSubmitHandler}>
+        <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
+          <Alert.Heading>{text}</Alert.Heading>
+        </Alert>
+        <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
+          <Alert.Heading>{text}</Alert.Heading>
+        </Alert>
+        <form noValidate autoComplete="off">
           <FormControl className={classes.form} fullWidth size="small">
             <TextField
-              label= {t('adminPage.category.table.categoryName')}
+              label="Tên chuyên mục"
               variant="outlined"
-              value={cateName}
-              error={cateNameHasError}
-              helperText={cateNameHasError && 'Category name must be not null or empty!'}
-              onBlur={cateNameBlurHandler}
-              onChange={cateNameChangeHandler}
+              value={catName}
+              onChange={catNameChangeHandler}
               size="small"
             />
           </FormControl>
-          <ButtonWithLoading
-            isLoading={modifyLoading}
+          <Button
+            className={classes.save}
+            fullWidth
             onClick={formSubmitHandler}
-            disabled={!cateNameIsValid}>
-            	{t('generalButtons.save')}
-          </ButtonWithLoading>
+          >
+            Lưu
+          </Button>
         </form>
       </div>
     </Modal>

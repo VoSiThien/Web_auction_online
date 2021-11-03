@@ -57,7 +57,7 @@ const Footer = ({ hasSideBar }) => {
 					<Typography variant="body1">
 						Copyright 2021 © Auction online.
 					</Typography>
-					<div className={classes.contact}>
+					{/* <div className={classes.contact}>
 						<Typography variant="body1">Contact us at</Typography>
 						<ul>
 							<li>
@@ -81,7 +81,7 @@ const Footer = ({ hasSideBar }) => {
 								</a>
 							</li>
 						</ul>
-					</div>
+					</div> */}
 				</div>
 			</Container>
 		</footer>
