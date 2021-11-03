@@ -10,7 +10,7 @@ import {
   TableRow,
   Paper,
   Typography,
-  Button,
+  Button
 } from '@material-ui/core';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-bootstrap';
@@ -19,19 +19,14 @@ import { uiActions } from '../../../reducers/ui';
 import SearchInput from '../../../components/UI/SearchInput';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CancelIcon from '@material-ui/icons/Cancel';
 import { Add } from '@material-ui/icons';
-import { getListCategory } from '../../../reducers/admin/category'
-/*
-import AddProduct from './AddProduct';
-import UpdateProduct from './UpdateProduct';
-*/
+import { getListCategory, deleteCategory } from '../../../reducers/admin/category'
 import TableError from '../../../components/Table/TableError';
 import TableLoading from '../../../components/Table/TableLoading';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
+import ModalConfirmDelete from '../../../components/Modal/ModalConfirmDelete';
 import Pagination from '@material-ui/lab/Pagination';
 import { Role } from '../../../config/role';
+import CategoryModal from './CategoryModal';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,9 +34,7 @@ const useStyles = makeStyles((theme) => ({
     // minHeight: '100vh',
     // maxHeight: '-webkit-fill-available',
   },
-  content: {
-    padding: '10vh 0',
-  },
+ 
   section: {
     borderRadius: theme.shape.borderRadius,
     background: 'white',
@@ -155,89 +148,76 @@ const useStyles = makeStyles((theme) => ({
 const CategoryManager = (props) => {//the first character of function always in upper case
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [openAddModal, setOpenAddModal] = useState(false);
-  const [openUpdateModal, setOpenUpdateModal] = useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+
   const [selectedId, setSelectedId] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [categoryInfo, setCategoryInfo] = useState({});
   let { loading, CategoryList, totalPage } = categoryInfo;
-  const filter = props.additional.filter;
-
+  const [openAddOrUpdateModal, setOpenAddOrUpdateModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [showFailed, setShowFailed] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [text, setText] = useState('');
+  const [action, setAction] = useState('INSERT');
+  const [catItem, setCatItem] = useState({});
+
+  const reloadData = () => {
+    setPage(1);
+    getCategoriesListHandler(1, 10);
+  };
 
   const openAddModalHandler = () => {
-    setOpenAddModal(true);
-    setOpenUpdateModal(false);
+    setAction('INSERT');
+    setOpenAddOrUpdateModal(true);
     setOpenDeleteModal(false);
   };
 
   const openUpdateModalHandler = (item) => {
-    setSelectedItem(item);
-    setOpenUpdateModal(true);
-    setOpenAddModal(false);
+    setAction('UPDATE');
+    setCatItem(item);
+    setOpenAddOrUpdateModal(true);
     setOpenDeleteModal(false);
   };
+
 
   const openDeleteModalHandler = (id) => {
     setSelectedId(id);
-    setOpenUpdateModal(false);
-    setOpenAddModal(false);
+    setOpenAddOrUpdateModal(false);
     setOpenDeleteModal(true);
+
   };
 
+
   const closeModalHandler = () => {
-    setOpenUpdateModal(false);
-    setOpenAddModal(false);
+    setOpenAddOrUpdateModal(false);
     setOpenDeleteModal(false);
+
   };
 
   const pageChangeHandler = (event, value) => {
     setPage(value);
-
   };
 
 
-  /*
-   const deleteUserHandler = async () => {
  
-     
- 
-     if (!selectedId) return;
- 
-     try {
- 
- 
-       await dispatch(deleteUser(selectedId)).un
-       
-       
-     wrap();
-       const limit = 10;
- 
- 
-       const role  = filter;
- 
- 
-       const response = await dispatch(getUserList({page, limit, role})).unwrap();
-       
-       setUserInfo(response);
-        userList = userList.filter(
-          (user) => user.userId !== selectedId
-        );
-       setText('Xoá thành công!!!');
-       setShowSuccess(true);
-     } catch (err) {
-       setText(err);
-       setShowFailed(true);
-     }
-     closeModalHandler();
-   
-   };
-   */
+  const deleteCategoryHandler = async () => {
+    if (!selectedId) return;
+    try {
+      //delete selected cat
+      await dispatch(deleteCategory({ catID: selectedId })).unwrap();
+      //load data again
+      reloadData()
+      setText('Xoá chuyên mục thành công!!!');
+      setShowSuccess(true);
+    } catch (err) {
+      setText(err);
+      setShowFailed(true);
+    }
+
+    closeModalHandler();
+  };
+
   const getCategoriesListHandler = useCallback(
     async (page = 1) => {
       try {
@@ -248,7 +228,7 @@ const CategoryManager = (props) => {//the first character of function always in 
         setError(err);
       }
     },
-    [dispatch, filter]
+    [dispatch]
   );
 
   useEffect(() => {
@@ -286,44 +266,46 @@ const CategoryManager = (props) => {//the first character of function always in 
     <>
       <div className={classes.root}>
         <Container>
-          {/*
-            <AddProduct isOpen={openAddModal} onClose={closeModalHandler} />
-            <UpdateProduct
-              itemInfo={selectedItem}
-              isOpen={openUpdateModal}
-              onClose={closeModalHandler}
-            />
-            
-            <ModalConfirm
-              title="Xoá chuyên mục"
-              isOpen={openDeleteModal}
-              onClose={closeModalHandler}
-              onConfirm={deleteUserHandler}
-            />
-            */}
+          {/* Add,update modal */}
+          <CategoryModal
+            CatItem={catItem}
+            action={action}
+            reloadTable={reloadData}
+            isOpenModal={openAddOrUpdateModal}
+            closeModalHandler={closeModalHandler}
+          />
+
+          {/* delete modal */}
+          <ModalConfirmDelete
+            title="Xoá chuyên mục"
+            isOpen={openDeleteModal}
+            onClose={closeModalHandler}
+            onConfirm={deleteCategoryHandler}
+          />
+
         </Container>
       </div>
 
       <div className={classes.section}>
         <Typography variant="h5" className={classes.title}>
-          Quản Lý Chuyên Mục ({filter === Role.Admin ? 'Admin' : filter === Role.Seller ? 'Seller' : 'Bidder'})
+          Quản Lý Chuyên Mục
         </Typography>
         <div className={classes.filter}>
           <div className={classes.search}>
             <SearchInput />
           </div>
-          {filter === Role.Admin && (
-            <div className={classes.addButton}>
-              <Button
-                startIcon={<Add />}
-                variant="contained"
-                color="primary"
-                className={classes.addButton}
-              >
-                Mới
-              </Button>
-            </div>
-          )}
+
+          <div className={classes.addButton}>
+            <Button
+              startIcon={<Add />}
+              variant="contained"
+              color="primary"
+              className={classes.addButton}
+              onClick={openAddModalHandler}>
+              Mới
+            </Button>
+          </div>
+
         </div>
       </div>
 
@@ -339,9 +321,10 @@ const CategoryManager = (props) => {//the first character of function always in 
             <TableHead>
               <TableRow className={classes.tableHead}>
                 <TableCell align="center">#</TableCell>
-                <TableCell align="center" style={{ width: "40%" }}>Tên chuyên mục</TableCell>
+                <TableCell align="center" style={{ width: "30%" }}>Tên chuyên mục</TableCell>
                 <TableCell align="center">Ngày tạo</TableCell>
                 <TableCell align="center">Last Modified</TableCell>
+                <TableCell align="center">Thao tác</TableCell>
               </TableRow>
             </TableHead>
             {loading ? (<TableLoading />) : error?.length > 0 ?
@@ -352,10 +335,34 @@ const CategoryManager = (props) => {//the first character of function always in 
                   <TableBody>
                     {CategoryList?.map((row, index) => (
                       <TableRow key={index}>
-                        <TableCell component="th" scope="row" align="center"> {index + 1 + (page - 1)*10} </TableCell>
+                        <TableCell component="th" scope="row" align="center"> {index + 1 + (page - 1) * 10} </TableCell>
                         <TableCell align="center" style={{ width: "60%" }}>{row.cate_name}</TableCell>
                         <TableCell align="center">{row.cate_created_date}</TableCell>
                         <TableCell align="center">{row.cate_updated_date == null ? "Không có thông tin!" : row.cate_updated_date}</TableCell>
+                        <TableCell align="center">
+                          <Button
+                            variant="outlined"
+                            startIcon={<EditIcon
+                              fontSize="small"
+                              style={{ cursor: 'pointer', marginLeft: "10px" }}
+                            />}
+                            style={{ width: '40px', marginLeft: 5 }}
+                            fontSize="small"
+                            onClick={() => openUpdateModalHandler(row)}
+                          >
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            startIcon={<DeleteIcon
+                              fontSize="small"
+                              style={{ cursor: 'pointer', marginLeft: "10px" }}
+                            />}
+                            style={{ width: '40px', marginLeft: 5 }}
+                            fontSize="small"
+                            onClick={() => openDeleteModalHandler(row.cate_id)}
+                          >
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

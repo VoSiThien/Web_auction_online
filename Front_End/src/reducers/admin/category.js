@@ -22,6 +22,43 @@ export const getListCategory = createAsyncThunk(
     }
   });
 
+
+  export const addCategory = createAsyncThunk(
+    'adminCategory/addCategory',
+    async ({catName}, { rejectWithValue }) => {
+    try {
+      const response = (await categoryApi.addCategory({catName})).data
+      return response;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  });
+
+  export const updateCategory = createAsyncThunk(
+    'adminCategory/updateCategory',
+    async ({catID, catName, catParentID}, { rejectWithValue }) => {
+    try {
+      const response = (await categoryApi.updateCategory({catID, catName, catParentID})).data
+      return response;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  });
+
+  export const deleteCategory = createAsyncThunk(
+    'adminCategory/deleteCategory',
+    async ({catID}, { rejectWithValue }) => {
+    try {
+     
+      const response = (await categoryApi.deleteCategory({catID})).data
+      
+      return response;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  });
+
+
 const adminUserSlice = createSlice({
   name: 'adminCategory',
   initialState,

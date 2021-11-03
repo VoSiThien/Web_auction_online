@@ -12,15 +12,27 @@ const initialState = {
 
 
 export const getListSubCategory = createAsyncThunk(
-    'adminCategory/ListParent',
-    async ({page, limit}, { rejectWithValue }) => {
+    'adminSubCategory/ListParent',
+    async ({catParent, page, limit}, { rejectWithValue }) => {
     try {
-      const subCategoryList = (await subCategoryAPI.getListCategory({page, limit})).data
+      const subCategoryList = (await subCategoryAPI.getListSubCategory({catParent, page, limit})).data
       return subCategoryList;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }
   });
+
+  export const addSubCategory = createAsyncThunk(
+    'adminSubCategory/addSubCategory',
+    async ({catName, catParentID}, { rejectWithValue }) => {
+    try {
+      const response = (await subCategoryAPI.addSubCategory({catName, catParentID})).data
+      return response;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  });
+
 
 const adminUserSlice = createSlice({
   name: 'adminCategory',
