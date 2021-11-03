@@ -5,16 +5,20 @@ const catValidation = require('../middlewares/validation/categories.validate')
 const catModel = require('../models/categories.model')
 const commonService = require('../services/commonService')
 const successCode = 0
-
+const moment = require('moment');
 router.post('/list-parent', async (req, res) => {
 	const { page, limit } = req.body
 	const parentCat = await catModel.getAllParent()
-	
+
 	if (parentCat.length === 0) {
 		return res.status(400).json({
-			errorMessage: 'Chuyên mục không tồn tại!',
+			errorMessage: 'Chưa có chuyên mục nào tồn tại!',
 			statusCode: errorCode
 		})
+	}
+	for (cat of parentCat) {
+		cat.cate_created_date = moment(cat.cate_created_date).format('DD/MM/YYYY HH:mm:ss')
+		cat.cate_updated_date = moment(cat.cate_updated_date).format('DD/MM/YYYY HH:mm:ss')
 	}
 	return res.status(200).json({
 		numberOfCat: parentCat.length,
@@ -26,7 +30,7 @@ router.post('/list-parent', async (req, res) => {
 router.post('/list-child', catValidation.listChild, async (req, res) => {
 	const { page, limit, catParent } = req.body
 	const parentCat = await catModel.getById(catParent)
-	
+
 	if (parentCat.length === 0) {
 		return res.status(400).json({
 			errorMessage: 'Chuyên mục cha không tồn tại!',
@@ -35,7 +39,11 @@ router.post('/list-child', catValidation.listChild, async (req, res) => {
 	}
 	const result = await knex.from('tbl_categories')
 		.where({ cate_father: catParent })
-	
+
+	for (cat of result) {
+		cat.cate_created_date = moment(cat.cate_created_date).format('DD/MM/YYYY HH:mm:ss')
+		cat.cate_updated_date = moment(cat.cate_updated_date).format('DD/MM/YYYY HH:mm:ss')
+	}
 	if (result.length !== 0) {
 		return res.status(200).json({
 			numberOfSubCat: result.length,
