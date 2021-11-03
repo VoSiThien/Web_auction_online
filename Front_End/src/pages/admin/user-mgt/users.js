@@ -351,7 +351,7 @@ const UserManager = (props) => {
               onConfirm={acceptSelModalHandler}
             />
             <ModalConfirm
-              title="Huỷ yêu cầu nâng cấp Seller?"
+              title="Huỷ yêu cầu nâng cấp/ hạ cấp Seller?"
               isOpen={openRejectModal}
               onClose={closeModalHandler}
               onConfirm={rejectSelModalHandler}
@@ -411,6 +411,7 @@ const UserManager = (props) => {
                         <TableCell align="center">Hết hạn Seller</TableCell>
                         <TableCell align="center">Số lượt thích</TableCell>
                         <TableCell align="center">Số lượt Không thích</TableCell>
+                        <TableCell align="center">Hạ cấp Seller</TableCell>
                       </>
                     )}
                     <TableCell align="center">Last Modified</TableCell>
@@ -476,6 +477,16 @@ const UserManager = (props) => {
                         <TableCell align="center">{row?.accExpUpgrade || 'None'}</TableCell>
                         <TableCell align="center">{row?.accLikeSeller || 0}</TableCell>
                         <TableCell align="center">{row?.accDisLikeSeller || 0}</TableCell>
+                        <TableCell align="center">
+                              <Button 
+                                variant="outlined" 
+                                startIcon={<CancelIcon style={{ align:"center", marginLeft: 10 }} />}
+                                onClick={() => openRejectSelModalHandler(row.accId)}
+                                fontSize="small"
+                                style={{width: '40px', marginLeft: 5, cursor: 'pointer', color: 'red', borderColor: 'red', hoverColor: 'blue' }}
+                                >
+                              </Button>
+                        </TableCell>
                       </>
                     )}
                       <TableCell align="center">{row?.accUpdatedDate}</TableCell>
