@@ -55,6 +55,12 @@ export const routes = [
     component: LoginPage,
   },
   {
+    path: '/profile/:slug',
+    protected: true,
+    exact: true,
+    component: ProfilePage,
+  },
+  {
     path: '/profile',
     protected: true,
     exact: true,
