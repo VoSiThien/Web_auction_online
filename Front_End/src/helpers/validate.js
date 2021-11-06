@@ -9,3 +9,4 @@ export const isPhoneNumber = (value) => {
 		/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/;
 	return re.test(String(value).toLowerCase());
 };
+//store the validate function

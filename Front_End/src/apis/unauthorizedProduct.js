@@ -9,6 +9,18 @@ const getProductDetail = (id) => {
   return axios.get(query);
 };
 
+const searchProduct = (searchKey, limit, page, orderBy, filterField, AndOrCondition) => {
+  let query = `/unauthorized-api/product/search`;
+  return axios.post(query, {
+    searchKey,
+    limit,
+    page,
+    orderBy,
+    filterField,
+    AndOrCondition
+  });
+}
+
 const getProductByCategory = (page, limit, catID, prodID) => {
   let query = `unauthorized-api/product/list-same-cat`;
   return axios.post(query, {
@@ -48,7 +60,8 @@ const unauthorizedProduct = {
   listProductAboutToEnd,
   listProductHighestPrice,
   listProductHighestBid,
-  getProductByCategory
+  getProductByCategory,
+  searchProduct
 };
 
 export default unauthorizedProduct;

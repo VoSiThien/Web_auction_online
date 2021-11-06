@@ -1,9 +1,11 @@
+import { Satellite } from '@material-ui/icons';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import homeCategoryApi from '../apis/homeCategory';
 import { getResponseError } from '../helpers';
 
 const initialState = {
   data: [],
+  dataProductByCate: [],
   loading: false,
 };
 
@@ -19,7 +21,7 @@ export const getHomeCategory = createAsyncThunk(
 });
 
 export const getProductByCategory = createAsyncThunk(
-  'homeCategory/GetList',
+  'homeCategory/GetListProduct',
   async ({page,limit, catID}, { rejectWithValue }) => {
   try {
     const productList = (await homeCategoryApi.getProductByCategory(page, limit, catID)).data
@@ -52,7 +54,7 @@ const honeCategorySlice = createSlice({
     },
     [getProductByCategory.fulfilled]: (state, action) => {
       state.loading = false;
-      state.data = action.payload;
+      state.dataProductByCate = action.payload;
     },
   },
 });
