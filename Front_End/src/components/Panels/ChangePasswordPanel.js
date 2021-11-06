@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
 const ChangePasswordPanel = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { t } = useTranslation();
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const user = useSelector((state) => state.auth.user);

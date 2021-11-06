@@ -33,6 +33,20 @@ export const accNewPassword = createAsyncThunk(
     }
 );
 
+export const accUpdateprofiles = createAsyncThunk(
+    'profile/upadateProfile',
+    async ({ email, fullName, birthday, phoneNumber }, { rejectWithValue }) => {
+        try {
+            const response = await await profileApi.accUpdateprofile({
+                email, fullName, birthday, phoneNumber
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(getResponseError(error));
+        }
+    }
+);
+
 const profileSlice = createSlice({
     name: 'profile',
     initialState,
@@ -59,6 +73,16 @@ const profileSlice = createSlice({
       [accNewPassword.fulfilled]: (state, action) => {
         state.loading = false;
         state.dataNewPass = action.payload;
+      },
+      [accUpdateprofiles.pending]: (state, action) => {
+        state.loading = true;
+      },
+      [accUpdateprofiles.rejected]: (state, action) => {
+        state.loading = false;
+        state.error = action.payload
+      },
+      [accUpdateprofiles.fulfilled]: (state, action) => {
+        state.loading = false;
       },
     },
   });

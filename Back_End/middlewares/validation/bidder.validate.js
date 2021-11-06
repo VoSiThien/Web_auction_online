@@ -63,7 +63,7 @@ const updateProfile = (req, res, next) => {
   		properties: {
             fullName: {type: 'string'},
     		email: { type: 'string', pattern: '^[a-z][a-z0-9_\.]{3,32}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$', maxLength: 100 },
-            birthday: {type: 'date'},
+            birthday: {type: 'string'},
 			phoneNumber: {type: 'string'}
   		},
 		required: ['fullName'],

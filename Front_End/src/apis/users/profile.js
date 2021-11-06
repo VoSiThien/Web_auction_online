@@ -11,8 +11,18 @@ const accNewPassword = ({ userId, newpassword, oldpassword }) => {
     });
 };
 
+const accUpdateprofile = ({ email, fullName, birthday, phoneNumber }) => {
+    return axios.post('/api/bidder/update-profile', {
+        email,
+        fullName,
+        birthday,
+        phoneNumber
+    });
+};
+
 const profileApi = {
     getProfile,
-    accNewPassword
+    accNewPassword,
+    accUpdateprofile
   };
   export default profileApi;

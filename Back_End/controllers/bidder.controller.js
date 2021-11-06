@@ -388,13 +388,14 @@ router.get('/profile', async (req, res) => {
 router.post('/update-profile', validator.updateProfile, async (req, res) => {
 	const { email, fullName, birthday, phoneNumber } = req.body
 	let dateUpdate = new Date()
+	const accId = req.account['accId']
 
 	// check unique email
-	const verifying = await accountModel.findByEmail(email)
+	const verifying = await accountModel.findByEmailAndNot(email, accId)
 
-	if (verifying !== undefined) {
+	if (verifying.length !== 0) {
 		return res.status(400).json({
-			errorMessage: 'Email not existed',
+			errorMessage: 'Email đã tồn tại',
 			statusCode: errorCode
 		})
 	}
@@ -409,16 +410,19 @@ router.post('/update-profile', validator.updateProfile, async (req, res) => {
 	}
 
 	await knex('tbl_account')
+		.where("acc_id", accId)
 		.returning('acc_id')
 		.update(account)
 
 	return res.status(200).json({
-		statusCode: successCode
+		statusCode: successCode,
+		message: "cập nhật thành công"
 	})
 })
 
 router.post('/update-password', validator.updatePassword, async (req, res) => {
 	const { newPassword, oldPassword } = req.body
+	const accId = req.account['accId']
 	let dateUpdate = new Date()
 
 	// check unique email
@@ -440,6 +444,7 @@ router.post('/update-password', validator.updatePassword, async (req, res) => {
 	}
 
 	await knex('tbl_account')
+		.where("acc_id", accId)
 		.returning('acc_id')
 		.update(account)
 

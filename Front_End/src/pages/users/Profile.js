@@ -7,12 +7,14 @@ import {
 	Tabs,
 } from "@material-ui/core";
 import { useEffect, useState } from "react";
+import { useSelector } from 'react-redux';
 import { useHistory, useParams } from "react-router-dom";
 import BasicProfilePanel from "../../components/Panels/BasicProfilePanel";
 import AvatarPanel from "../../components/Panels/AvatarPanel";
 import ChangePasswordPanel from "../../components/Panels/ChangePasswordPanel";
 import Footer from "../../components/Layout/Footer";
 import Header from "../../components/Layout/Header";
+import { Role } from '../../config/role';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -54,6 +56,8 @@ const Profile = (props) => {
 	let { slug } = useParams();
 	const classes = useStyles();
 	const [tabValue, setTabValue] = useState(0);
+	const [hiddenList, setHiddenList] = useState(false);
+	const user = useSelector((state) => state.auth.user);
 
 	const indexToTabName = {
 		0: "basic",
@@ -66,6 +70,9 @@ const Profile = (props) => {
 	};
 
 	useEffect(() => {
+		if(user.role === Role.Seller){
+			setHiddenList(true);
+		}
 		const tabNameToIndex = {
 			basic: 0,
 			password: 1,
@@ -93,7 +100,7 @@ const Profile = (props) => {
 						>
 							<Tab label="Hồ sơ cá nhân" />
 							<Tab label="ĐỔI MẬT KHẨU" />
-							<Tab label="Danh sách" />
+							<Tab hidden={hiddenList} label="Danh sách" />
 						</Tabs>
 					</Paper>
 					<TabPanel
