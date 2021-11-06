@@ -50,27 +50,27 @@ export const resetPassword = createAsyncThunk(
     }
   }
 );
-// export const verifyEmail = createAsyncThunk(
-//   'user/VerifyEmail',
-//   async ({ userId, accessToken }, { rejectWithValue }) => {
-//     try {
-//       const response = await authApi.verifyEmail({ userId, accessToken });
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(getResponseError(error));
-//     }
-//   }
-// );
-// export const forgotPassword = createAsyncThunk(
-//   'user/ForgotPassword',
-//   async (email, { rejectWithValue }) => {
-//     try {
-//       return (await authApi.forgotPassword(email)).data;
-//     } catch (error) {
-//       return rejectWithValue(getResponseError(error));
-//     }
-//   }
-// );
+export const verifyEmail = createAsyncThunk(
+  'user/VerifyEmail',
+  async ({ userId, accessToken }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.verifyEmail({ userId, accessToken });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+export const forgotPassword = createAsyncThunk(
+  'user/ForgotPassword',
+  async (email, { rejectWithValue }) => {
+    try {
+      return (await authApi.forgotPassword(email)).data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
 
 const authSlice = createSlice({
     name: 'auth',
@@ -121,15 +121,15 @@ const authSlice = createSlice({
         // [register.fulfilled]: (state) => {
         //   state.loading = false;
         // },
-        // [forgotPassword.pending]: (state) => {
-        //   state.loading = true;
-        // },
-        // [forgotPassword.rejected]: (state) => {
-        //   state.loading = false;
-        // },
-        // [forgotPassword.fulfilled]: (state) => {
-        //   state.loading = false;
-        // },
+        [forgotPassword.pending]: (state) => {
+          state.loading = true;
+        },
+        [forgotPassword.rejected]: (state) => {
+          state.loading = false;
+        },
+        [forgotPassword.fulfilled]: (state) => {
+          state.loading = false;
+        },
     },
 });
 
