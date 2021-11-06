@@ -4,8 +4,7 @@ import { FcShop } from 'react-icons/fc';
 import {
 	Typography,
 	makeStyles,
-	IconButton,
-	TextField
+	IconButton
 } from "@material-ui/core";
 import {
 	Person,
@@ -200,11 +199,11 @@ function Header({ showMenu }) {
 
 
 	const logoutHandler = () => {
-		dispatch(userAuthActions.logout());
+		dispatch(userAuthActions.logout());//dispatch is used to call function from reducer
 		history.push("/login");
 	};
 
-	useEffect(() => {
+	useEffect(() => {//UseEffect is the function when data this function monitor has been changed, it will be called again
 		if (SocketInNotify !== 0) {
 			setOpenModalNotify(true);
 			dispatch(unauProduct.ResetSocketInNotify());
@@ -226,19 +225,36 @@ function Header({ showMenu }) {
 
 	//searching
 	const searchSubmitHandler = async (e) => {
-		e.preventDefault();
-
-
+		e.preventDefault();//prevent submit
+		if (searchKey.trim().length == '0') {
+			alert('Từ khóa tìm kiếm không được phép rỗng!');
+			return;
+		}
+		//redirect to new page
+		// const location = {
+		// 	pathname: `/search?q=${searchKey}`,
+		// 	state: { searchKeyWord: searchKey },
+		// };
+		
+		history.push(`/search?searchKeyWord=${searchKey}`);
+		return true;
 	};
 
 	const searchKeyChangeHandler = (e) => {
-		setSearchKey(e.target.value)
+		/*
+		e.target mean get current target that use this event
+		we can print console.log(e), console.log(e.target) to learn more
+		*/
+		setSearchKey(e.target.value)//this is the way to get value in change handler
 	};
-	console.log(searchKey)
+
+
+
 	//useEffect run automatically, when data's changed, function define below it will be loaded again
 	useEffect(() => {
 		//in order to run handler function, we need to put it inside useEffect
 		getListCategoryHandler();
+		
 	}, [getListCategoryHandler]);//followed value, when data's changed, this function defined here will be called again
 
 	const domain = window.location.origin;
@@ -264,16 +280,14 @@ function Header({ showMenu }) {
 
 							</NavDropdown>
 						</Nav>
-						{/* <Form className="d-flex" action="details" method="post">
-							<FormControl className={classes.form} fullWidth size="small">
-								<TextField
-									label="Tên chuyên mục"
-									variant="outlined"
-									
-									// onChange={catNameChangeHandler}
-									size="small"
-								/>
-							</FormControl>
+						<Form className="d-flex"  >
+							<FormControl
+								type="search"
+								placeholder="Search"
+								className="mr-2"
+								aria-label="Search"
+								onChange={searchKeyChangeHandler}
+							/>
 							<Button
 								variant="dark"
 								type="submit"
@@ -281,7 +295,7 @@ function Header({ showMenu }) {
 							>
 								Search
 							</Button>
-						</Form> */}
+						</Form>
 						<Nav>
 							<NavDropdown title={<div style={{ display: "inline-block" }}><Person style={{ color: 'white' }} /></div>} id="collasible-nav-dropdown-2">
 								{user != null && isAuthenticated && (

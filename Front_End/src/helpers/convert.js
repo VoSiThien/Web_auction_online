@@ -5,3 +5,4 @@ export const moneyFormat = (value) => {
 		(parts[1] ? "." + parts[1] : "")
 	);
 };
+//format money

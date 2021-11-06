@@ -1,9 +1,9 @@
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
 import ProductInfoCard from '../components/ProductCard/ProductInfoCard';
-import { Card, Row, Col, Alert, Carousel, Button, Toast, ToastContainer } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { getProductByCategory } from '../reducers/homeCategory'
 import Pagination from '@material-ui/lab/Pagination';
@@ -12,7 +12,6 @@ import {
     makeStyles,
 } from '@material-ui/core';
 import '../index.css';
-import { BsTypeH2 } from 'react-icons/bs';
 
 const useStyles = makeStyles((theme) => ({
     root: {

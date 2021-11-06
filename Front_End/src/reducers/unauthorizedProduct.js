@@ -71,6 +71,19 @@ export const listProductHighestBid = createAsyncThunk(
     }
   }
 );
+
+export const listProductSearch = createAsyncThunk(
+  'userProduct/listSearchProduct',
+  async ({searchKey, limit, page, orderBy, filterField, AndOrCondition}, { rejectWithValue }) => {
+    try {
+      var value = (await unauthorizedProductApi.searchProduct(searchKey, limit, page, orderBy, filterField, AndOrCondition)).data;
+      return value;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
 const unauthorizedProductSlice = createSlice({
   name: 'userProduct',
   initialState,
@@ -133,6 +146,15 @@ const unauthorizedProductSlice = createSlice({
       state.loading = false;
     },
     [listProductHighestBid.fulfilled]: (state, action) => {
+      state.loading = false;
+    },
+    [listProductSearch.pending]: (state) => {
+      state.loading = true;
+    },
+    [listProductSearch.rejected]: (state) => {
+      state.loading = false;
+    },
+    [listProductSearch.fulfilled]: (state, action) => {
       state.loading = false;
     },
   },
