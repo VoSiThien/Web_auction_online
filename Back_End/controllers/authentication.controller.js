@@ -237,7 +237,7 @@ router.post('/register', authenticationValidate.register, async(req, res) => {
         acc_email: email,
         acc_phone_number: phoneNumber || null,
         acc_full_name: fullName || null,
-        acc_role: role || 'USER',
+        acc_role: role || 'BID',
         acc_token: hashToken,
         acc_created_date: dateOb
     }
