@@ -18,6 +18,11 @@ const UserPage = lazy(() => import('../pages/admin/user-mgt/users'));
 
 const AdminCategoryPage = lazy(() => import('../pages/admin/category-mgt/Category'));
 const AdminSubCategoryPage = lazy(() => import('../pages/admin/subCategory-mgt/SubCategory'));
+
+const ForgotPasswordPage = lazy(() => import('../pages/ForgotPassword'));
+const RecoveryPasswordPage = lazy(() => import('../pages/RecoveryPassword'));
+
+const AccountActivationPage = lazy(() => import('../pages/AccountActivation'));
 export const routes = [
   {
     path: '/',
@@ -76,6 +81,24 @@ export const routes = [
     exact: true,
     component: HistoryBidBidder,
     roles: [Role.Bidder],
+  },
+  {
+    path: '/forgot-password',
+    protected: false,
+    exact: true,
+    component: ForgotPasswordPage,
+  },
+  {
+    path: '/recovery-password',
+    protected: false,
+    exact: true,
+    component: RecoveryPasswordPage,
+  },
+  {
+    path: '/account-activation',
+    protected: false,
+    exact: true,
+    component: AccountActivationPage,
   },
 ];
 

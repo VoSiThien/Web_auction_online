@@ -6,6 +6,7 @@ import { deleteHTML } from '../../helpers/deleteHTML';
 import { useDispatch, useSelector } from 'react-redux';
 import { bidAddWatchList } from '../../reducers/users/bidder';
 import { FcLike } from "react-icons/fc";
+import NumberFormat from 'react-number-format';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -144,7 +145,16 @@ const ProductCard = ({
               variant="body2"
               color="textSecondary"
               component="p">
-              Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : currentPrice + 'VNĐ'} </strong>
+              Giá hiện tại: <strong>
+                {currentPrice == null ? 'Chưa có thông tin' : ''}
+                <NumberFormat
+                  value={currentPrice}
+                  variant="standard"
+                  thousandSeparator={true}
+                  suffix={' VND'}
+                  displayType={'text'}
+                />
+              </strong>
             </Typography>
 
 
@@ -152,14 +162,23 @@ const ProductCard = ({
               variant="body2"
               color="textSecondary"// https://mui.com/api/typography/#props
               component="p">
-              Người giữ giá: <strong>{priceHolder}</strong>
+              Người giữ giá: <strong>{priceHolder == null ? 'Chưa có thông tin' : priceHolder}</strong>
             </Typography>
 
             <Typography className={classes.subInfomation}
               variant="body2"
               color="textSecondary"
               component="p">
-              Giá mua ngay: <strong>{price == null ? 'Chưa có thông tin' : price + 'VNĐ'} </strong>
+              Giá mua ngay: <strong>
+                {price == null ? 'Chưa có thông tin' : ''} 
+                <NumberFormat
+                              value={price}
+                              variant="standard"
+                              thousandSeparator={true}
+                              suffix={' VND'}
+                              displayType={'text'}
+                            /> 
+                </strong>
             </Typography>
 
             <Typography className={classes.subInfomation}

@@ -99,15 +99,15 @@ router.post('/forgot-password', authenticationValidate.forgotPassword, async(req
 
     if (result.length === 0) {
         return res.status(400).json({
-            errorMessage: 'email not exist',
+            errorMessage: 'Email không tồn tại',
             statusCode: errorCode
         })
     }
 
     var token = 'f' + (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString()
 
-    const cusName = result[0]['acc_fullName'] || 'quý khách'
-    await mailService.sendMail(mailOptions.forgotPasswordOptions(email, cusName, token), req, res)
+    const cusName = result.acc_full_name || 'quý khách'
+    await mailService.sendMail(mailOptions.forgotPasswordOptions(email, cusName, token), req, res)    
     const hashToken = bcrypt.hashSync(token, 3)
 
     const account = {
@@ -115,11 +115,11 @@ router.post('/forgot-password', authenticationValidate.forgotPassword, async(req
         acc_updated_date: dateOb
     }
 
-    await knex('tbl_account').where('acc_id', result[0]['acc_id']).update(account)
+    await knex('tbl_account').where('acc_id', result.acc_id).update(account)
 
     return res.status(200).json({
         statusCode: successCode,
-        accId: result[0]['acc_id']
+        accId: result.acc_id
     })
 })
 
@@ -131,17 +131,23 @@ router.post('/new-password', authenticationValidate.newPassword, async(req, res)
 
     if (result.length === 0) {
         return res.status(400).json({
-            errorMessage: 'id not exists',
+            errorMessage: 'Id không tồn tại',
+            statusCode: errorCode
+        })
+    }
+    if(result[0]['acc_token_forgot'] === null){
+        return res.status(400).json({
+            errorMessage: 'Bạn đã xác nhận rồi, vui lòng nhập lại email',
             statusCode: errorCode
         })
     }
 
     if (!bcrypt.compareSync(tokenChangePass, result[0]['acc_token_forgot'])) {
         return res.status(400).json({
-            errorMessage: 'token change password wrong',
+            errorMessage: 'Mã xác nhận không đúng',
             statusCode: errorCode
         })
-    }
+    }    
 
     const hashPassWord = bcrypt.hashSync(accPassword, 3)
     const account = {
@@ -196,7 +202,7 @@ router.post('/register', authenticationValidate.register, async(req, res) => {
     // check unique email
     const verifying = await accountModel.findByEmail(email)
 
-    if (verifying.length != 0) {
+    if (verifying!=undefined) {
         return res.status(400).json({
             errorMessage: 'Email existed',
             statusCode: errorCode
@@ -231,7 +237,7 @@ router.post('/register', authenticationValidate.register, async(req, res) => {
         acc_email: email,
         acc_phone_number: phoneNumber || null,
         acc_full_name: fullName || null,
-        acc_role: role || 'USER',
+        acc_role: role || 'BID',
         acc_token: hashToken,
         acc_created_date: dateOb
     }

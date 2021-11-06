@@ -121,7 +121,7 @@ const newPassword = (req, res, next) => {
 	const shema = {
 		type: 'object',
 		properties: {
-			accId: { type: 'integer' },
+			accId: { type: 'string' },
 			accPassword: { type: 'string', pattern: '' , minLength: 1 },
 			tokenChangePass: { type: 'string', pattern: '' }
 		},

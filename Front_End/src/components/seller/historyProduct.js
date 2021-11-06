@@ -5,6 +5,7 @@ import { getListHistory, cancelHistory, confirmHistory } from '../../reducers/hi
 import Pagination from '@material-ui/lab/Pagination';
 import { BsCheckLg, BsXLg } from 'react-icons/bs';
 import '../../index.css';
+import NumberFormat from 'react-number-format';
 
 import {
     makeStyles
@@ -211,7 +212,15 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                                                         <td>{index + 1 + (page - 1) * 10}</td>
                                                         <td>{row.his_created_date}</td>
                                                         <td>{row.acc_full_name}</td>
-                                                        <td>{row.his_price} VNĐ</td>
+                                                        <td>
+                                                            <NumberFormat
+                                                                value={row.his_price}
+                                                                variant="standard"
+                                                                thousandSeparator={true}
+                                                                suffix={' VND'}
+                                                                displayType={'text'}
+                                                            />
+                                                        </td>
                                                         <td>
                                                             <Button size="sm" variant="danger" disabled={hiddenText} onClick={() => CancelStatus0Handler(row.his_id, { page, limit, prodId, status, sortByPrice })}><BsXLg /> Từ chối</Button>
                                                         </td>
