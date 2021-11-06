@@ -88,6 +88,7 @@ const CategoryModal = ({ CatItem, action, reloadTable, isOpenModal, closeModalHa
     } else if (action === "INSERT") {
       try {
         await dispatch(addCategory({ catName })).unwrap();
+        setShowSuccess(true);
         setText('Thêm thành công!');
         reloadTable();
       } catch (error) {

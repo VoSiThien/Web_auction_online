@@ -127,15 +127,15 @@ router.post('/list-same-cat', prodValidation.listByCategory, async (req, res) =>
 			prod_seller_id: result[index].prod_seller_id,
 			prod_main_image: result[index].prod_main_image,
 			prod_cate_name: result[index].cate_name,
-			prod_price_holder : result[index].prod_price_holder
+			prod_price_holder: result[index].prod_price_holder
 		}
-		
+
 		if (prodObj.prod_price_holder != null)
 			prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == result[index].prod_price_holder).acc_full_name
 		if (prodObj.prod_seller_id != null)
 			prodObj.prod_seller_id = accountList.find((seller) => seller.acc_id == result[index].prod_seller_id).acc_full_name
-		
-	
+
+
 		prodList.push(prodObj)
 		index++
 	}
@@ -225,8 +225,11 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 			prod_seller_id: result[index].prod_seller_id,
 			prod_main_image: result[index].prod_main_image
 		}
-		prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == result[index].prod_price_holder).acc_full_name
-		prodObj.prod_seller = accountList.find((seller) => seller.acc_id == result[index].prod_seller_id).acc_full_name
+		//get holder & seller information
+		if (prodObj.prod_price_holder)
+			prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == prodObj.prod_price_holder).acc_full_name
+		if (prodObj.prod_seller_id)
+			prodObj.prod_seller_id = accountList.find((seller) => seller.acc_id == prodObj.prod_seller_id).acc_full_name
 		prodList.push(prodObj)
 		index++
 	}
