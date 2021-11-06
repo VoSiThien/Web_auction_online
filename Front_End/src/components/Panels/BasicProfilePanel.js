@@ -5,12 +5,14 @@ import {
 	makeStyles,
 	TextField,
 } from "@material-ui/core";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { Validate } from "../../helpers";
 import { useInput } from "../../hooks/use-input";
+import { getProfile } from '../../reducers/users/profile';
+import { useDispatch, useSelector } from "react-redux";
 const useStyles = makeStyles((theme) => ({
 	form: {
 		width: "30rem",
@@ -37,6 +39,17 @@ const useStyles = makeStyles((theme) => ({
 const BasicProfilePanel = () => {
 	const { t } = useTranslation();
 	const classes = useStyles();
+	const data = useSelector((state) => state.profile.data);
+	const dispatch = useDispatch();
+
+	const getProfileUser = useCallback(async () => {
+        try {
+            await dispatch(getProfile()).unwrap();
+        } catch (err) {
+            alert(err);
+        }
+    }, [dispatch]);
+
 
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [phoneNumberIsTouched, setPhoneNumberIsTouched] = useState(false);
@@ -45,7 +58,9 @@ const BasicProfilePanel = () => {
 		(Validate.isNotEmpty(phoneNumber) &&
 			Validate.isPhoneNumber(phoneNumber)) ||
 		phoneNumber === "";
+
 	const phoneNumberHasError = !phoneNumberIsValid && phoneNumberIsTouched;
+
 	const {
 		enteredInput: enteredFullName,
 		hasError: fullNameHasError,
@@ -53,7 +68,8 @@ const BasicProfilePanel = () => {
 		inputChangeHandler: fullNameChangeHandler,
 		inputIsValid: fullNameIsValid,
 		inputReset: fullNameReset,
-	} = useInput(Validate.isNotEmpty, "Nguyễn Văn A");
+	} = useInput(Validate.isNotEmpty, data.acc_full_name);
+
 	const {
 		enteredInput: enteredEmail,
 		hasError: emailHasError,
@@ -63,8 +79,9 @@ const BasicProfilePanel = () => {
 		inputReset: emailReset,
 	} = useInput(
 		(value) => Validate.isNotEmpty(value) && Validate.isEmail(value),
-		"Email@gmail.com"
+		data.acc_email
 	);
+
 	const {
 		enteredInput: enteredAddress,
 		hasError: addressHasError,
@@ -72,10 +89,10 @@ const BasicProfilePanel = () => {
 		inputChangeHandler: addressChangeHandler,
 		inputIsValid: addressIsValid,
 		inputReset: addressReset,
-	} = useInput(Validate.isNotEmpty, "Thu Duc City");
+	} = useInput(Validate.isNotEmpty, data.acc_birthday);
+
 	const phoneNumberChangeHandler = (value) => {
 		setPhoneNumber(value);
-		console.log(value);
 	};
 
 	const phoneNumberBlurHandler = () => {
@@ -89,9 +106,10 @@ const BasicProfilePanel = () => {
 
 	const formIsValid =
 		fullNameIsValid && emailIsValid && addressIsValid && phoneNumberIsValid;
+
 	const formSubmitHandler = async (e) => {
 		e.preventDefault();
-		if (!formIsValid) return;
+		//if (!formIsValid) return;
 
 		fullNameReset();
 		emailReset();
@@ -99,6 +117,14 @@ const BasicProfilePanel = () => {
 		phoneNumberReset();
 		// xử lí logic ở đây
 	};
+
+	useEffect(() => {
+        getProfileUser();
+    }, [getProfileUser]);
+	useEffect(()=>{
+		setPhoneNumber(data.acc_phone_number);
+	},[data])
+
 	return (
 		<form
 			noValidate
@@ -162,15 +188,11 @@ const BasicProfilePanel = () => {
 			<FormControl className={classes.formControl}>
 				<TextField
 					error={addressHasError}
-					label={t("profilepage.address")}
-					helperText={
-						addressHasError && "Please enter a valid address."
-					}
+					type="date"
+					helperText={addressHasError && "Please enter a valid email."}
 					fullWidth
 					size="small"
 					variant="standard"
-					multiline
-					rows={4}
 					value={enteredAddress}
 					onChange={addressChangeHandler}
 					onBlur={addressBlurHandler}
@@ -181,9 +203,8 @@ const BasicProfilePanel = () => {
 				color="primary"
 				fullWidth
 				type="submit"
-				disabled={!formIsValid}
 			>
-				{t("profilepage.buttonExecute")}
+				Lưu thay đổi
 			</Button>
 		</form>
 	);
