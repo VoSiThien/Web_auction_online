@@ -21,10 +21,9 @@ import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import { uiActions } from '../../../reducers/ui';
 import SearchInput from '../../../components/UI/SearchInput';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import { Add } from '@material-ui/icons';
+import { Add, Forum, Edit, Delete } from '@material-ui/icons';
 import { deleteAuctionProduct, getAuctionProductList } from '../../../reducers/users/product';
+import CommentProduct from './CommentProduct';
 import AddProduct from './AddProduct';
 import UpdateProduct from './UpdateProduct';
 import TableError from '../../../components/Table/TableError';
@@ -143,6 +142,7 @@ const ProductManager = (props) => {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openCommentModal, setOpenCommentModal] = useState(false);
   const [productInfo, setProductInfo] = useState({});
   const [selectedId, setSelectedId] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -153,10 +153,20 @@ const ProductManager = (props) => {
   const [text, setText] = useState('');
   let { loading, productList, numPage } = productInfo;
 
+  const openCommentModalHandler = () => {
+    setOpenAddModal(false);
+    setOpenUpdateModal(false);
+    setOpenDeleteModal(false);
+    setOpenCommentModal(true);
+    setText('');
+  };
+
+
   const openAddModalHandler = () => {
     setOpenAddModal(true);
     setOpenUpdateModal(false);
     setOpenDeleteModal(false);
+    setOpenCommentModal(false);
     setText('');
   };
 
@@ -165,6 +175,7 @@ const ProductManager = (props) => {
     setOpenUpdateModal(true);
     setOpenAddModal(false);
     setOpenDeleteModal(false);
+    setOpenCommentModal(false);
     setText('');
   };
   const openDeleteModalHandler = (id) => {
@@ -172,6 +183,7 @@ const ProductManager = (props) => {
     setOpenUpdateModal(false);
     setOpenAddModal(false);
     setOpenDeleteModal(true);
+    setOpenCommentModal(false);
     setText('');
   };
 
@@ -179,6 +191,7 @@ const ProductManager = (props) => {
     setOpenUpdateModal(false);
     setOpenAddModal(false);
     setOpenDeleteModal(false);
+    setOpenCommentModal(false);
     setText('');
   };
 
@@ -247,9 +260,16 @@ const ProductManager = (props) => {
             <Container >
               <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
                   <Alert.Heading>{text}</Alert.Heading>
-              </Alert>
+              </Alert>=
               <AddProduct 
                 isOpen={openAddModal} 
+                onClose={closeModalHandler}
+                showSuccess={setShowSuccess}
+                textAlert={setText}
+              />
+              <CommentProduct
+                itemInfo={selectedItem}
+                isOpen={openCommentModal}
                 onClose={closeModalHandler}
                 showSuccess={setShowSuccess}
                 textAlert={setText}
@@ -351,16 +371,39 @@ const ProductManager = (props) => {
                           <TableCell><Checkbox checked={row?.prodAutoExtend===1?true:false} color="primary"/></TableCell>
                           <TableCell>{moment(new Date(row?.prodUpdatedDate)).format("DD/MM/YYYY HH:mm")}</TableCell>
                           <TableCell align="center" style={{ minWidth: 150 }}>
-                            <EditIcon
+                            <Button 
+                              variant="outlined" 
+                              startIcon={<Forum
+                                fontSize="small"
+                                style={{ cursor: 'pointer', marginLeft: "10px" }}
+                              />}
+                              style={{ marginLeft: 5 }}
+                              fontSize="small"
+                              onClick={() => openCommentModalHandler(row)}
+                              >
+                            </Button>
+                            <Button 
+                              variant="outlined" 
+                              startIcon={<Edit
+                                fontSize="small"
+                                style={{ cursor: 'pointer', marginLeft: "10px" }}
+                              />}
+                              style={{ marginLeft: 5 }}
+                              fontSize="small"
                               onClick={() => openUpdateModalHandler(row)}
+                              >
+                            </Button>
+                            <Button 
+                              variant="outlined" 
+                              startIcon={<Delete
+                                fontSize="small"
+                                style={{ cursor: 'pointer', marginLeft: "10px" }}
+                              />}
+                              style={{ marginLeft: 5 }}
                               fontSize="small"
-                              style={{ marginRight: 5, cursor: 'pointer' }}
-                            />
-                            <DeleteIcon
-                              fontSize="small"
-                              style={{ cursor: 'pointer' }}
                               onClick={() => openDeleteModalHandler(row.prodId)}
-                            />
+                              >
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}

@@ -5,11 +5,15 @@ import {
 	Paper,
 	Tab,
 	Tabs,
+	Card,
+	CardHeader,
+	CardContent,
 } from "@material-ui/core";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from 'react-redux';
 import { useHistory, useParams } from "react-router-dom";
 import BasicProfilePanel from "../../components/Panels/BasicProfilePanel";
+import SellerProfilePanel from "../../components/UserInfomation/SellerProfilePanel";
 import AllList from "../../components/Panels/AllList";
 import ChangePasswordPanel from "../../components/Panels/ChangePasswordPanel";
 import Footer from "../../components/Layout/Footer";
@@ -32,6 +36,24 @@ const useStyles = makeStyles((theme) => ({
 	},
 	label: {
 		color: "#fff",
+	},
+	boxstyle:{
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		padding: 20,
+	},
+	carheader:{
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+    	fontfamily: "Roboto",
+	},
+	carcontent:{
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+    	fontfamily: "Roboto",
 	},
 }));
 
@@ -84,6 +106,38 @@ const Profile = (props) => {
 	useEffect(() => {
 		document.title = "Thông tin cá nhân"
 	});
+
+	const cardBidder = (
+		<React.Fragment>
+			<CardHeader
+				className={classes.carheader}
+				justifyContent="center" 
+				alignItems="center"
+				title='Bidder Infomation'
+				variant="body2"
+			/>
+		  <CardContent 
+				className={classes.carcontent}>
+		  	<BasicProfilePanel />
+		  </CardContent>
+		</React.Fragment>
+	  );
+	const cardSeller = (
+		<React.Fragment>
+			<CardHeader
+				className={classes.carheader}
+				justifyContent="center" 
+				alignItems="center"
+				title='Seller Infomation'
+				variant="body2"
+			/>
+		  <CardContent
+				className={classes.carcontent}>
+		  	<SellerProfilePanel />
+		  </CardContent>
+		</React.Fragment>
+	  );
+
 	return (
 		<>
 			<div className={classes.root}>
@@ -108,7 +162,17 @@ const Profile = (props) => {
 						index={0}
 						className={classes.tabPanel}
 					>
-						<BasicProfilePanel />
+						<Box className={classes.boxstyle}
+							sx={{ typography: 'body2', }}>
+      						<Card variant="outlined">{cardBidder}</Card>
+    					</Box>
+						{user != null && user.role === Role.Seller && (
+						<Box className={classes.boxstyle}
+							sx={{ typography: 'body2' }}>
+      						<Card variant="outlined">{cardSeller}</Card>
+    					</Box>
+						)}
+						{/* <BasicProfilePanel /> */}
 					</TabPanel>
 					<TabPanel
 						value={tabValue}
