@@ -209,7 +209,7 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                                             {data.historyList?.length > 0 &&
                                                 data.historyList.map((row, index) => (
                                                     <tr key={index}>
-                                                        <td>{index + 1 + (page - 1) * 10}</td>
+                                                        <td>{index + 1 + ((page - 1) * limit)}</td>
                                                         <td>{row.his_created_date}</td>
                                                         <td>{row.acc_full_name}</td>
                                                         <td>
@@ -249,7 +249,7 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                                             {data.historyList?.length > 0 &&
                                                 data.historyList.map((row, index) => (
                                                     <tr key={index * 2}>
-                                                        <td>{index + 1}</td>
+                                                        <td>{index + 1 + ((page - 1) * limit)}</td>
                                                         <td>{row.his_created_date}</td>
                                                         <td>{row.acc_full_name}</td>
                                                         <td>{row.his_price} VNĐ</td>
@@ -281,7 +281,7 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                                             {data.historyList?.length > 0 &&
                                                 data.historyList.map((row, index) => (
                                                     <tr key={index * 3}>
-                                                        <td>{index + 1}</td>
+                                                        <td>{index + 1 + ((page - 1) * limit)}</td>
                                                         <td>{row.his_created_date}</td>
                                                         <td>{row.acc_full_name}</td>
                                                         <td>{row.his_price} VNĐ</td>

@@ -20,9 +20,45 @@ const accUpdateprofile = ({ email, fullName, birthday, phoneNumber }) => {
     });
 };
 
+const getListFavoriteProduct = ({ page, limit }) => {
+    return axios.post('/api/bidder/get-list-favorite-product', {
+        page,
+        limit
+    });
+};
+
+const getListJoiningProduct = ({ page, limit }) => {
+    return axios.post('/api/bidder/get-list-joining-product', {
+        page,
+        limit
+    });
+};
+
+const getListHighestPriceProduct = ({ page, limit }) => {
+    return axios.post('/api/bidder/get-list-highestPrice-product-bidder', {
+        page,
+        limit
+    });
+};
+
+const getListComment = ({ page, limit }) => {
+    return axios.post('/api/bidder/get-list-comment', {
+        page,
+        limit
+    });
+};
+
+const deleteProductInWatchList = ({ id }) => {
+    return axios.post( `/api/bidder/favorite-product/delete/${id}`);
+};
 const profileApi = {
     getProfile,
     accNewPassword,
-    accUpdateprofile
+    accUpdateprofile,
+    getListFavoriteProduct,
+    getListJoiningProduct,
+    getListHighestPriceProduct,
+    deleteProductInWatchList,
+    getListComment
   };
   export default profileApi;
