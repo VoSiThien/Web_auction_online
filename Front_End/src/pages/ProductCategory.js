@@ -1,6 +1,12 @@
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
-import { mainColor } from '../utils';
+import ProductInfoCard from '../components/ProductCard/ProductInfoCard';
+import { Card } from 'react-bootstrap';
+import { useCallback, useEffect, useState } from 'react';
+import { useParams } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { getProductByCategory } from '../reducers/homeCategory'
+import Pagination from '@material-ui/lab/Pagination';
 import {
     Container,
     makeStyles,
@@ -9,154 +15,122 @@ import '../index.css';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        minHeight: '100vh',
+        minHeight: '50vh',
         maxHeight: '-webkit-fill-available',
+    },
+    section: {
+        borderRadius: theme.shape.borderRadius,
+        background: 'white',
+        boxShadow: '0px 2px 8px rgba(0,0,0,.1)',
+        padding: theme.spacing(2),
+        // marginBottom: theme.spacing(2),
+        margin: theme.spacing(2),
+        marginLeft: theme.spacing(6),
+        marginRight: theme.spacing(6),
+    },
+    pagination: {
+        '& > *': {
+            justifyContent: 'center',
+            display: 'flex',
+        },
     },
     content: {
         padding: '5vh 0',
-    },
-    title: {
-        marginBottom: 25,
-        [theme.breakpoints.down('sm')]: {
-            fontSize: 25,
-        },
-    },
-    form: {
-        width: '30rem',
-        background: '#fff',
-        maxWidth: '100%',
-        margin: '0 auto',
-        borderRadius: theme.shape.borderRadius,
-        padding: '50px 25px',
-        [theme.breakpoints.down('xs')]: {
-            padding: '35px 15px',
-        },
-    },
-    formControl: {
-        display: 'block',
-        marginBottom: 15,
-    },
-    button: {
-        '&:disabled': {
-            cursor: 'not-allowed',
-            pointerEvents: 'all !important',
-        },
-    },
-    actions: {
-        marginTop: 10,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        '& a': {
-            color: mainColor,
-        },
     },
 }));
 
 function Home() {
     const classes = useStyles()
+    const dispatch = useDispatch();
+    const { catID } = useParams();
+    const [productCatInfo, setProductCatInfo] = useState({});
+
+    let { loading, listProduct, numberProduct, numberOfPage } = productCatInfo;
+    const [page, setPage] = useState(1);
+    const [error, setError] = useState('');
+    const getProductByCategoryListHandler = useCallback(
+        async (page = 1, catID) => {
+            try {
+
+                const limit = 8;
+
+                const response = await dispatch(getProductByCategory({ page, limit, catID: +catID })).unwrap();
+                //process start date and end date here
+                setProductCatInfo(response);
+            } catch (err) {
+                setError(err);
+            }
+        },
+        [dispatch]
+    );
+    const pageChangeHandler = (event, value) => {
+        setPage(value);
+
+    };
+    useEffect(() => {
+        if (catID)
+            getProductByCategoryListHandler(page, catID)
+    }, [dispatch, getProductByCategoryListHandler, page, catID]);//when page change, get the new list
+
+    useEffect(() => {
+        document.title = 'Sản phẩm theo chuyên mục';
+    }, []);
+
     return (
         <>
+
             <div className={classes.root}>
                 <Header />
                 <div className={classes.content}>
                     <Container>
-                        <div class="container">
-                            {/*Section: Block Content*/}
-                            <section>
+                        <div className="container">
+                            
+                            <section className="text-center mt-5" >
+
                                 {/* Grid row */}
-                                <div className="row">
-                                    {/* Grid column */}
-                                    <div className="col-md-4 mb-4">
-                                        {/* Card */}
-                                        <div className>
-                                            <div className="view zoom overlay z-depth-2 rounded">
-                                                <a href="#!">
-                                                    <div className="mask">
-                                                        <img className="img-fluid w-100" src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" />
-                                                        <div className="mask rgba-black-slight" />
-                                                    </div>
-                                                </a>
+                                <div className="row justify-content-center flex-fill">
+                                    {listProduct?.length > 0 &&
+                                        listProduct.map((prod, index) => (
+                                            <div key={prod.prod_id} className="col-4">
+                                                <Card className="h-100">
+                                                    <Card.Body>
+                                                        <ProductInfoCard
+                                                            id={prod.prod_id}
+                                                            title={prod.prod_name}
+                                                            description={prod.prod_description}
+                                                            image={prod.prod_main_image}
+                                                            price={prod.prod_price}
+                                                            endDate={prod.prod_end_date}
+                                                            currentPrice={prod.prod_price_current}
+                                                            catName={prod.cate_name}
+                                                            holder={prod.prod_price_holder}
+                                                            seller={prod.prod_seller_id}
+                                                            numberBid={prod.number_bid}
+                                                            createdDate = {prod.created_date}
+                                                            priceHolder = {prod.prod_price_holder}
+                                                           
+                                                        />
+                                                    </Card.Body>
+
+                                                </Card>
+                                                {/* Card */}
                                             </div>
-                                            <div className="text-center pt-4">
-                                                <h5>Fantasy T-shirt</h5>
-                                                <p className="mb-2 text-muted text-uppercase small">Shirts</p>
-                                                
-                                                <hr />
-                                                <h6 className="mb-3">12.99 $</h6>
-                                                <button type="button" className="btn btn-primary btn-sm mr-1 mb-2"><i className="fas fa-shopping-cart pr-2" />Add to cart</button>
-                                                <button type="button" className="btn btn-light btn-sm mr-1 mb-2"><i className="fas fa-info-circle pr-2" />Details</button>
-                                                <button type="button" className="btn btn-danger btn-sm px-3 mb-2 material-tooltip-main" data-toggle="tooltip" data-placement="top" title="Add to wishlist"><i className="far fa-heart" /></button>
-                                            </div>
-                                        </div>
-                                        {/* Card */}
-                                    </div>
-                                    {/* Grid column */}
-                                    {/* Grid column */}
-                                    <div className="col-md-4 mb-4">
-                                        {/* Card */}
-                                        <div className>
-                                            <div className="view zoom overlay z-depth-2 rounded">
-                                               <a href="#!">
-                                                    <div className="mask">
-                                                        <img className="img-fluid w-100" src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/13.jpg" />
-                                                        <div className="mask rgba-black-slight" />
-                                                    </div>
-                                                </a>
-                                            </div>
-                                            <div className="text-center pt-4">
-                                                <h5>Fantasy T-shirt</h5>
-                                                <p className="mb-2 text-muted text-uppercase small">Shirts</p>
-                                                
-                                                <hr />
-                                                <h6 className="mb-3">12.99 $</h6>
-                                                <button type="button" className="btn btn-light btn-sm mr-1 mb-2"><i className="fas fa-info-circle pr-2" />Details</button>
-                                                <button type="button" className="btn btn-danger btn-sm px-3 mb-2 material-tooltip-main" data-toggle="tooltip" data-placement="top" title="Add to wishlist"><i className="far fa-heart" /></button>
-                                            </div>
-                                        </div>
-                                        {/* Card */}
-                                    </div>
-                                    {/* Grid column */}
-                                    {/* Grid column */}
-                                    <div className="col-md-4 mb-4">
-                                        {/* Card */}
-                                        <div className>
-                                            <div className="view zoom overlay z-depth-2 rounded">
-                                               <a href="#!">
-                                                    <div className="mask">
-                                                        <img className="img-fluid w-100" src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/14.jpg" />
-                                                        <div className="mask rgba-black-slight" />
-                                                    </div>
-                                                </a>
-                                            </div>
-                                            <div className="text-center pt-4">
-                                                <h5>Fantasy T-shirt</h5>
-                                                <p className="mb-2 text-muted text-uppercase small">Shirts</p>
-                                              
-                                                <hr />
-                                                <h6 className="mb-3">
-                                                    <span className="text-danger mr-1">$12.99</span>
-                                                    <span className="text-grey"><s>$36.99</s></span>
-                                                </h6>
-                                                <button type="button" className="btn btn-primary btn-sm mr-1 mb-2"><i className="fas fa-shopping-cart pr-2" />Add to cart</button>
-                                                <button type="button" className="btn btn-light btn-sm mr-1 mb-2"><i className="fas fa-info-circle pr-2" />Details</button>
-                                                <button type="button" className="btn btn-danger btn-sm px-3 mb-2 material-tooltip-main" data-toggle="tooltip" data-placement="top" title="Add to wishlist"><i className="far fa-heart" /></button>
-                                            </div>
-                                        </div>
-                                        {/* Card */}
-                                    </div>
-                                    {/* Grid column */}
+
+                                        ))}
+
+
                                 </div>
-                                {/* Grid row */}
                             </section>
-                            {/*Section: Block Content*/}
 
                         </div>
 
                     </Container>
+                    <div className={`${classes.pagination} ${classes.section}`}>
+                        <Pagination count={numberOfPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+                    </div>
                 </div>
             </div>
+
             <div className={classes.content}>
                 <Footer />
             </div>

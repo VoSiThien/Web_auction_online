@@ -4,7 +4,7 @@ import { FcShop } from 'react-icons/fc';
 import {
 	Typography,
 	makeStyles,
-	IconButton,
+	IconButton
 } from "@material-ui/core";
 import {
 	Person,
@@ -189,22 +189,27 @@ function Header({ showMenu }) {
 	const history = useHistory();
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 	const user = useSelector((state) => state.auth.user);
-	const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store
+	//state : all data in local store
+	//state.homeCategory : data from homeCategory reducer
+	//state.homeCategory.data: data from data variable of homeCategory reducer
+	const homeCatData = useSelector((state) => state.homeCategory.data)// get data from local store, can get at all pages, 
 	const SocketInNotify = useSelector((state) => state.unauthorizedProduct.SocketInNotify);
-  	const [openModalNotify, setOpenModalNotify] = useState(false);
+	const [openModalNotify, setOpenModalNotify] = useState(false);//initialize data for local variable of this page
+	const [searchKey, setSearchKey] = useState('');
+
 
 	const logoutHandler = () => {
-		dispatch(userAuthActions.logout());
+		dispatch(userAuthActions.logout());//dispatch is used to call function from reducer
 		history.push("/login");
 	};
 
-	useEffect(() => {
-		if(SocketInNotify !== 0){
-		  setOpenModalNotify(true);
-		  dispatch(unauProduct.ResetSocketInNotify());
+	useEffect(() => {//UseEffect is the function when data this function monitor has been changed, it will be called again
+		if (SocketInNotify !== 0) {
+			setOpenModalNotify(true);
+			dispatch(unauProduct.ResetSocketInNotify());
 		}
-	  }, [SocketInNotify]);
-	
+	}, [SocketInNotify]);
+
 	const handleCloseModelBidProduct = () => {
 		setOpenModalNotify(false);
 	};
@@ -218,16 +223,44 @@ function Header({ showMenu }) {
 		}
 	}, [dispatch]);
 
+	//searching
+	const searchSubmitHandler = async (e) => {
+		e.preventDefault();//prevent submit
+		if (searchKey.trim().length == '0') {
+			alert('Từ khóa tìm kiếm không được phép rỗng!');
+			return;
+		}
+		//redirect to new page
+		// const location = {
+		// 	pathname: `/search?q=${searchKey}`,
+		// 	state: { searchKeyWord: searchKey },
+		// };
+		
+		history.push(`/search?searchKeyWord=${searchKey}`);
+		return true;
+	};
+
+	const searchKeyChangeHandler = (e) => {
+		/*
+		e.target mean get current target that use this event
+		we can print console.log(e), console.log(e.target) to learn more
+		*/
+		setSearchKey(e.target.value)//this is the way to get value in change handler
+	};
+
+
+
 	//useEffect run automatically, when data's changed, function define below it will be loaded again
 	useEffect(() => {
 		//in order to run handler function, we need to put it inside useEffect
 		getListCategoryHandler();
+		
 	}, [getListCategoryHandler]);//followed value, when data's changed, this function defined here will be called again
 
 	const domain = window.location.origin;
-    return (
+	return (
 		<>
-        <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
+			<Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
 				<Container>
 					<Navbar.Brand href="/">
 						<FcShop className="iconhome" /> Auction Online</Navbar.Brand>
@@ -247,56 +280,63 @@ function Header({ showMenu }) {
 
 							</NavDropdown>
 						</Nav>
-						<Form className="d-flex" action="details/3">
+						<Form className="d-flex"  >
 							<FormControl
 								type="search"
 								placeholder="Search"
 								className="mr-2"
 								aria-label="Search"
+								onChange={searchKeyChangeHandler}
 							/>
-							<Button variant="dark" type="submit">Search</Button>
-						</Form>
-                    <Nav>
-					<NavDropdown title={<div style={{display: "inline-block"}}><Person style={{color: 'white'}}/></div>} id="collasible-nav-dropdown-2">
-						{user != null && isAuthenticated && (
-							<>
-								<NavDropdown.Item href={domain +'/profile'} >Trang cá nhân</NavDropdown.Item>
-								{(user.role === Role.Seller) && (
-									<NavDropdown.Item href={domain +'/product-mgt'} >Quản lý sản phẩm</NavDropdown.Item>
-								)}
-							</>
-						)}
-						{(user == null || !isAuthenticated) && (
-							<NavDropdown.Item href={domain +'/login'} >Đăng nhập</NavDropdown.Item>
-						)}
-					</NavDropdown>
-					{user != null && isAuthenticated && (
-						<IconButton
-							aria-label="My profile"
-							color="inherit"
-							className={classes.iconButton}
-							onClick={logoutHandler}
-						>
-							<ExitToApp style={{color: 'white'}}/>
-							<Typography
-								variant="caption"
-								className={classes.iconButtonCaption}
+							<Button
+								variant="dark"
+								type="submit"
+								onClick={searchSubmitHandler}
 							>
-								Đăng xuất
-							</Typography>
-						</IconButton>
-					)}
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
-		<NotifyBidPriceModel
-            isOpen={openModalNotify}
-            onClose={handleCloseModelBidProduct}
-            text="Có người đấu giá"
-        />
+								Search
+							</Button>
+						</Form>
+						<Nav>
+							<NavDropdown title={<div style={{ display: "inline-block" }}><Person style={{ color: 'white' }} /></div>} id="collasible-nav-dropdown-2">
+								{user != null && isAuthenticated && (
+									<>
+										<NavDropdown.Item href={domain + '/profile'} >Trang cá nhân</NavDropdown.Item>
+										{(user.role === Role.Seller) && (
+											<NavDropdown.Item href={domain + '/product-mgt'} >Quản lý sản phẩm</NavDropdown.Item>
+										)}
+									</>
+								)}
+								{(user == null || !isAuthenticated) && (
+									<NavDropdown.Item href={domain + '/login'} >Đăng nhập</NavDropdown.Item>
+								)}
+							</NavDropdown>
+							{user != null && isAuthenticated && (
+								<IconButton
+									aria-label="My profile"
+									color="inherit"
+									className={classes.iconButton}
+									onClick={logoutHandler}
+								>
+									<ExitToApp style={{ color: 'white' }} />
+									<Typography
+										variant="caption"
+										className={classes.iconButtonCaption}
+									>
+										Đăng xuất
+									</Typography>
+								</IconButton>
+							)}
+						</Nav>
+					</Navbar.Collapse>
+				</Container>
+			</Navbar>
+			<NotifyBidPriceModel
+				isOpen={openModalNotify}
+				onClose={handleCloseModelBidProduct}
+				text="Có người đấu giá"
+			/>
 		</>
-    );
+	);
 }
 
 export default Header;

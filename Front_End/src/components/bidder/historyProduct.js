@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListHistory } from '../../reducers/historyBid';
 import Pagination from '@material-ui/lab/Pagination';
+import NumberFormat from 'react-number-format';
 
 import {
     makeStyles
@@ -123,10 +124,16 @@ function HistoryProductBid({ isOpen, onClose, prod_id }) {
                                     {data.historyList?.length > 0 &&
                                         data.historyList.map((row, index) => (
                                             <tr key={index}>
-                                                <td>{index + 1 + (page - 1) * 10}</td>
+                                                <td>{index + 1 + ((page - 1) * limit)}</td>
                                                 <td>{row.his_created_date}</td>
                                                 <td>{row.acc_full_name}</td>
-                                                <td>{row.his_price}</td>
+                                                <td><NumberFormat
+                                                    value={row.his_price}
+                                                    variant="standard"
+                                                    thousandSeparator={true}
+                                                    suffix={' VND'}
+                                                    displayType={'text'}
+                                                /></td>
                                             </tr>
                                         ))}
                                 </tbody>

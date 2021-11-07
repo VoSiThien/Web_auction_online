@@ -6,7 +6,7 @@ let initialState = {//default state, this value will be gotten from use selector
   loading: false,
   data: [],
   dataProductDetail: [],
-  SocketInProductDetail: 0,
+  SocketInProductDetail: 0,//these variables will be stored in local store, and can access with useSelector in page
   SocketInProductHome: 0,
   SocketInNotify: 0
 };
@@ -71,6 +71,19 @@ export const listProductHighestBid = createAsyncThunk(
     }
   }
 );
+
+export const listProductSearch = createAsyncThunk(
+  'userProduct/listSearchProduct',
+  async ({searchKey, limit, page, orderBy, filterField, AndOrCondition}, { rejectWithValue }) => {
+    try {
+      var value = (await unauthorizedProductApi.searchProduct(searchKey, limit, page, orderBy, filterField, AndOrCondition)).data;
+      return value;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
 const unauthorizedProductSlice = createSlice({
   name: 'userProduct',
   initialState,
@@ -97,7 +110,7 @@ const unauthorizedProductSlice = createSlice({
     },
     [getProductDetail.fulfilled]: (state, action) => {
       state.loading = false;
-      state.dataProductDetail = action.payload
+      state.dataProductDetail = action.payload//store variable in here at local store
     },
     [getProductByCategory.pending]: (state) => {
       state.loading = true;
@@ -133,6 +146,15 @@ const unauthorizedProductSlice = createSlice({
       state.loading = false;
     },
     [listProductHighestBid.fulfilled]: (state, action) => {
+      state.loading = false;
+    },
+    [listProductSearch.pending]: (state) => {
+      state.loading = true;
+    },
+    [listProductSearch.rejected]: (state) => {
+      state.loading = false;
+    },
+    [listProductSearch.fulfilled]: (state, action) => {
       state.loading = false;
     },
   },

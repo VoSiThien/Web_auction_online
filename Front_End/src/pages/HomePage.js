@@ -15,6 +15,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { listProductAboutToEnd, listProductHighestPrice, listProductHighestBid } from '../reducers/unauthorizedProduct';
 import { Link, useHistory } from "react-router-dom";
+import NumberFormat from 'react-number-format';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -70,15 +71,31 @@ function Home() {
                         <img
                           className="d-block w-100 photo"
                           src={prod.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'}
-                          alt="Third slide"
+                          alt="Fifth slide"
                         />
                         <Carousel.Caption >
                           <Link to={`/details/${prod.prod_id}`} style={{ textDecoration: "none", color: "white" }}>
                             <h3>{prod.prod_name}</h3>
                             <p>Loại sản phẩm: <strong>{prod.cate_name}</strong></p>
-                            <p style={{ color: "light" }}>Giá hiện tại: <strong>{prod.prod_price_current == null ? 'Chưa có thông tin' : prod.prod_price_current + 'VNĐ'} </strong> </p>
+                            <p style={{ color: "light" }}>Giá hiện tại: <strong>{prod.prod_price_current == null ? 'Chưa có thông tin' : ''}
+                              <NumberFormat
+                                value={prod.prod_price_current}
+                                variant="standard"
+                                thousandSeparator={true}
+                                suffix={' VND'}
+                                displayType={'text'}
+                              />
+                            </strong> </p>
                             <p style={{ color: "light" }}>Người giữ giá: <strong>{prod.acc_full_name == null ? 'Chưa có thông tin' : prod.acc_full_name} </strong> </p>
-                            <p style={{ color: "light" }}>Giá mua ngay: <strong>{prod.prod_price == null ? 'Chưa có thông tin' : prod.prod_price + 'VNĐ'} </strong> </p>
+                            <p style={{ color: "light" }}>Giá mua ngay: <strong>{prod.prod_price == null ? 'Chưa có thông tin' : ''}
+                            <NumberFormat
+                                value={prod.prod_price}
+                                variant="standard"
+                                thousandSeparator={true}
+                                suffix={' VND'}
+                                displayType={'text'}
+                              />
+                               </strong> </p>
                             <p style={{ color: "light" }}>Ngày đăng: <strong>{prod.prod_created_date}</strong> </p>
                             <p style={{ color: "light" }}>Ngày hết hạn: <strong>{prod.prod_end_date}</strong> </p>
                             <p style={{ color: "light" }}>Số lượt ra giá: <strong>{prod.number_bid == null ? 'Chưa có thông tin' : prod.number_bid + ' lượt'} </strong> </p>

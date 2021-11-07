@@ -19,6 +19,7 @@ import HistoryProductBid from "../components/bidder/historyProduct";
 import HistoryProductSel from "../components/seller/historyProduct";
 import { Role } from '../config/role';
 import { invalid } from 'moment';
+import NumberFormat from 'react-number-format';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -187,10 +188,27 @@ function Home() {
                                 <p className="mb-2 text-muted text-uppercase small">Loại sản phẩm : <b>{productDetails.prod_categoryName}</b></p>
                                 <ul className="rating">
                                     <li>
-                                        <p>Giá hiện tại : {productDetails.prod_price_current == null ? 0 : productDetails.prod_price_current} VNĐ</p>
+                                        <p>Giá hiện tại : {productDetails.prod_price_current == null ? 'Chưa có thông tin' : ''}
+                                            <NumberFormat
+                                                value={productDetails.prod_price_current}
+                                                variant="standard"
+                                                thousandSeparator={true}
+                                                suffix={' VND'}
+                                                displayType={'text'}
+                                            />
+                                        </p>
+                                        
                                     </li>
                                     <li>
-                                        <p>Giá mua ngay : {productDetails.prod_price == null ? 0 : productDetails.prod_price} VNĐ</p>
+                                        <p>Giá mua ngay : {productDetails.prod_price == null ? 'Chưa có thông tin' : ''}
+                                        <NumberFormat
+                                                value={productDetails.prod_price}
+                                                variant="standard"
+                                                thousandSeparator={true}
+                                                suffix={' VND'}
+                                                displayType={'text'}
+                                            />
+                                        </p>
                                     </li>
                                 </ul>
                                 <div className="table-responsive">

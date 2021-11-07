@@ -34,12 +34,17 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 	if (numberOfProduct > limit) {
 		numberOfPage = Math.ceil(numberOfProduct / limit)
 	}
-
+	var whereClause = `where h.his_status != 2 and pr.prod_category_id = ${catID}`
 	var result = await knex.raw(`
-	select pr.*, cat.* 
-	from tbl_product pr left join tbl_categories cat on cat.cate_id = pr.prod_category_id
-	where pr.prod_category_id = ${catID}
-	order by prod_created_date desc
+	select count(h.his_id) number_bid, pr.*
+	from ((tbl_product pr left join tbl_categories cat on pr.prod_category_id = cat.cate_id)
+	join tbl_product_history h on h.his_product_id = pr.prod_id)
+	left join tbl_account ac on ac.acc_id = pr.prod_price_holder
+	${whereClause}
+	group by ac.acc_full_name, pr.prod_id, pr.prod_name, pr.prod_description,
+	pr.prod_main_image, pr.prod_price, pr.prod_end_date,
+	pr.prod_price_current, pr.prod_created_date, cat.cate_name
+	order by pr.prod_price::integer desc
 	offset ${offset}
 	limit ${limit}`)
 
@@ -49,29 +54,12 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 	var index = 0
 	var accountList = await accountModel.findActiveUser()
 	while (index < result.length) {
-		let prodObj = {
-			prod_id: result[index].prod_id,
-			prod_name: result[index].prod_name,
-			prod_category_id: result[index].prod_category_id,
-			prod_category_name: result[index].cate_name,
-			prod_amount: result[index].prod_amount,
-			prod_description: result[index].prod_description,
-			prod_created_date: moment(result[index].prod_created_date).format('DD/MM/YYYY HH:mm:ss'),
-			prod_updated_date: moment(result[index].prod_updated_date).format('DD/MM/YYYY HH:mm:ss') == 'Invalid date' ? moment(result[index].prod_created_date).format('DD/MM/YYYY') : moment(result[index].prod_updated_date).format('DD/MM/YYYY'),
-			prod_price_starting: result[index].prod_price_starting,
-			prod_price_current: result[index].prod_price_current,
-			prod_price_highest: result[index].prod_price_highest,
-			prod_price_step: result[index].prod_price_step,
-			prod_end_date: moment(result[index].prod_end_date).format('DD/MM/YYYY HH:mm:ss'),
-			prod_auto_extend: result[index].prod_auto_extend,
-			prod_seller_id: result[index].prod_seller_id,
-			prod_main_image: result[index].prod_main_image,
-			prod_cate_name: result[index].cate_name
-		}
+		let prodObj = result[index]
+
 		if (prodObj.prod_price_holder != null)
 			prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == result[index].prod_price_holder).acc_full_name
-		if (prodObj.prod_seller != null)
-			prodObj.prod_seller = accountList.find((seller) => seller.acc_id == result[index].prod_seller_id).acc_full_name
+		if (prodObj.prod_seller_id != null)
+			prodObj.prod_seller_id = accountList.find((seller) => seller.acc_id == result[index].prod_seller_id).acc_full_name
 		prodList.push(prodObj)
 		index++
 	}
@@ -87,7 +75,7 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 
 router.post('/list-same-cat', prodValidation.listByCategory, async (req, res) => {
 	const { limit, page, catID, prodID } = req.body
-	console.log(prodID)
+
 	const offset = limit * (page - 1)
 	/*
 	var whereClause = 'and prod_status != 1 and prod_amount > 0'
@@ -138,12 +126,16 @@ router.post('/list-same-cat', prodValidation.listByCategory, async (req, res) =>
 			prod_auto_extend: result[index].prod_auto_extend,
 			prod_seller_id: result[index].prod_seller_id,
 			prod_main_image: result[index].prod_main_image,
-			prod_cate_name: result[index].cate_name
+			prod_cate_name: result[index].cate_name,
+			prod_price_holder: result[index].prod_price_holder
 		}
+
 		if (prodObj.prod_price_holder != null)
 			prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == result[index].prod_price_holder).acc_full_name
-		if (prodObj.prod_seller != null)
-			prodObj.prod_seller = accountList.find((seller) => seller.acc_id == result[index].prod_seller_id).acc_full_name
+		if (prodObj.prod_seller_id != null)
+			prodObj.prod_seller_id = accountList.find((seller) => seller.acc_id == result[index].prod_seller_id).acc_full_name
+
+
 		prodList.push(prodObj)
 		index++
 	}
@@ -233,8 +225,11 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 			prod_seller_id: result[index].prod_seller_id,
 			prod_main_image: result[index].prod_main_image
 		}
-		prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == result[index].prod_price_holder).acc_full_name
-		prodObj.prod_seller = accountList.find((seller) => seller.acc_id == result[index].prod_seller_id).acc_full_name
+		//get holder & seller information
+		if (prodObj.prod_price_holder)
+			prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == prodObj.prod_price_holder).acc_full_name
+		if (prodObj.prod_seller_id)
+			prodObj.prod_seller_id = accountList.find((seller) => seller.acc_id == prodObj.prod_seller_id).acc_full_name
 		prodList.push(prodObj)
 		index++
 	}
@@ -265,7 +260,7 @@ router.get('/details/:id', async (req, res) => {
 	var prodObject = {}
 	var accountList = await accountModel.findActiveUser()
 	var rating = {}
-	
+
 	await knex.from('tbl_product')
 		.where('prod_id', id)
 		.returning('*')
@@ -273,17 +268,17 @@ router.get('/details/:id', async (req, res) => {
 			prodObject = rows[0];
 			prodObject.prod_end_date = moment(prodObject.prod_end_date).format('DD/MM/YYYY HH:mm:ss')
 			prodObject.prod_created_date = moment(prodObject.prod_created_date).format('DD/MM/YYYY HH:mm:ss')
-			
+
 			var like_bid = 0
 			var dis_like_bid = 0
 			var like_seller = 0
 			var dis_like_seller = 0
-			for(var i = 0; i < accountList.length; i++){				
-				if(accountList[i].acc_id === prodObject.prod_price_holder){
+			for (var i = 0; i < accountList.length; i++) {
+				if (accountList[i].acc_id === prodObject.prod_price_holder) {
 					like_bid = accountList[i].acc_like_bidder
 					dis_like_bid = accountList[i].acc_dis_like_bidder
 				}
-				if(accountList[i].acc_id === prodObject.prod_seller_id){
+				if (accountList[i].acc_id === prodObject.prod_seller_id) {
 					like_seller = accountList[i].acc_like_seller
 					dis_like_seller = accountList[i].acc_dis_like_seller
 				}
@@ -307,7 +302,7 @@ router.get('/details/:id', async (req, res) => {
 				.where('prod_img_product_id', prodObject.prod_id);
 			prodObject['prod_img'] = imageResult.map(attr => attr.prod_img_data);
 		})
-	
+
 	if (prodObject) {
 		return res.status(200).json({
 			productDetail: prodObject,

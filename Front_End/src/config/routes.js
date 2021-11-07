@@ -16,6 +16,13 @@ const ProductCategory = lazy(() => import('../pages/ProductCategory'));
 const DashbroadPage = lazy(() => import('../pages/admin/DashbroadPage'));
 const UserPage = lazy(() => import('../pages/admin/user-mgt/users'));
 const AdminProductPage = lazy(() => import('../pages/admin/product-mgt/Product'));
+const AdminCategoryPage = lazy(() => import('../pages/admin/category-mgt/Category'));
+const AdminSubCategoryPage = lazy(() => import('../pages/admin/subCategory-mgt/SubCategory'));
+
+const ForgotPasswordPage = lazy(() => import('../pages/ForgotPassword'));
+const RecoveryPasswordPage = lazy(() => import('../pages/RecoveryPassword'));
+
+const AccountActivationPage = lazy(() => import('../pages/AccountActivation'));
 export const routes = [
   {
     path: '/',
@@ -48,6 +55,12 @@ export const routes = [
     component: LoginPage,
   },
   {
+    path: '/profile/:slug',
+    protected: true,
+    exact: true,
+    component: ProfilePage,
+  },
+  {
     path: '/profile',
     protected: true,
     exact: true,
@@ -74,6 +87,24 @@ export const routes = [
     exact: true,
     component: HistoryBidBidder,
     roles: [Role.Bidder],
+  },
+  {
+    path: '/forgot-password',
+    protected: false,
+    exact: true,
+    component: ForgotPasswordPage,
+  },
+  {
+    path: '/recovery-password',
+    protected: false,
+    exact: true,
+    component: RecoveryPasswordPage,
+  },
+  {
+    path: '/account-activation',
+    protected: false,
+    exact: true,
+    component: AccountActivationPage,
   },
 ];
 
@@ -129,4 +160,24 @@ export const adminRoutes = [
     component: AdminProductPage,
     roles: [Role.Admin],
   },
+  {
+    path: '/admin/categories',
+    protected: true,
+    exact: true,
+    component: AdminCategoryPage,
+    roles: [Role.Admin],
+    additional: {
+      filter: Role.Bidder,
+    }
+  },
+  {
+    path: '/admin/sub-categories',
+    protected: true,
+    exact: true,
+    component: AdminSubCategoryPage,
+    roles: [Role.Admin],
+    additional: {
+      filter: Role.Bidder,
+    }
+  }
 ];

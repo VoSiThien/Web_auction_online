@@ -62,7 +62,7 @@ const SearchInput = ({ border }) => {
 				<Search />
 			</div>
 			<InputBase
-				placeholder="Từ khoá cần tìm..."
+				placeholder="Nhập một vài từ để tìm kiếm..."
 				classes={{
 					root: classes.inputRoot,
 					input: classes.inputInput,
