@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from 'react-redux';
 import { useHistory, useParams } from "react-router-dom";
 import BasicProfilePanel from "../../components/Panels/BasicProfilePanel";
-import AvatarPanel from "../../components/Panels/AvatarPanel";
+import AllList from "../../components/Panels/AllList";
 import ChangePasswordPanel from "../../components/Panels/ChangePasswordPanel";
 import Footer from "../../components/Layout/Footer";
 import Header from "../../components/Layout/Header";
@@ -70,9 +70,9 @@ const Profile = (props) => {
 	};
 
 	useEffect(() => {
-		if(user.role === Role.Seller){
-			setHiddenList(true);
-		}
+		// if(user.role === Role.Seller){
+		// 	setHiddenList(true);
+		// }
 		const tabNameToIndex = {
 			basic: 0,
 			password: 1,
@@ -122,7 +122,7 @@ const Profile = (props) => {
 						index={2}
 						className={classes.tabPanel}
 					>
-						<AvatarPanel />
+						<AllList />
 					</TabPanel>
 				</Container>
 			</div>

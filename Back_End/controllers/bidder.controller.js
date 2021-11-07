@@ -70,20 +70,26 @@ router.post('/update-info', validator.updateInfo, async (req, res) => {
 	})
 })
 
-router.post('/get-list-favorite-product/:id', async (req, res) => {
-	const { page, limit, id } = req.params
+router.post('/get-list-favorite-product', async (req, res) => {
+	const { page, limit} = req.body
+	const id = req.account['accId']
 
 	const offset = limit * (page - 1)
 
-	var numberPage = await knex.raw(`select count(distinct fav_id) 
+	var numberPage = await knex.raw(`select distinct fav_id
 	from tbl_favorite_product where fav_account_id = ${id}`)
 
-	numberPage = Number(numberPage.rows[0].count)
-	if (numberPage > limit) {
-		numberPage = Math.ceil(numberPage / limit)
+	if (numberPage.rows.length === 0) {
+		numberPage = 1
 	}
 	else {
-		numberPage = 1
+		numberPage = Number(numberPage.rows.length)
+		if (numberPage > limit) {
+			numberPage = Math.ceil(numberPage / limit)
+		}
+		else {
+			numberPage = 1
+		}
 	}
 
 	var result = await knex.raw(`select * from tbl_favorite_product h join tbl_product a
@@ -91,6 +97,7 @@ router.post('/get-list-favorite-product/:id', async (req, res) => {
 								offset ${offset} limit ${limit}`)
 
 	result = result.rows
+	
 
 	var listFavorite = []
 	var index = 0
@@ -98,110 +105,95 @@ router.post('/get-list-favorite-product/:id', async (req, res) => {
 	while (index < result.length) {
 		var name = result[index].prod_name;
 		let item = {
+			fav_id: result[index].fav_id,
 			prod_name: name,
 			prod_price: result[index].prod_price,
 			prod_price_current: result[index].prod_price_current,
 			prod_price_starting: result[index].prod_price_starting,
-			prod_price_highest: result[index].prod_price_highest
+			prod_created_date: result[index].prod_created_date
 		}
 		listFavorite.push(item)
 		index++
 	}
 
-	return res.status(400).json({
+	return res.status(200).json({
 		numberOfPage: numberPage,
 		watchList: listFavorite,
-		statusCode: errorCode
+		statusCode: successCode
 	})
 })
 
-router.post('/get-list-joining-product/:id', async (req, res) => {
-	const { page, limit, id } = req.params
+router.post('/get-list-joining-product', async (req, res) => {
+	const { page, limit} = req.body
+	const id = req.account['accId']
 
 	const offset = limit * (page - 1)
 
-	var numberPage = await knex.raw(`select count(distinct his_id) 
-	from tbl_product_history where his_status = 2 and his_account_id = ${id}`)
+	var numberPage = await knex.raw(`select distinct his_product_id
+	from tbl_product_history where his_status != 3 and his_account_id = ${id}`)
 
-	numberPage = Number(numberPage.rows[0].count)
-	if (numberPage > limit) {
-		numberPage = Math.ceil(numberPage / limit)
-	}
-	else {
+	if (numberPage.rows.length === 0) {
 		numberPage = 1
 	}
+	else {
+		numberPage = Number(numberPage.rows.length)
+		if (numberPage > limit) {
+			numberPage = Math.ceil(numberPage / limit)
+		}
+		else {
+			numberPage = 1
+		}
+	}
 
-	var result = await knex.raw(`select * from tbl_product_history h join tbl_product a
-                                on h.his_product_id = a.prod_id where his_status = 2 and h.his_account_id = ${id}
+	var result = await knex.raw(`select distinct h.his_product_id, p.prod_name, a.acc_full_name from tbl_product_history h
+								join tbl_product p on p.prod_id = h.his_product_id
+								left join tbl_account a on a.acc_id = p.prod_price_holder
+								where his_status != 3 and h.his_account_id = ${id}
 								offset ${offset} limit ${limit}`)
 
 	result = result.rows
 
-	var listFavorite = []
-	var index = 0
 
-	while (index < result.length) {
-		var name = result[index].prod_name;
-		let item = {
-			prod_name: name,
-			prod_price: result[index].prod_price,
-			prod_price_current: result[index].prod_price_current,
-			prod_price_starting: result[index].prod_price_starting,
-			prod_price_highest: result[index].prod_price_highest
-		}
-		listFavorite.push(item)
-		index++
-	}
-
-	return res.status(400).json({
+	return res.status(200).json({
 		numberOfPage: numberPage,
-		watchList: listFavorite,
-		statusCode: errorCode
+		joiningList: result,
+		statusCode: successCode
 	})
 })
 
-router.post('/get-list-highestPrice-product-bidder/:id', async (req, res) => {
-	const { page, limit, id } = req.params
+router.post('/get-list-highestPrice-product-bidder', async (req, res) => {
+	const { page, limit} = req.body
+	const id = req.account['accId']
 
 	const offset = limit * (page - 1)
 
-	var numberPage = await knex.raw(`select count(distinct his_id) 
-	from tbl_product_history where his_status = 1 and his_account_id = ${id}`)
+	var numberPage = await knex.raw(`select prod_id from tbl_product where prod_price_holder = ${id}
+									and to_timestamp(prod_end_date, 'YYYY/MM/DD HH24:MI:SS') < CURRENT_TIMESTAMP`)
 
-	numberPage = Number(numberPage.rows[0].count)
-	if (numberPage > limit) {
-		numberPage = Math.ceil(numberPage / limit)
-	}
-	else {
+	if (numberPage.rows.length === 0) {
 		numberPage = 1
 	}
+	else {
+		numberPage = Number(numberPage.rows.length)
+		if (numberPage > limit) {
+			numberPage = Math.ceil(numberPage / limit)
+		}
+		else {
+			numberPage = 1
+		}
+	}
 
-	var result = await knex.raw(`select * from tbl_product_history h join tbl_product a
-                                on h.his_product_id = a.prod_id where his_status = 1 and h.his_account_id = ${id}
+	var result = await knex.raw(`select * from tbl_product where prod_price_holder = ${id}
+								and to_timestamp(prod_end_date, 'YYYY/MM/DD HH24:MI:SS') < CURRENT_TIMESTAMP
 								offset ${offset} limit ${limit}`)
 
 	result = result.rows
 
-	var listFavorite = []
-	var index = 0
 
-	while (index < result.length) {
-		var name = result[index].prod_name;
-		let item = {
-			prod_name: name,
-			prod_price: result[index].prod_price,
-			prod_price_current: result[index].prod_price_current,
-			prod_price_starting: result[index].prod_price_starting,
-			prod_price_highest: result[index].prod_price_highest
-		}
-		listFavorite.push(item)
-		index++
-	}
-
-	return res.status(400).json({
+	return res.status(200).json({
 		numberOfPage: numberPage,
-		watchList: listFavorite,
-		statusCode: errorCode
+		highestPrice: result,
+		statusCode: successCode
 	})
 })
 
@@ -291,6 +283,41 @@ router.post('/get-list-comment-seller/:id', async (req, res) => {
 		numberOfPage: numberPage,
 		watchList: listFavorite,
 		statusCode: errorCode
+	})
+})
+
+router.post('/get-list-comment', async (req, res) => {
+	const { page, limit} = req.body
+	const id = req.account['accId']
+
+	const offset = limit * (page - 1)
+
+	var numberPage = await knex.raw(`select count(c.acom_id) from tbl_account_comments c
+									join tbl_product p on c.acom_product_id = p.prod_id
+									join tbl_account a on a.acc_id = c.acom_assessor where c.acom_receiver = ${id}`)
+
+	numberPage = Number(numberPage.rows[0].count)
+	if (numberPage > limit) {
+		numberPage = Math.ceil(numberPage / limit)
+	}
+	else {
+		numberPage = 1
+	}
+
+	var result = await knex.raw(`select * from tbl_account_comments c
+								join tbl_product p on c.acom_product_id = p.prod_id
+								join tbl_account a on a.acc_id = c.acom_assessor where c.acom_receiver = ${id}
+								offset ${offset} limit ${limit}`)
+
+	var rating = await knex('tbl_account').where("acc_id", id)
+
+	result = result.rows
+
+	return res.status(200).json({
+		numberOfPage: numberPage,
+		commentList: result,
+		rating: rating,
+		statusCode: successCode
 	})
 })
 

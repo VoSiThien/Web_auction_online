@@ -5,7 +5,11 @@ import { getResponseError } from '../../helpers';
 const initialState = {
     data:[],
     loading: false,
-    dataNewPass: []
+    dataNewPass: [],
+    dataFavorite: [],
+    dataJoiningProduct: [],
+    dataHighestPriceProduct:[],
+    dataComment:[]
   };
 
 export const getProfile = createAsyncThunk( 'profile/get', async(_, {rejectWithValue}) => {
@@ -21,7 +25,7 @@ export const accNewPassword = createAsyncThunk(
     'profile/NewPassword',
     async ({ userId, newpassword, oldpassword }, { rejectWithValue }) => {
         try {
-            const response = await await profileApi.accNewPassword({
+            const response = await profileApi.accNewPassword({
                 userId,
                 newpassword,
                 oldpassword
@@ -37,7 +41,7 @@ export const accUpdateprofiles = createAsyncThunk(
     'profile/upadateProfile',
     async ({ email, fullName, birthday, phoneNumber }, { rejectWithValue }) => {
         try {
-            const response = await await profileApi.accUpdateprofile({
+            const response = await profileApi.accUpdateprofile({
                 email, fullName, birthday, phoneNumber
             });
             return response.data;
@@ -45,6 +49,78 @@ export const accUpdateprofiles = createAsyncThunk(
             return rejectWithValue(getResponseError(error));
         }
     }
+);
+
+export const getListFavoriteProducts = createAsyncThunk(
+  'profile/getListFavoriteProducts',
+  async ({ page, limit }, { rejectWithValue }) => {
+      try {
+          const response = await profileApi.getListFavoriteProduct({
+              page,
+              limit
+          });
+          return response.data;
+      } catch (error) {
+          return rejectWithValue(getResponseError(error));
+      }
+  }
+);
+
+export const getListJoiningProducts = createAsyncThunk(
+  'profile/getListJoiningProducts',
+  async ({ page, limit }, { rejectWithValue }) => {
+      try {
+          const response = await profileApi.getListJoiningProduct({
+              page,
+              limit
+          });
+          return response.data;
+      } catch (error) {
+          return rejectWithValue(getResponseError(error));
+      }
+  }
+);
+
+export const getListHighestPriceProducts = createAsyncThunk(
+  'profile/getListHighestPriceProducts',
+  async ({ page, limit }, { rejectWithValue }) => {
+      try {
+          const response = await profileApi.getListHighestPriceProduct({
+              page,
+              limit
+          });
+          return response.data;
+      } catch (error) {
+          return rejectWithValue(getResponseError(error));
+      }
+  }
+);
+
+export const getListComments = createAsyncThunk(
+  'profile/getListComments',
+  async ({ page, limit }, { rejectWithValue }) => {
+      try {
+          const response = await profileApi.getListComment({
+              page,
+              limit
+          });
+          return response.data;
+      } catch (error) {
+          return rejectWithValue(getResponseError(error));
+      }
+  }
+);
+
+export const deleteProductInWatchLists = createAsyncThunk(
+  'profile/deleteProductInWatchLists',
+  async ({ id }, { rejectWithValue }) => {
+      try {
+          const response = await profileApi.deleteProductInWatchList({id});
+          return response.data;
+      } catch (error) {
+          return rejectWithValue(getResponseError(error));
+      }
+  }
 );
 
 const profileSlice = createSlice({
@@ -83,6 +159,50 @@ const profileSlice = createSlice({
       },
       [accUpdateprofiles.fulfilled]: (state, action) => {
         state.loading = false;
+      },
+      [getListFavoriteProducts.pending]: (state, action) => {
+        state.loading = true;
+      },
+      [getListFavoriteProducts.rejected]: (state, action) => {
+        state.loading = false;
+        state.error = action.payload
+      },
+      [getListFavoriteProducts.fulfilled]: (state, action) => {
+        state.loading = false;
+        state.dataFavorite = action.payload
+      },
+      [getListJoiningProducts.pending]: (state, action) => {
+        state.loading = true;
+      },
+      [getListJoiningProducts.rejected]: (state, action) => {
+        state.loading = false;
+        state.error = action.payload
+      },
+      [getListJoiningProducts.fulfilled]: (state, action) => {
+        state.loading = false;
+        state.dataJoiningProduct = action.payload
+      },
+      [getListHighestPriceProducts.pending]: (state, action) => {
+        state.loading = true;
+      },
+      [getListHighestPriceProducts.rejected]: (state, action) => {
+        state.loading = false;
+        state.error = action.payload
+      },
+      [getListHighestPriceProducts.fulfilled]: (state, action) => {
+        state.loading = false;
+        state.dataHighestPriceProduct = action.payload
+      },
+      [getListComments.pending]: (state, action) => {
+        state.loading = true;
+      },
+      [getListComments.rejected]: (state, action) => {
+        state.loading = false;
+        state.error = action.payload
+      },
+      [getListComments.fulfilled]: (state, action) => {
+        state.loading = false;
+        state.dataComment = action.payload
       },
     },
   });
