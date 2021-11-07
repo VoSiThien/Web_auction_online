@@ -15,6 +15,7 @@ const ProductCategory = lazy(() => import('../pages/ProductCategory'));
 
 const DashbroadPage = lazy(() => import('../pages/admin/DashbroadPage'));
 const UserPage = lazy(() => import('../pages/admin/user-mgt/users'));
+const AdminProductPage = lazy(() => import('../pages/admin/product-mgt/Product'));
 export const routes = [
   {
     path: '/',
@@ -120,5 +121,12 @@ export const adminRoutes = [
     additional: {
       filter: Role.Bidder,
     }
+  },
+  {
+    path: '/admin/products',
+    protected: true,
+    exact: true,
+    component: AdminProductPage,
+    roles: [Role.Admin],
   },
 ];
