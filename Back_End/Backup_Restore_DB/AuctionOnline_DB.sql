@@ -89,6 +89,7 @@ CREATE TABLE public.tbl_account_comments (
     acom_assessor integer,
     acom_receiver integer,
     acom_product_id integer,
+    acom_status_rating integer,
     acom_created_date character varying(100),
     acom_updated_date character varying(100)
 );
@@ -136,7 +137,8 @@ CREATE TABLE public.tbl_categories (
     cate_status integer DEFAULT 0,
     cate_father integer,
     cate_created_date character varying(100),
-    cate_updated_date character varying(100)
+    cate_updated_date character varying(100),
+    ts tsvector GENERATED ALWAYS AS (setweight(to_tsvector('english'::regconfig, (COALESCE(cate_name, ''::character varying))::text), 'A'::"char")) STORED
 );
 
 
