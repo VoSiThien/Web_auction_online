@@ -123,6 +123,22 @@ export const deleteProductInWatchLists = createAsyncThunk(
   }
 );
 
+export const addComments = createAsyncThunk(
+  'profile/addComments',
+  async ({ textComment, status, prodId }, { rejectWithValue }) => {
+      try {
+          const response = await profileApi.addComment({
+            Comment: textComment,
+            Status: status,
+            prodId
+          });
+          return response.data;
+      } catch (error) {
+          return rejectWithValue(getResponseError(error));
+      }
+  }
+);
+
 const profileSlice = createSlice({
     name: 'profile',
     initialState,

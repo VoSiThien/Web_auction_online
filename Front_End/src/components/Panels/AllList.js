@@ -6,8 +6,10 @@ import { getListHistory } from '../../reducers/historyBid';
 import { getListFavoriteProducts, getListJoiningProducts, getListHighestPriceProducts, deleteProductInWatchLists, getListComments } from '../../reducers/users/profile';
 import Pagination from '@material-ui/lab/Pagination';
 import { BsCheckLg, BsXLg } from 'react-icons/bs';
+import { Link } from 'react-router-dom';
 import '../../index.css';
 import NumberFormat from 'react-number-format';
+import CommentModel from './Comment';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -73,6 +75,9 @@ const AllList = () => {
 	const [hiddenText, setHiddenText] = useState(false);
 	const [hiddenText2, setHiddenText2] = useState(false);
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+	const [openModalComment, setOpenModalComment] = useState(false);
+	const [productId, setProductId] = useState(0);
+	const [statusRating, setStatusRating] = useState(0);
 
 	const pageChangeHandler = (event, value) => {
 		setPage(value);
@@ -163,6 +168,16 @@ const AllList = () => {
 		}
 	}
 
+	const handleCloseBid = () => {
+        setOpenModalComment(false);
+    };
+
+    const openModalHandlerBid = (prod_id, statusRating) => {
+		setProductId(prod_id);
+		setStatusRating(statusRating);
+        setOpenModalComment(true);
+    };
+
 	useEffect(() => {
 		if (prodId !== undefined && isAuthenticated) {
 			getListHistoryHandler({ page, limit, prodId, status, sortByPrice });
@@ -189,6 +204,12 @@ const AllList = () => {
 	return (
 		<div>
 			<Container>
+				<CommentModel
+					isOpen={openModalComment}
+					onClose={handleCloseBid}
+					prod_id={productId}
+					statusS={statusRating}
+				/>
 				<Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
 					<Alert.Heading>{text}</Alert.Heading>
 				</Alert>
@@ -231,7 +252,7 @@ const AllList = () => {
 										dataFavorite.watchList.map((row, index) => (
 											<tr key={index}>
 												<td>{index + 1 + ((page - 1) * limit)}</td>
-												<td>{row.prod_name}</td>
+												<td><Link to={`/details/${row.prod_id}`} className={classes.link}>{row.prod_name}</Link></td>
 												<td>
 													<NumberFormat
 														value={row.prod_price}
@@ -344,8 +365,8 @@ const AllList = () => {
 													/></td>
 												<td>{row.prod_end_date}</td>
 												<td>
-												<Button size="sm" variant="primary" > like</Button>
-												<Button size="sm" variant="danger" > dis like</Button>
+												<Button size="sm" variant="primary" onClick={()=>{openModalHandlerBid(row.prod_id, 0)}}> like</Button>
+												<Button size="sm" variant="danger" onClick={()=>{openModalHandlerBid(row.prod_id, 1)}}> dis like</Button>
 												</td>
 											</tr>
 										))}
@@ -371,6 +392,7 @@ const AllList = () => {
 										<th>Nhận xét</th>
 										<th>Người gửi</th>
 										<th>Tên sản phẩm</th>
+										<th>Loại nhận xét</th>
 										<th>Ngày tạo</th>
 									</tr>
 								</thead>
@@ -382,6 +404,7 @@ const AllList = () => {
 												<td>{row.acom_note}</td>
 												<td>{row.acc_full_name}</td>
 												<td>{row.prod_name}</td>
+												<td>{row.acc_status_rating}</td>
 												<td>{row.acom_created_date}</td>
 											</tr>
 										))}
