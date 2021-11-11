@@ -6,6 +6,7 @@ const knex = require('../utils/dbConnection')
 const validator = require('../middlewares/validation/bidder.validate')
 const accountModel = require('../models/account.model')
 const bcrypt = require('bcrypt')
+const moment = require('moment');
 
 const router = express.Router()
 const successCode = 0
@@ -106,6 +107,7 @@ router.post('/get-list-favorite-product', async (req, res) => {
 		var name = result[index].prod_name;
 		let item = {
 			fav_id: result[index].fav_id,
+			prod_id: result[index].prod_id,
 			prod_name: name,
 			prod_price: result[index].prod_price,
 			prod_price_current: result[index].prod_price_current,
@@ -286,6 +288,57 @@ router.post('/get-list-comment-seller/:id', async (req, res) => {
 	})
 })
 
+router.post('/add-comment', async (req, res) => {
+	const { Comment, Status, prodId } = req.body
+	const id = req.account['accId']
+
+	const product = await knex('tbl_product').where('prod_id', prodId)
+	if (product.length === 0) {
+		return res.status(400).json({
+			errorMessage: 'Sản phẩm không tồn tại',
+			statusCode: errorCode
+		})
+	}
+
+	const comment = await knex('tbl_account_comments').where('acom_product_id', prodId).andWhere('acom_receiver', id)
+	if (comment.length !== 0) {
+		return res.status(400).json({
+			errorMessage: 'Sản phẩm đã được đánh giá, vui lòng không đánh giá lại',
+			statusCode: errorCode
+		})
+	}
+
+	let dateCreate = new Date()
+	const Comments = {
+		acom_note: Comment,
+		acom_assessor: product[0].prod_seller_id,
+		acom_receiver: id,
+		acom_product_id: prodId,
+		acom_status_rating: Status,
+		acom_created_date: moment(dateCreate).format('YYYY-MM-DD HH:mm:ss')
+	}
+	
+	const newAccId = await knex('tbl_account_comments')
+		.returning('acom_id')
+		.insert(Comments)
+	const acc = await knex('tbl_account').where('acc_id', product[0].prod_id)
+	if(acc[0].acc_like_seller === null || acc[0].acc_dis_like_seller === null ){
+		await knex.raw(`update tbl_account set acc_like_seller = 0, acc_dis_like_seller = 0 where acc_id = ${product[0].prod_seller_id}`)
+	}
+	if(Status === 0){
+		await knex.raw(`update tbl_account set acc_like_seller = acc_like_seller + 1 where acc_id = ${product[0].prod_seller_id}`)
+	}
+	else{
+		await knex.raw(`update tbl_account set acc_dis_like_seller = acc_dis_like_seller + 1 where acc_id = ${product[0].prod_seller_id}`)
+	}
+	
+
+	return res.status(200).json({
+		statusCode: successCode,
+		acoms_id: newAccId[0]
+	})
+})
+
 router.post('/get-list-comment', async (req, res) => {
 	const { page, limit} = req.body
 	const id = req.account['accId']
@@ -313,9 +366,30 @@ router.post('/get-list-comment', async (req, res) => {
 
 	result = result.rows
 
+	var listComment = []
+	var index = 0
+
+	while (index < result.length) {
+		var status_rating = 'Like'
+		if(result[index].acc_status_rating === 1){
+			status_rating = 'Dis Like'
+		}
+		let item = {
+			acom_id: result[index].acom_id,
+			acc_full_name: result[index].acc_full_name,
+			prod_name: result[index].prod_name,
+			acom_note: result[index].acom_note,
+			acc_status_rating: status_rating,
+			acom_created_date: result[index].acom_created_date,
+			acom_updated_date: result[index].acom_updated_date
+		}
+		listComment.push(item)
+		index++
+	}
+
 	return res.status(200).json({
 		numberOfPage: numberPage,
-		commentList: result,
+		commentList: listComment,
 		rating: rating,
 		statusCode: successCode
 	})
@@ -432,7 +506,7 @@ router.post('/update-profile', validator.updateProfile, async (req, res) => {
 		acc_email: email,
 		acc_full_name: fullName || null,
 		acc_birthday: birthday,
-		acc_updated_date: dateUpdate,
+		acc_updated_date: moment(dateUpdate).format('YYYY-MM-DD HH:mm:ss'),
 		acc_phone_number: phoneNumber
 	}
 
@@ -467,7 +541,7 @@ router.post('/update-password', validator.updatePassword, async (req, res) => {
 	// add account
 	const account = {
 		acc_password: hashPassword,
-		acc_updated_date: dateUpdate
+		acc_updated_date: moment(dateUpdate).format('YYYY-MM-DD HH:mm:ss')
 	}
 
 	await knex('tbl_account')

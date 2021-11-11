@@ -48,6 +48,14 @@ const getListComment = ({ page, limit }) => {
     });
 };
 
+const addComment = ({ Comment, Status, prodId }) => {
+    return axios.post('/api/bidder/add-comment', {
+        Comment,
+        Status,
+        prodId
+    });
+};
+
 const deleteProductInWatchList = ({ id }) => {
     return axios.post( `/api/bidder/favorite-product/delete/${id}`);
 };
@@ -59,6 +67,7 @@ const profileApi = {
     getListJoiningProduct,
     getListHighestPriceProduct,
     deleteProductInWatchList,
-    getListComment
+    getListComment,
+    addComment
   };
   export default profileApi;
