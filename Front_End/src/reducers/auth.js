@@ -18,23 +18,23 @@ export const login = createAsyncThunk( 'user/Login', async({ email, password }, 
         }
     }
 );
-// export const register = createAsyncThunk(
-//   'user/Register',
-//   async ({ username, password, email, fullName, phoneNumber }, { rejectWithValue }) => {
-//     try {
-//       const response = await authApi.register({
-//         username,
-//         password,
-//         email,
-//         fullName,
-//         phoneNumber,
-//       });
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(getResponseError(error));
-//     }
-//   }
-// );
+export const register = createAsyncThunk(
+  'user/Register',
+  async ({ username, password, email, fullName, phoneNumber }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.register({
+        username,
+        password,
+        email,
+        fullName,
+        phoneNumber,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
 export const resetPassword = createAsyncThunk(
   'user/NewPassword',
   async ({ userId, newPassword, code }, { rejectWithValue }) => {
@@ -112,15 +112,15 @@ const authSlice = createSlice({
                 localStorage.setItem('user', JSON.stringify(user));
             }
         },
-        // [register.pending]: (state) => {
-        //   state.loading = true;
-        // },
-        // [register.rejected]: (state) => {
-        //   state.loading = false;
-        // },
-        // [register.fulfilled]: (state) => {
-        //   state.loading = false;
-        // },
+        [register.pending]: (state) => {
+          state.loading = true;
+        },
+        [register.rejected]: (state) => {
+          state.loading = false;
+        },
+        [register.fulfilled]: (state) => {
+          state.loading = false;
+        },
         [forgotPassword.pending]: (state) => {
           state.loading = true;
         },

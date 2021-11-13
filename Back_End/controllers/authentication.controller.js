@@ -15,6 +15,8 @@ const mailOptions = require('../template/mailOptions')
 
 const accountModel = require('../models/account.model')
 
+const moment = require('moment')
+
 const errorCode = 1
 const successCode = 0
 
@@ -65,14 +67,14 @@ router.post('/verification-email', authenticationValidate.confirmToken, async(re
 
     if (result[0].acc_token === null) {
         return res.status(400).json({
-            errorMessage: 'user has already vefified',
+            errorMessage: 'Người dùng đã xác nhận email',
             statusCode: errorCode
         })
     }
 
     if (!bcrypt.compareSync(accToken, result[0]['acc_token'])) {
         return res.status(400).json({
-            errorMessage: 'verify email fail',
+            errorMessage: 'Mã xác nhận không đúng',
             statusCode: errorCode
         })
     }
@@ -204,7 +206,7 @@ router.post('/register', authenticationValidate.register, async(req, res) => {
 
     if (verifying!=undefined) {
         return res.status(400).json({
-            errorMessage: 'Email existed',
+            errorMessage: 'Email đã tồn tại',
             statusCode: errorCode
         })
     }
@@ -239,7 +241,7 @@ router.post('/register', authenticationValidate.register, async(req, res) => {
         acc_full_name: fullName || null,
         acc_role: role || 'BID',
         acc_token: hashToken,
-        acc_created_date: dateOb
+        acc_created_date: moment(dateOb).format('YYYY-MM-DD HH:mm:ss')
     }
 
     const newAccId = await knex('tbl_account')
