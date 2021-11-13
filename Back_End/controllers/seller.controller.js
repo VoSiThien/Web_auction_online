@@ -3,7 +3,7 @@ const express = require('express')
 const knex = require('../utils/dbConnection')
 const { uploaderImage } = require('../utils/uploader')
 const validator = require('../middlewares/validation/seller.validate')
-
+const moment = require('moment');
 const router = express.Router()
 const successCode = 0
 const errorCode = 1
@@ -119,6 +119,13 @@ router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res)
     } = req.body
     const accId = req.account.accId
     const now = new Date(Date.now())
+
+    var dateEnd = prodEndDate+':00'
+    dateEnd = dateEnd.split('/')
+
+    var getyear = dateEnd[2].split(' ')
+    var dateToEnd = getyear[0] + '-'+dateEnd[1]+'-'+dateEnd[0]+' '+ getyear[1]
+    
     let prodId = null;
     try {
 
@@ -130,10 +137,10 @@ router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res)
             prod_price_step: prodPriceStep,
             prod_price: prodPrice,
             prod_description: prodDescription,
-            prod_end_date: prodEndDate,
+            prod_end_date: dateToEnd,
             prod_seller_id: accId,
-            prod_created_date: now,
-            prod_updated_date: now,
+            prod_created_date: moment(now).format('YYYY-MM-DD HH:mm:ss'),
+            prod_updated_date: moment(now).format('YYYY-MM-DD HH:mm:ss'),
             prod_auto_extend: prodAutoExtend
         })
         .returning('prod_id')
