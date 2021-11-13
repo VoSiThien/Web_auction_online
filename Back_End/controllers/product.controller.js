@@ -318,5 +318,94 @@ router.get('/details/:id', async (req, res) => {
 	})
 })
 
+//PRODUCT FOR ADMIN
+router.post('/getAuctionProductList', prodValidation.getAuctionProductList, async (req, res) => {
+	const { page, limit } = req.body
+	const offset = limit * (page - 1)
+
+	if (page < 1 || limit < 1) {
+		return res.status(400).json({
+			errorMessage: "limit and page parameter is not valid",
+			statusCode: errorCode
+		})
+	}
+
+	var total = await knex.raw(`select count(distinct prod_id) 
+	from tbl_product where prod_status = 0`)
+
+
+	total = Number(total.rows[0].count)
+    numPage = 1
+	if (total > limit) {
+		numPage = Math.ceil(total / limit)
+	}
+	else {
+		numPage = 1
+	}
+
+	var result = await knex.raw(`select * from tbl_product p join tbl_categories c
+                                on c.cate_id = p.prod_category_id 
+                                where p.prod_status != 2
+								order by p.prod_status offset ${offset} limit ${limit}`)
+	result = result.rows
+
+	var prodList = []
+	var index = 0
+	while(index < result.length){
+		let probItem = {
+			prodId: result[index].prod_id,
+			prodName: result[index].prod_name,
+			prodPrice: result[index].prod_price,
+
+            prodCategoryName: result[index].cate_name,
+            prodCategoryId: result[index].prod_category_id,
+            prodPrice: result[index].prod_price,
+            prodPriceStarting: result[index].prod_price_starting,
+            prodPriceStep: result[index].prod_price_step,
+            prodPriceStarting: result[index].prod_price_starting,
+            prodPriceCurrent: result[index].prod_price_current,
+            prodPriceHighest: result[index].prod_price_highest,
+            prodEndDate: result[index].prod_end_date,
+            prodAutoExtend: result[index].prod_auto_extend,
+            prodMainImage: result[index].prod_main_image,
+
+			prodDescription: result[index].prod_description,
+			prodUpdatedDate: result[index].prod_updated_date
+		}
+        var idxImg = 0;
+        let imageLink = [];
+        try{
+            let imgs = await knex.raw(`select * from tbl_product_images where prod_img_product_id=${result[index].prod_id}`);
+            imgs = imgs.rows;
+            while(idxImg < imgs.length){
+                imageLink.push(imgs[idxImg].prod_img_data);
+                idxImg++;
+            }
+            probItem['prodImages'] = imageLink;
+        }catch(e){
+            console.log(e);
+        }
+		prodList.push(probItem);
+		index++;
+	}
+
+	return res.status(200).json({
+		numPage: numPage,
+		curPage: page,
+        total: total,
+		productList: prodList,
+		statusCode: successCode
+	})
+})
+
+router.post('/deleteAuctionProduct', prodValidation.deleteAuctionProduct, async(req, res) => {
+    const { prodId } = req.body
+    const now = new Date(Date.now())
+    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_status: 2, prod_updated_date: now })
+    return res.status(200).json({
+        data: true,
+        statusCode: successCode
+    })
+})
 
 module.exports = router

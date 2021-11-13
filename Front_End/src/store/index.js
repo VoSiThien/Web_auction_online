@@ -13,6 +13,7 @@ import langSlice from '../reducers/lang';
 import uiSlice from '../reducers/ui';
 import bidderRedu from '../reducers/users/bidder';
 import unauthorizedProductRedu from '../reducers/unauthorizedProduct';
+import profileSlice from '../reducers/users/profile';
 const store = configureStore({
   reducer: {
     category: categoryRedu.reducer,
@@ -20,6 +21,7 @@ const store = configureStore({
     homeCategory: homeCategoryRedu.reducer,
     history: historyRedu.reducer,
     bidder: bidderRedu.reducer,
+    profile: profileSlice.reducer,
     
     auth: authSlice.reducer,
     selProduct: selProductRedu.reducer,

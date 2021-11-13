@@ -12,6 +12,13 @@ const findByEmail = async (email) => {
 	return info
 }
 
+const findByEmailAndNot = async (email, id) => {
+	const info = await knex('tbl_account')
+					.where({ acc_email: email })
+					.whereNot({acc_id: id})
+	return info
+}
+
 const findActiveUserByEmail = async (email) => {
 	const info = await knex('tbl_account')
 		.where({ acc_email: email })
@@ -55,5 +62,6 @@ module.exports = {
 	findActiveUser,
 	findActiveUserByEmail,
 	updateRefreshToken,
-	isValidRefreshToken
+	isValidRefreshToken,
+	findByEmailAndNot
 }

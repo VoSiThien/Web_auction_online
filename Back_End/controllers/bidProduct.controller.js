@@ -25,6 +25,16 @@ router.post('/bid-product', validator.bidProduct, async (req, res) => {
         })
     }
 
+    var productTime = await knex.raw(`select * from tbl_product where prod_id = ${prodId} and 
+                                    to_timestamp(prod_end_date, 'YYYY/MM/DD HH24:MI:SS') > CURRENT_TIMESTAMP`);
+                                    
+    if(productTime.rows.length === 0){
+        return res.status(400).json({
+            errorMessage: 'Sản phẩm đã hết thời gian, không thể đấu giá !',
+            statusCode: errorCode
+        })
+    }
+
     var product = await knex('tbl_product').join('tbl_account', 'acc_id', 'prod_seller_id').where("prod_id", prodId)
     var account = await knex('tbl_account').where("acc_id", accId)
     var historyCheck = await knex('tbl_product_history').where("his_account_id", accId).andWhere("his_status", 3).andWhere("his_product_id", prodId)
@@ -124,12 +134,17 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
         numberPage = await knex.raw(`select count(distinct his_id) 
 	        from tbl_product_history where his_product_id = ${prodId} and his_status != 2 and his_status != 3`)
 
-        numberPage = Number(numberPage.rows[0].count)
-        if (numberPage > limit) {
-            numberPage = Math.ceil(numberPage / limit)
+        if (numberPage.rows.length === 0) {
+            numberPage = 1
         }
         else {
-            numberPage = 1
+            numberPage = Number(numberPage.rows[0].count)
+            if (numberPage > limit) {
+                numberPage = Math.ceil(numberPage / limit)
+            }
+            else {
+                numberPage = 1
+            }
         }
 
         if (sortByPrice === 'NON') {
@@ -171,13 +186,19 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
                 numberPage = await knex.raw(`select count(distinct his_id) 
                 from tbl_product_history where his_product_id = ${prodId} and his_status = ${status}`)
 
-                numberPage = Number(numberPage.rows[0].count)
-                if (numberPage > limit) {
-                    numberPage = Math.ceil(numberPage / limit)
-                }
-                else {
+                if (numberPage.rows.length === 0) {
                     numberPage = 1
                 }
+                else {
+                    numberPage = Number(numberPage.rows[0].count)
+                    if (numberPage > limit) {
+                        numberPage = Math.ceil(numberPage / limit)
+                    }
+                    else {
+                        numberPage = 1
+                    }
+                }
+
                 if(sortByPrice === 'NON'){
                     result = await knex.raw(`select * from tbl_product_history h join tbl_account a
                                         on h.his_account_id = a.acc_id where h.his_product_id = ${prodId} and his_status = ${status}
@@ -193,12 +214,17 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
                 numberPage = await knex.raw(`select count(distinct his_id) 
                 from tbl_product_history where his_product_id = ${prodId} and his_status != 2 and his_status != 3`)
 
-                numberPage = Number(numberPage.rows[0].count)
-                if (numberPage > limit) {
-                    numberPage = Math.ceil(numberPage / limit)
+                if (numberPage.rows.length === 0) {
+                    numberPage = 1
                 }
                 else {
-                    numberPage = 1
+                    numberPage = Number(numberPage.rows[0].count)
+                    if (numberPage > limit) {
+                        numberPage = Math.ceil(numberPage / limit)
+                    }
+                    else {
+                        numberPage = 1
+                    }
                 }
                 if(sortByPrice === 'NON'){
                     result = await knex.raw(`select * from tbl_product_history h join tbl_account a
