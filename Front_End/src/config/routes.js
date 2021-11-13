@@ -23,6 +23,7 @@ const ForgotPasswordPage = lazy(() => import('../pages/ForgotPassword'));
 const RecoveryPasswordPage = lazy(() => import('../pages/RecoveryPassword'));
 
 const AccountActivationPage = lazy(() => import('../pages/AccountActivation'));
+const RegisterPage = lazy(() => import('../pages/RegisterPage'));
 export const routes = [
   {
     path: '/',
@@ -53,6 +54,12 @@ export const routes = [
     protected: false,
     exact: true,
     component: LoginPage,
+  },
+  {
+    path: '/register',
+    protected: false,
+    exact: true,
+    component: RegisterPage,
   },
   {
     path: '/profile/:slug',
