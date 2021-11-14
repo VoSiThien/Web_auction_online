@@ -62,7 +62,7 @@ const notifyBidSuccessToSeller = (account, product, priceBid) => {
         to: `${product[0].acc_email}`,
         subject: 'Đấu giá thành công',
         html: ` <h1>Chào ${product[0].acc_full_name} thân mến! </h1>
-                <h3>Xin chúc mừng bạn đã ra giá thành công</h3>
+                <h3>Đã có người ra giá thành công cho sản phẩm của bạn, vui lòng xem chi tiết bên dưới</h3>
                 <h3>Thông tin người ra giá: </h3>
                 <h3>Tên: ${account[0].acc_full_name}</h3>
                 <h3>Số điện thoại: ${account[0].acc_phone_number}</h3>
