@@ -27,6 +27,7 @@ import ModalConfirmDelete from '../../../components/Modal/ModalConfirmDelete';
 import Pagination from '@material-ui/lab/Pagination';
 import { Role } from '../../../config/role';
 import CategoryModal from './CategoryModal';
+import Footer from '../../../components/Layout/Footer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -233,7 +234,7 @@ const CategoryManager = (props) => {//the first character of function always in 
 
   useEffect(() => {
     dispatch(uiActions.hideModal());
-    getCategoriesListHandler(page)
+    getCategoriesListHandler(page);
   }, [dispatch, getCategoriesListHandler, page]);//when page change, get the new list
 
   useEffect(() => {
@@ -255,7 +256,7 @@ const CategoryManager = (props) => {//the first character of function always in 
       setTimeout(() => {
         setShowFailed(false)
         setShowSuccess(false)
-      }, 5000);
+      }, 4000);
     }
   }, [showFailed, showSuccess]);
 
@@ -372,10 +373,10 @@ const CategoryManager = (props) => {//the first character of function always in 
               )}
           </Table>
         </TableContainer>
-      </div>
-
-      <div className={`${classes.pagination} ${classes.section}`}>
-        <Pagination count={totalPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+        <div className={`${classes.pagination} ${classes.section}`}>
+            <Pagination count={totalPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+        </div>
+        <div style={{ marginTop: 100 }}><Footer /></div>
       </div>
     </>
   );

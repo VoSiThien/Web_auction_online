@@ -26,11 +26,11 @@ router.post('/bid-product', validator.bidProduct, async (req, res) => {
     }
 
     var productTime = await knex.raw(`select * from tbl_product where prod_id = ${prodId} and 
-                                    to_timestamp(prod_end_date, 'YYYY/MM/DD HH24:MI:SS') > CURRENT_TIMESTAMP`);
+                                    to_timestamp(prod_end_date, 'YYYY/MM/DD HH24:MI:SS') > CURRENT_TIMESTAMP and prod_status != 1`);
                                     
     if(productTime.rows.length === 0){
         return res.status(400).json({
-            errorMessage: 'Sản phẩm đã hết thời gian, không thể đấu giá !',
+            errorMessage: 'Sản phẩm đã hết thời gian hoặc bị khóa, không thể đấu giá !',
             statusCode: errorCode
         })
     }
@@ -127,7 +127,7 @@ router.post('/history-product', validator.historyProduct, async (req, res) => {
     }
 
     var checkTimeOfProduct = await knex.raw(`select * from tbl_product
-                                             where to_timestamp(prod_end_date, 'YYYY/MM/DD HH24:MI:SS') > CURRENT_TIMESTAMP and prod_id = ${prodId}`)
+                                             where to_timestamp(prod_end_date, 'YYYY/MM/DD HH24:MI:SS') > CURRENT_TIMESTAMP and prod_id = ${prodId} and prod_status != 1`)
     checkTimeOfProduct = checkTimeOfProduct.rows
 
     const ListHistory = async () => {

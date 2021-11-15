@@ -57,7 +57,6 @@ router.post('/top-product-about-to-end', async (req, res) => {
 	order by pr.prod_end_date::timestamp ASC
 	offset 0
 	limit 5`)
-	console.log(productAboutToEndList.rows)
 	
 	return res.status(200).json({
 		productAboutToEndList: productAboutToEndList.rows,

@@ -13,7 +13,7 @@ import {
   Fade,
   Backdrop
 } from '@material-ui/core';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateCategory } from '../../../reducers/admin/category'
 import { addSubCategory } from '../../../reducers/admin/subCategory';
@@ -75,16 +75,10 @@ const ModalSubCategory = ({ catParentID, subCatInfo, action, catParentList, relo
   const dispatch = useDispatch();
   const [subCategoryName, setSubCategoryName] = useState(subCatInfo?.cate_name || '');
   const [catParent, setCatParent] = useState(catParentID || '');
-  console.log(subCatInfo)
   const [showFailed, setShowFailed] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [text, setText] = useState('');
-  useEffect(() => {
-    if (action === 'INSERT') {
-      setSubCategoryName('');
-    }
-    setCatParent(catParentID);
-  }, [action]);
+
   const subCatNameChangeHandler = (e) => {
     //get value when the input changed, and set into subcat name
     setSubCategoryName(e.target.value);
@@ -112,10 +106,12 @@ const ModalSubCategory = ({ catParentID, subCatInfo, action, catParentList, relo
         ).unwrap();
         setText("Thêm chuyên mục con thành công");
         setShowSuccess(true);
+        setShowFailed(false);
         reloadTable();
       } catch (error) {
         setText(error);
         setShowFailed(true);
+        setShowSuccess(false);
       }
     }
     if (action === 'UPDATE') {
@@ -129,13 +125,35 @@ const ModalSubCategory = ({ catParentID, subCatInfo, action, catParentList, relo
         ).unwrap();
         setText("Cập nhật chuyên mục con thành công");
         setShowSuccess(true);
+        setShowFailed(false);
         reloadTable();
       } catch (error) {
         setText(error);
         setShowFailed(true);
+        setShowSuccess(false);
       }
     }
   };
+
+  const handleVisible = useCallback(() => {
+    if (showSuccess === true) {
+      setTimeout(() => {
+        setShowSuccess(false)
+        setShowFailed(false)
+      }, 4000);
+    }
+  }, [showSuccess, showFailed]);
+
+  useEffect(() => {
+    handleVisible();
+    if(action === "UPDATE"){
+      setCatParent(catParentID);
+      setSubCategoryName(subCatInfo?.cate_name);
+    }
+    else{
+      setSubCategoryName('');
+    }
+  }, [handleVisible, subCatInfo?.cate_name, catParentID]);
 
   return (
     <>

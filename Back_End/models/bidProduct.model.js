@@ -84,6 +84,10 @@ const bidding = async (priceBid, product, prodId, account) => {
 	Number(priceBid) <= Number(product[0].prod_price_highest)){
 		await knex('tbl_product').where("prod_id", prodId).update({ prod_price_current: priceBid })
 
+		let msgBroadCast = prodId + '|' + priceBid + '|' + product[0].prod_name
+		msgBroadCast += ConverListToString([])
+		ws.broadCastAll(msgBroadCast)
+
 		return {
 			message: "Đấu giá không thành công !",
 			statusCode: 1

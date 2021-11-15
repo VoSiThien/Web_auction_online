@@ -143,7 +143,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
+const AddProduct = ({ isOpen, onClose, showSuccess, textAlert, getList }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.category.data);
@@ -160,6 +160,7 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
   const prodPriceRef = useRef(0);
   const prodAutoExtendRef = useRef(0);
   const prodEndDateRef = useRef('');
+  const [endDate, setEndDate] = useState("");
 
   const openDescriptionModalHandler = () => {
     setOpenDescriptionModal(true);
@@ -212,7 +213,8 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
     const enteredProdPriceStep = prodPriceStepRef.current.state.numAsString;
     const enteredProdPrice = prodPriceRef.current.state.numAsString;
     const enteredProdAutoExtend = prodAutoExtendRef.current.value;
-    const enteredProdEndDate = prodEndDateRef.current.value;
+//    const enteredProdEndDate = prodEndDateRef.current.value;endDate
+    const enteredProdEndDate = endDate;
     const enteredProdDescription = stateDescription;
     let formData = new FormData();
     if (
@@ -221,7 +223,7 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
       enteredProdPriceStarting?.length > 0 &&
       enteredProdPriceStep?.length > 0 &&
       enteredProdDescription?.length > 0 &&
-      enteredProdEndDate?.length > 0
+      endDate?.length > 0
     ) {
       setSubmitIsValid(true);
     } else {
@@ -253,14 +255,19 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
     
     try {
       await dispatch(postAuctionProduct(formData)).unwrap();
+      getList(1);
+      //textAlert('Lưu thành công!!!');
       showSuccess(true);
-      textAlert('Lưu thành công!!!');
     } catch (err) {
       setError(err);
       return;
     }
     onClose();
   };
+
+  const handleOnChange = (e)=>{    
+    setEndDate(e.target.value);
+  }
   
   useEffect(() => {
     getListCategoryHandler();
@@ -420,7 +427,7 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
                 <Typography variant="caption" component="p">
                 Ngày hết hạn
                 </Typography>
-                <MuiPickersUtilsProvider utils={MomentUtils}>
+                {/* <MuiPickersUtilsProvider utils={MomentUtils}>
                 <KeyboardDateTimePicker
                     variant="standard"
                     ampm={false}
@@ -428,7 +435,8 @@ const AddProduct = ({ isOpen, onClose, showSuccess, textAlert }) => {
                     disablePast
                     format="DD/MM/yyyy HH:mm"
                   />
-                </MuiPickersUtilsProvider>
+                </MuiPickersUtilsProvider> */}
+                <input type="datetime-local" value={endDate} onChange={e=>{handleOnChange(e)}}></input>
               </div>
               <div className={classes.textField}>
                 <Typography variant="caption" component="p">

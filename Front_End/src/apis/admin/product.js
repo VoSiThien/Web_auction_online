@@ -5,7 +5,7 @@ const getAuctionProductList = ({page, limit}) => {
 };
 
 const deleteAuctionProduct = (data) => {
-  return axios.post('/api/admin/product/deleteAuctionProductList', data);
+  return axios.post('/api/admin/product/deleteAuctionProduct', data);
 };
 
 const adminProductApi = {

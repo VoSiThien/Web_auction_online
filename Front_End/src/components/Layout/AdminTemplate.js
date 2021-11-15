@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 
   },
   main: {
-    background: '#ddd',
+    background: '#FFF',
     minHeight: '80vh',
     maxHeight: 'calc(100% - 129px)',
     paddingTop: 64,
@@ -96,7 +96,7 @@ export const AdminTemplate = ({ children }) => {
         <AdminMenu options={options} />
       </SideBar>
       <main className={classes.main}>{children}</main>
-      <Footer hasSideBar />
+      {/* <Footer hasSideBar /> */}
     </>
   );
 };

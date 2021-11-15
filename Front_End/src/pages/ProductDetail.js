@@ -20,6 +20,7 @@ import HistoryProductSel from "../components/seller/historyProduct";
 import { Role } from '../config/role';
 import { invalid } from 'moment';
 import NumberFormat from 'react-number-format';
+import { Markup } from 'interweave';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -319,7 +320,7 @@ function Home() {
                             <div className="tab-content p-5 mb-5" id="advancedTabContent" style={{ backgroundColor: "#ebe9e6" }}>
                                 <div className="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
                                     <h5>Mô tả sản phẩm</h5>
-                                    <p className="pt-1">{productDetails.prod_description}</p>
+                                    <Markup content={productDetails.prod_description} />
                                 </div>
                                 <div className="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                                     <h5><span>1</span> review for <span>Fantasy T-shirt</span></h5>

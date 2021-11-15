@@ -31,6 +31,7 @@ import ModalConfirmDelete from '../../../components/Modal/ModalConfirmDelete';
 import ModalConfirm from '../../../components/Modal/ModalConfirm';
 import Pagination from '@material-ui/lab/Pagination';
 import { Role } from '../../../config/role';
+import Footer from '../../../components/Layout/Footer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -524,10 +525,10 @@ const UserManager = (props) => {
           )}
           </Table>
         </TableContainer>
-      </div>
-
-      <div className={`${classes.pagination} ${classes.section}`}>
-        <Pagination count={numPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+          <div className={`${classes.pagination} ${classes.section}`}>
+            <Pagination count={numPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+          </div>
+        <div style={{ marginTop: 100 }}><Footer /></div>
       </div>
     </>
   );
