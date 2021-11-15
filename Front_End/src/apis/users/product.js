@@ -12,8 +12,8 @@ const updateAuctionProduct = (data) => {
   return axios.post('/api/seller/updateAuctionProductDescription', data);
 };
 
-const deleteAuctionProduct = (data) => {
-  return axios.post('/api/seller/deleteAuctionProductList', data);
+const deleteAuctionProduct = ({prodId}) => {
+  return axios.post('/api/seller/deleteAuctionProduct', {prodId});
 };
 
 const sellerProductApi = {

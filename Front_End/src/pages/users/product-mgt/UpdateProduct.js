@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getListCategory } from '../../../reducers/category';
 import { updateAuctionProduct } from '../../../reducers/users/product';
 import DescriptionProduct from './DescriptionModel';
+import { Markup } from 'interweave';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
@@ -154,7 +155,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const UpdateProduct = ({ itemInfo, isOpen, onClose, showSuccess, textAlert }) => {
+const UpdateProduct = ({ itemInfo, isOpen, onClose, showSuccess, textAlert, getList }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.category.data);
@@ -205,7 +206,7 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose, showSuccess, textAlert }) =>
   }, [dispatch]);
 
   const closeModalHandler = () => {
-    itemInfo.prodDescription = currentProdDescription + '<br>' + itemInfo?.prodDescription;
+    //itemInfo.prodDescription = currentProdDescription + '<br>' + itemInfo?.prodDescription;
     setError('');
     onClose();
   };
@@ -229,6 +230,7 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose, showSuccess, textAlert }) =>
         await dispatch(updateAuctionProduct(formData)).unwrap();
         showSuccess(true);
         textAlert('Lưu thành công!!!');
+        getList();
       } catch (err) {
         setError(err);
         return;
@@ -414,7 +416,7 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose, showSuccess, textAlert }) =>
                 <Typography variant="caption" component="p">
                   Mô tả
                 </Typography>
-                <TextField
+                {/* <TextField
                   variant="standard"
                   size="small"
                   multiline
@@ -422,7 +424,8 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose, showSuccess, textAlert }) =>
                   fullWidth
                   value={currentProdDescription}
                   inputRef={prodDescriptionRef}
-                />            
+                /> */}
+                <Markup content={currentProdDescription} />            
                 <Button
                 marginTop={2}
                 startIcon={<Edit />}

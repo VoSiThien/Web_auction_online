@@ -150,7 +150,7 @@ const ProductManager = (props) => {
   const [page, setPage] = useState(1);
   const [showFailed, setShowFailed] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [text, setText] = useState('');
+  const [textss, setTextss] = useState('');
   let { loading, productList, numPage } = productInfo;
 
   const openCommentModalHandler = () => {
@@ -158,16 +158,18 @@ const ProductManager = (props) => {
     setOpenUpdateModal(false);
     setOpenDeleteModal(false);
     setOpenCommentModal(true);
-    setText('');
+    setTextss('');
   };
 
 
   const openAddModalHandler = () => {
+    setTextss('Thêm sản phẩm thành công');
     setOpenAddModal(true);
     setOpenUpdateModal(false);
     setOpenDeleteModal(false);
     setOpenCommentModal(false);
-    setText('');
+    console.log('day');
+    console.log(textss);
   };
 
   const openUpdateModalHandler = (item) => {
@@ -176,7 +178,7 @@ const ProductManager = (props) => {
     setOpenAddModal(false);
     setOpenDeleteModal(false);
     setOpenCommentModal(false);
-    setText('');
+    setTextss('');
   };
   const openDeleteModalHandler = (id) => {
     setSelectedId(id);
@@ -184,7 +186,7 @@ const ProductManager = (props) => {
     setOpenAddModal(false);
     setOpenDeleteModal(true);
     setOpenCommentModal(false);
-    setText('');
+    setTextss('');
   };
 
   const closeModalHandler = () => {
@@ -192,7 +194,7 @@ const ProductManager = (props) => {
     setOpenAddModal(false);
     setOpenDeleteModal(false);
     setOpenCommentModal(false);
-    setText('');
+    setTextss('');
   };
 
   const pageChangeHandler = (event, value) => {
@@ -203,9 +205,10 @@ const ProductManager = (props) => {
     if (!selectedId) return;
     try {
       await dispatch(deleteAuctionProduct(selectedId)).unwrap();
-      productList = productList.filter(
-        (product) => product.prodId !== selectedId
-      );
+      // productList = productList.filter(
+      //   (product) => product.prodId !== selectedId
+      // );
+      getAuctionProductListHandler(page);
     } catch (err) {
       toast.error(err);
     }
@@ -258,28 +261,28 @@ const ProductManager = (props) => {
         <Header />
           <div className={classes.content}>
             <Container >
-              <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
-                  <Alert.Heading>{text}</Alert.Heading>
-              </Alert>=
+              
               <AddProduct 
                 isOpen={openAddModal} 
                 onClose={closeModalHandler}
                 showSuccess={setShowSuccess}
-                textAlert={setText}
+                getList = {getAuctionProductListHandler}
+                textAlert={setTextss}
               />
               <CommentProduct
                 itemInfo={selectedItem}
                 isOpen={openCommentModal}
                 onClose={closeModalHandler}
                 showSuccess={setShowSuccess}
-                textAlert={setText}
+                textAlert={setTextss}
               />
               <UpdateProduct
                 itemInfo={selectedItem}
                 isOpen={openUpdateModal}
                 onClose={closeModalHandler}
                 showSuccess={setShowSuccess}
-                textAlert={setText}
+                getList = {getAuctionProductListHandler}
+                textAlert={setTextss}
               />
               <ModalConfirmDelete
                 title="Xoá sản phẩm"
@@ -287,6 +290,12 @@ const ProductManager = (props) => {
                 onClose={closeModalHandler}
                 onConfirm={productDeleteHandler}
               />
+            <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
+              <Alert.Heading style={{ textAlign: "center" }}>Thất bại</Alert.Heading>
+            </Alert>
+            <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
+              <Alert.Heading style={{ textAlign: "center" }}>Thành công </Alert.Heading>
+            </Alert>
 
               <div className={classes.section}>
                 <Typography variant="h5" className={classes.title}>
@@ -311,12 +320,7 @@ const ProductManager = (props) => {
               </div>
               
               <div>
-              <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
-                      <Alert.Heading style={{textAlign: "center"}}>{text}</Alert.Heading>
-                  </Alert>
-                  <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
-                      <Alert.Heading style={{textAlign: "center"}}>{text}</Alert.Heading>
-              </Alert>
+              
               <TableContainer component={Paper} className={classes.section}>
                       <Table aria-label="a dense table">
                         <TableHead>
@@ -399,7 +403,7 @@ const ProductManager = (props) => {
                                 fontSize="small"
                                 style={{ cursor: 'pointer', marginLeft: "10px" }}
                               />}
-                              style={{ marginLeft: 5 }}
+                              style={{ marginLeft: 5 }} 
                               fontSize="small"
                               onClick={() => openDeleteModalHandler(row.prodId)}
                               >

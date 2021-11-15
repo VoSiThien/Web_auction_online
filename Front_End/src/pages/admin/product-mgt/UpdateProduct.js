@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getListCategory } from '../../../reducers/category';
 // import { updateAuctionProduct } from '../../../reducers/users/product';
 import DescriptionProduct from './DescriptionModel';
+import { Markup } from 'interweave';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
@@ -422,7 +423,7 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose, showSuccess, textAlert }) =>
                 <Typography variant="caption" component="p">
                   Mô tả
                 </Typography>
-                <TextField
+                {/* <TextField
                   variant="standard"
                   size="small"
                   multiline
@@ -430,7 +431,8 @@ const UpdateProduct = ({ itemInfo, isOpen, onClose, showSuccess, textAlert }) =>
                   fullWidth
                   value={itemInfo?.prodDescription}
                   inputRef={prodDescriptionRef}
-                />            
+                />   */}
+                <Markup content={itemInfo?.prodDescription} />                      
                 {/* <Button
                 marginTop={2}
                 startIcon={<Edit />}

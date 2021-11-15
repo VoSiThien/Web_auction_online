@@ -29,6 +29,7 @@ import TableError from '../../../components/Table/TableError';
 import TableLoading from '../../../components/Table/TableLoading';
 import ModalConfirmDelete from '../../../components/Modal/ModalConfirmDelete';
 import { toast } from 'react-toastify';
+import Footer from '../../../components/Layout/Footer';
 const useStyles = makeStyles((theme) => ({
   root: {
     // padding: theme.spacing(2),
@@ -198,9 +199,10 @@ const ProductManager = (props) => {
     if (!selectedId) return;
     try {
       await dispatch(deleteAuctionProduct(selectedId)).unwrap();
-      productList = productList.filter(
-        (product) => product.prodId !== selectedId
-      );
+      // productList = productList.filter(
+      //   (product) => product.prodId !== selectedId
+      // );
+      getAuctionProductListHandler(page);
     } catch (err) {
       toast.error(err);
     }
@@ -211,7 +213,7 @@ const ProductManager = (props) => {
     async (page = 1) => {
       try {
         const limit = 10;
-        const response = await dispatch(getAuctionProductList({page, limit})).unwrap();
+        const response = await dispatch(getAuctionProductList({ page, limit })).unwrap();
         setProductInfo(response);
       } catch (err) {
         setError(err);
@@ -237,38 +239,38 @@ const ProductManager = (props) => {
 
   const handleVisible = useCallback(() => {
     if (showSuccess === true) {
-        setTimeout(() => {
-            setShowSuccess(false)
-        }, 5000);
+      setTimeout(() => {
+        setShowSuccess(false)
+      }, 5000);
     }
-}, [showSuccess]);
+  }, [showSuccess]);
 
   useEffect(() => {
-      handleVisible();
+    handleVisible();
   }, [handleVisible]);
 
   return (
     <>
       <div className={classes.root}>
-      <Container>
-      <UpdateProduct
-              itemInfo={selectedItem}
-              isOpen={openUpdateModal}
-              onClose={closeModalHandler}
-              showSuccess={setShowSuccess}
-              textAlert={setText}
-            />
-            <ModalConfirmDelete
-              title="Xoá sản phẩm"
-              isOpen={openDeleteModal}
-              onClose={closeModalHandler}
-              onConfirm={productDeleteHandler}
-            />
-      </Container>
+        <Container>
+          <UpdateProduct
+            itemInfo={selectedItem}
+            isOpen={openUpdateModal}
+            onClose={closeModalHandler}
+            showSuccess={setShowSuccess}
+            textAlert={setText}
+          />
+          <ModalConfirmDelete
+            title="Xoá sản phẩm"
+            isOpen={openDeleteModal}
+            onClose={closeModalHandler}
+            onConfirm={productDeleteHandler}
+          />
+        </Container>
       </div>
       <div className={classes.section}>
         <Typography variant="h5" className={classes.title}>
-        Quản Lý Sản Phẩm
+          Quản Lý Sản Phẩm
         </Typography>
         <div className={classes.filter}>
           <div className={classes.search}>
@@ -278,10 +280,10 @@ const ProductManager = (props) => {
       </div>
       <div className={classes.bodytable}>
         <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
-          <Alert.Heading style={{textAlign: "center"}}>{text}</Alert.Heading>
+          <Alert.Heading style={{ textAlign: "center" }}>{text}</Alert.Heading>
         </Alert>
         <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
-          <Alert.Heading style={{textAlign: "center"}}>{text}</Alert.Heading>
+          <Alert.Heading style={{ textAlign: "center" }}>{text}</Alert.Heading>
         </Alert>
         <TableContainer component={Paper}>
           <Table aria-label="a dense table">
@@ -299,79 +301,82 @@ const ProductManager = (props) => {
                 <TableCell align="center">Options</TableCell>
               </TableRow>
             </TableHead>
-    {loading ? ( <TableLoading /> ): error?.length > 0 ?
-      (
-      <TableError message={error} onTryAgain={getAuctionProductListHandler} />
-    ) : productList?.length > 0 ? (
-      <>
-        <TableBody>
-          {productList.map((row, index) => (
-            <TableRow key={index}>
-              <TableCell component="th" scope="row">
-                {index + 1 + (page - 1) * 10}
-              </TableCell>
-              <TableCell>{row?.prodName}</TableCell>
-              <TableCell>
-                <img
-                  src={row?.prodMainImage || errImg}
-                  alt={row?.prodName}
-                  style={{ width: 100, height: 80, objectFit: 'cover' }}
-                />
-              </TableCell>
-              <TableCell>{row?.prodCategoryName}</TableCell>
-              <TableCell>
-                <NumberFormat 
-                  value={row?.prodPriceStarting} 
-                  displayType={'text'} 
-                  thousandSeparator={true} 
-                  suffix={' VND'}/>
-                  </TableCell>
-              <TableCell>
-                <NumberFormat 
-                  value={row?.prodPriceStep} 
-                  displayType={'text'} 
-                  thousandSeparator={true} 
-                  suffix={' VND'}/>
-              </TableCell>
-              <TableCell>{moment(new Date(row?.prodEndDate)).format("DD/MM/YYYY HH:mm")}</TableCell>
-              <TableCell><Checkbox checked={row?.prodAutoExtend===1?true:false} color="primary"/></TableCell>
-              <TableCell>{moment(new Date(row?.prodUpdatedDate)).format("DD/MM/YYYY HH:mm")}</TableCell>
-              <TableCell align="center" style={{ minWidth: 150 }}>
-                <Button 
-                  variant="outlined" 
-                  startIcon={<PreviewIcon
-                    fontSize="small"
-                    style={{ cursor: 'pointer', marginLeft: "10px" }}
-                  />}
-                  style={{ width: '40px', marginLeft: 5 }}
-                  fontSize="small"
-                  onClick={() => openUpdateModalHandler(row)}
-                  >
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  startIcon={<DeleteIcon
-                    fontSize="small"
-                    style={{ cursor: 'pointer', marginLeft: "10px" }}
-                  />}
-                  style={{ width: '40px', marginLeft: 5 }}
-                  fontSize="small"
-                  onClick={() => openDeleteModalHandler(row.prodId)}
-                  >
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </>
-    ) : (
-      <TableError message="No data in database" onTryAgain={getAuctionProductListHandler} />
-    )}
-      </Table>
-    </TableContainer>
-      </div>
-      <div className={`${classes.pagination} ${classes.section}`}>
-      <Pagination count={numPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+            {loading ? (<TableLoading />) : error?.length > 0 ?
+              (
+                <TableError message={error} onTryAgain={getAuctionProductListHandler} />
+              ) : productList?.length > 0 ? (
+                <>
+                  <TableBody>
+                    {productList.map((row, index) => (
+                      <TableRow key={index}>
+                        <TableCell component="th" scope="row">
+                          {index + 1 + (page - 1) * 10}
+                        </TableCell>
+                        <TableCell>{row?.prodName}</TableCell>
+                        <TableCell>
+                          <img
+                            src={row?.prodMainImage || errImg}
+                            alt={row?.prodName}
+                            style={{ width: 100, height: 80, objectFit: 'cover' }}
+                          />
+                        </TableCell>
+                        <TableCell>{row?.prodCategoryName}</TableCell>
+                        <TableCell>
+                          <NumberFormat
+                            value={row?.prodPriceStarting}
+                            displayType={'text'}
+                            thousandSeparator={true}
+                            suffix={' VND'} />
+                        </TableCell>
+                        <TableCell>
+                          <NumberFormat
+                            value={row?.prodPriceStep}
+                            displayType={'text'}
+                            thousandSeparator={true}
+                            suffix={' VND'} />
+                        </TableCell>
+                        <TableCell>{moment(new Date(row?.prodEndDate)).format("DD/MM/YYYY HH:mm")}</TableCell>
+                        <TableCell><Checkbox checked={row?.prodAutoExtend === 1 ? true : false} color="primary" /></TableCell>
+                        <TableCell>{moment(new Date(row?.prodUpdatedDate)).format("DD/MM/YYYY HH:mm")}</TableCell>
+                        <TableCell align="center" style={{ minWidth: 150 }}>
+                          <Button
+                            variant="outlined"
+                            startIcon={<PreviewIcon
+                              fontSize="small"
+                              style={{ cursor: 'pointer', marginLeft: "10px" }}
+                            />}
+                            style={{ width: '40px', marginLeft: 5 }}
+                            fontSize="small"
+                            onClick={() => openUpdateModalHandler(row)}
+                          >
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            startIcon={<DeleteIcon
+                              fontSize="small"
+                              style={{ cursor: 'pointer', marginLeft: "10px" }}
+                            />}
+                            style={{ width: '40px', marginLeft: 5 }}
+                            fontSize="small"
+                            onClick={() => openDeleteModalHandler(row.prodId)}
+                          >
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </>
+              ) : (
+                <TableError message="No data in database" onTryAgain={getAuctionProductListHandler} />
+              )}
+          </Table>
+
+        </TableContainer>
+        <div className={`${classes.pagination} ${classes.section}`}>
+          <Pagination count={numPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+        </div>
+        <div style={{ marginTop: 100 }}><Footer /></div>
+        {/* import Footer from '../../../components/Layout/Footer'; */}
       </div>
     </>
   );

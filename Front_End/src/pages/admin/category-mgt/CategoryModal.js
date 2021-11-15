@@ -1,5 +1,5 @@
 import { makeStyles, TextField, Typography, FormControl, Modal, Button } from '@material-ui/core';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCategory, updateCategory } from '../../../reducers/admin/category';
 
@@ -54,11 +54,10 @@ const CategoryModal = ({ CatItem, action, reloadTable, isOpenModal, closeModalHa
 
   const dispatch = useDispatch();
   const classes = useStyles();
-  const [catName, setCatName] = useState(CatItem?.cate_name || '')
+  const [catName, setCatName] = useState(CatItem?.cate_name)
   const [showFailed, setShowFailed] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [text, setText] = useState('');
-
 
   const catNameChangeHandler = (e) => {
     //get value when the input changed, and set into cat name
@@ -80,23 +79,45 @@ const CategoryModal = ({ CatItem, action, reloadTable, isOpenModal, closeModalHa
 
         setText('Cập nhật thành công!');
         setShowSuccess(true);
+        setShowFailed(false);
         reloadTable();
       } catch (error) {
         setShowFailed(true);
+        setShowSuccess(false);
         setText(error);
       }
     } else if (action === "INSERT") {
       try {
         await dispatch(addCategory({ catName })).unwrap();
         setShowSuccess(true);
+        setShowFailed(false);
         setText('Thêm thành công!');
         reloadTable();
       } catch (error) {
         setShowFailed(true);
+        setShowSuccess(false);
         setText(error);
       }
     }
   };
+
+  const handleVisible = useCallback(() => {
+    if (showSuccess === true) {
+      setTimeout(() => {
+        setShowSuccess(false)
+        setShowFailed(false)
+      }, 4000);
+    }
+  }, [showSuccess, showFailed]);
+
+  useEffect(() => {
+    handleVisible();
+    if(action === "UPDATE"){
+      setCatName(CatItem?.cate_name);
+    }else{
+      setCatName('');
+    }
+  }, [handleVisible, CatItem?.cate_name, action]);
 
   return (
     <Modal
