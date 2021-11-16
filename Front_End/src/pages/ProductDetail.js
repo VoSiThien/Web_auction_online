@@ -64,7 +64,7 @@ function Home() {
     const [isShowButtonHis, setisShowButtonHis] = useState(false);
     const [isShowButtonWat, setisShowButtonWat] = useState(false);
     const user = useSelector((state) => state.auth.user);
-    const Socket = useSelector((state) => state.unauthorizedProduct.SocketInProductDetail);    
+    const Socket = useSelector((state) => state.unauthorizedProduct.SocketInProductDetail);
     //3.create handler
     const getProductDetailHandler = useCallback(async () => {
         try {
@@ -198,11 +198,11 @@ function Home() {
                                                 displayType={'text'}
                                             />
                                         </p>
-                                        
+
                                     </li>
                                     <li>
                                         <p>Giá mua ngay : {productDetails.prod_price == null ? 'Chưa có thông tin' : ''}
-                                        <NumberFormat
+                                            <NumberFormat
                                                 value={productDetails.prod_price}
                                                 variant="standard"
                                                 thousandSeparator={true}
@@ -216,8 +216,8 @@ function Home() {
                                     <table className="table table-sm table-borderless mb-0">
                                         <tbody>
                                             <tr >
-                                                <th className="pl-0 w-25" scope="row" style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><strong>Người bán: </strong></th>
-                                                <td style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_seller_id == null ? 'Chưa có thông tin' : productDetails.prod_seller_id} </p></td>
+                                                <th className="pl-0 w-25" scope="row" style={{ borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5" }}><strong>Người bán: </strong></th>
+                                                <td style={{ borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5" }}><p>{productDetails.prod_seller_id == null ? 'Chưa có thông tin' : productDetails.prod_seller_id} </p></td>
                                                 <th className="pl-0 w-25" scope="row"><strong></strong></th>
                                             </tr>
                                             <tr>
@@ -229,8 +229,8 @@ function Home() {
                                                 <td><p>{ratingAccount.acc_dis_like_seller == null ? 0 : ratingAccount.acc_dis_like_seller} </p></td>
                                             </tr>
                                             <tr>
-                                                <th style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}} className="pl-0 w-25" scope="row"><strong>Người giữ giá:</strong></th>
-                                                <td style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_price_holder == null ? 'Chưa có thông tin' : productDetails.prod_price_holder} </p></td>
+                                                <th style={{ borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5" }} className="pl-0 w-25" scope="row"><strong>Người giữ giá:</strong></th>
+                                                <td style={{ borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5" }}><p>{productDetails.prod_price_holder == null ? 'Chưa có thông tin' : productDetails.prod_price_holder} </p></td>
                                                 <th className="pl-0 w-25" scope="row"><strong></strong></th>
                                             </tr>
                                             <tr>
@@ -242,13 +242,13 @@ function Home() {
                                                 <td><p>{ratingAccount.acc_dis_like_bidder == null ? 0 : ratingAccount.acc_dis_like_bidder} </p></td>
                                             </tr>
                                             <tr>
-                                                <th style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}} className="pl-0 w-25" scope="row"><strong>Thời điểm đăng: </strong></th>
-                                                <td style={{borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_created_date == null? 'Chưa có thông tin' : productDetails.prod_created_date}</p></td>
+                                                <th style={{ borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5" }} className="pl-0 w-25" scope="row"><strong>Thời điểm đăng: </strong></th>
+                                                <td style={{ borderTop: "1px solid black", borderStyle: "dashed", borderColor: "#2877F5" }}><p>{productDetails.prod_created_date == null ? 'Chưa có thông tin' : productDetails.prod_created_date}</p></td>
                                                 <th className="pl-0 w-25" scope="row"><strong></strong></th>
                                             </tr>
                                             <tr>
-                                                <th style={{borderTop: "0.5px solid", borderStyle: "dashed", borderColor: "#2877F5"}} className="pl-0 w-25" scope="row"><strong>Ngày hết hạn: </strong></th>
-                                                <td style={{borderTop: "0.5px solid", borderStyle: "dashed", borderColor: "#2877F5"}}><p>{productDetails.prod_end_date == null? 'Chưa có thông tin' : productDetails.prod_end_date}</p></td>
+                                                <th style={{ borderTop: "0.5px solid", borderStyle: "dashed", borderColor: "#2877F5" }} className="pl-0 w-25" scope="row"><strong>Ngày hết hạn: </strong></th>
+                                                <td style={{ borderTop: "0.5px solid", borderStyle: "dashed", borderColor: "#2877F5" }}><p>{productDetails.prod_end_date == null ? 'Chưa có thông tin' : productDetails.prod_end_date}</p></td>
                                                 <th className="pl-0 w-25" scope="row"><strong></strong></th>
                                             </tr>
                                         </tbody>
@@ -270,36 +270,16 @@ function Home() {
                                 <div className="table-responsive mb-2">
                                     <div className="col-12">
                                         <div className="row scroll">
-                                            <div className="col">
-                                                <div className="view overlay rounded z-depth-1 gallery-item">
-                                                    <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12a.jpg" className="img-fluid" />
-                                                    <div className="mask rgba-white-slight" />
-                                                </div>
-                                            </div>
-                                            <div className="col">
-                                                <div className="view overlay rounded z-depth-1 gallery-item">
-                                                    <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12a.jpg" className="img-fluid" />
-                                                    <div className="mask rgba-white-slight" />
-                                                </div>
-                                            </div>
-                                            <div className="col">
-                                                <div className="view overlay rounded z-depth-1 gallery-item">
-                                                    <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/13a.jpg" className="img-fluid" />
-                                                    <div className="mask rgba-white-slight" />
-                                                </div>
-                                            </div>
-                                            <div className="col">
-                                                <div className="view overlay rounded z-depth-1 gallery-item">
-                                                    <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/14a.jpg" className="img-fluid" />
-                                                    <div className="mask rgba-white-slight" />
-                                                </div>
-                                            </div>
-                                            <div className="col">
-                                                <div className="view overlay rounded z-depth-1 gallery-item">
-                                                    <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/15a.jpg" className="img-fluid" />
-                                                    <div className="mask rgba-white-slight" />
-                                                </div>
-                                            </div>
+                                            {productDetails.prod_img?.length > 0 &&
+                                                productDetails.prod_img.map((image, index) => (
+
+                                                    <div className="col">
+                                                        <div className="view overlay rounded z-depth-1 gallery-item">
+                                                            <img src={image} className="img-fluid" />
+                                                            <div className="mask rgba-white-slight" />
+                                                        </div>
+                                                    </div>
+                                                ))}
                                         </div>
                                     </div>
                                 </div>
@@ -322,7 +302,7 @@ function Home() {
                                     <h5>Mô tả sản phẩm</h5>
                                     <Markup content={productDetails.prod_description} />
                                 </div>
-                                <div className="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                                {/* <div className="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                                     <h5><span>1</span> review for <span>Fantasy T-shirt</span></h5>
                                     <div className="media mt-3 mb-4">
                                         <img className="d-flex mr-3 z-depth-1" src="https://mdbootstrap.com/img/Photos/Others/placeholder1.jpg" width={62} alt="Generic placeholder image" />
@@ -342,17 +322,17 @@ function Home() {
                                     <p>Your email address will not be published.</p>
 
                                     <div>
-                                        {/* Your review */}
+                                    
                                         <div className="md-form md-outline">
                                             <textarea id="form76" className="md-textarea form-control pr-6" rows={4} defaultValue={""} />
                                             <label htmlFor="form76">Your review</label>
                                         </div>
-                                        {/* Name */}
+                                       
                                         <div className="md-form md-outline">
                                             <input type="text" id="form75" className="form-control pr-6" />
                                             <label htmlFor="form75">Name</label>
                                         </div>
-                                        {/* Email */}
+                                      
                                         <div className="md-form md-outline">
                                             <input type="email" id="form77" className="form-control pr-6" />
                                             <label htmlFor="form77">Email</label>
@@ -361,7 +341,7 @@ function Home() {
                                             <button type="button" className="btn btn-primary">Add a review</button>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         {/* Classic tabs */}
@@ -396,8 +376,8 @@ function Home() {
                                     </div>
 
                                 ))}
-                           
-                           
+
+
                         </div>
                     </section>
                 </div>

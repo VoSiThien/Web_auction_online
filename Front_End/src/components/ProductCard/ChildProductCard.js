@@ -30,8 +30,8 @@ const useStyles = makeStyles((theme) => ({
   },
   display_image: {
     height: "100%",
-    paddingTop: '56.25%',
-    
+    padding: '56.25%',
+    width:"100%"
   },
   title: {
     display: '-webkit-box',
@@ -123,11 +123,13 @@ const ProductCard = ({
       <Card className={classes.card}>
         
         <Link to={`/details/${id}`} className={classes.link}>
+          <div style = {{height:"100%"}}>
           <CardMedia
             className={classes.display_image}
             image={image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'}
             title={title}
           />
+          </div>
           <CardContent className={classes.content}>
           <Typography className={classes.title} variant="body1">
               {title}
