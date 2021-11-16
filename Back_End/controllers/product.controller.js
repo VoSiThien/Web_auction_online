@@ -34,7 +34,8 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 	if (numberOfProduct > limit) {
 		numberOfPage = Math.ceil(numberOfProduct / limit)
 	}
-	var whereClause = `where pr.prod_category_id = ${catID}`
+	var whereClause = `where pr.prod_category_id = ${catID} and pr.prod_status != 2`
+
 	var result = await knex.raw(`
 	select count(h.his_id) number_bid, pr.*
 	from ((tbl_product pr left join tbl_categories cat on pr.prod_category_id = cat.cate_id)
@@ -98,7 +99,7 @@ router.post('/list-same-cat', prodValidation.listByCategory, async (req, res) =>
 	var result = await knex.raw(`
 	select pr.*, cat.* 
 	from tbl_product pr left join tbl_categories cat on cat.cate_id = pr.prod_category_id
-	where pr.prod_category_id = ${catID} and pr.prod_id != ${prodID}
+	where pr.prod_category_id = ${catID} and pr.prod_id != ${prodID} and pr.prod_status != 2
 	order by prod_created_date desc
 	offset ${offset}
 	limit ${limit}`)
