@@ -194,9 +194,14 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 
 	//full-text-search for category & product name
 	var result = await knex.raw(`
-		SELECT *
-		FROM tbl_product pr join tbl_categories cat on pr.prod_category_id = cat.cate_id
-		WHERE cat.ts @@ to_tsquery('english', '${searchKey}') ${AndOrCondition} pr.ts @@ to_tsquery('english', '${searchKey}') and pr.prod_status != 2
+		SELECT count(h.his_id) number_bid, pr.*, cat.cate_name
+		FROM (tbl_product pr join tbl_categories cat on pr.prod_category_id = cat.cate_id)
+		left join tbl_product_history h on h.his_product_id = pr.prod_id
+		WHERE cat.ts @@ to_tsquery('english', '${searchKey}') ${AndOrCondition} pr.ts @@ to_tsquery('english', '${searchKey}')
+		group by pr.prod_id, pr.prod_name, pr.prod_description,
+		pr.prod_main_image, pr.prod_price, pr.prod_end_date,
+		pr.prod_price_current, pr.prod_created_date, cat.cate_name,
+		pr.prod_seller_id, pr.prod_price_holder
 		order by ${filterField} ${orderBy}
 		limit ${limit}
 		offset ${offset}
@@ -211,20 +216,16 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 		let prodObj = {
 			prod_id: result[index].prod_id,
 			prod_name: result[index].prod_name,
-			prod_category_id: result[index].prod_category_id,
 			prod_category_name: result[index].cate_name,
-			prod_amount: result[index].prod_amount,
 			prod_description: result[index].prod_description,
 			prod_created_date: moment(result[index].prod_created_date).format('DD/MM/YYYY HH:mm:ss'),
-			prod_updated_date: moment(result[index].prod_updated_date).format('DD/MM/YYYY HH:mm:ss') == 'Invalid date' ? moment(result[index].prod_created_date).format('DD/MM/YYYY') : moment(result[index].prod_updated_date).format('DD/MM/YYYY'),
-			prod_price_starting: result[index].prod_price_starting,
 			prod_price_current: result[index].prod_price_current,
-			prod_price_highest: result[index].prod_price_highest,
-			prod_price_step: result[index].prod_price_step,
 			prod_end_date: moment(result[index].prod_end_date).format('DD/MM/YYYY HH:mm:ss'),
-			prod_auto_extend: result[index].prod_auto_extend,
 			prod_seller_id: result[index].prod_seller_id,
-			prod_main_image: result[index].prod_main_image
+			prod_main_image: result[index].prod_main_image,
+			prod_price: result[index].prod_price,
+			prod_price_holder: result[index].prod_price_holder,
+			number_bid: result[index].number_bid
 		}
 		//get holder & seller information
 		if (prodObj.prod_price_holder)
