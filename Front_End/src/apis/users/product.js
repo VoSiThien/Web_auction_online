@@ -4,6 +4,18 @@ const getAuctionProductList = ({page, limit}) => {
   return axios.post('/api/seller/getAuctionProductList', {page,limit});
 };
 
+const getAuctionProductEndList = ({page, limit}) => {
+  return axios.post('/api/seller/getAuctionProductEndList', {page,limit});
+};
+
+const addComment = ({ Comment, Status, prodId }) => {
+  return axios.post('/api/seller/add-comment', {
+      Comment,
+      Status,
+      prodId
+  });
+};
+
 const postAuctionProduct = (data) => {
   return axios.post('/api/seller/postAuctionProduct', data);
 };
@@ -21,6 +33,8 @@ const sellerProductApi = {
   postAuctionProduct,
   updateAuctionProduct,
   deleteAuctionProduct,
+  getAuctionProductEndList,
+  addComment
 };
 
 export default sellerProductApi;

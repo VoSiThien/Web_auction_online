@@ -6,6 +6,7 @@ const HomePage = lazy(() => import('../pages/HomePage'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const ProfilePage = lazy(() => import('../pages/users/Profile'));
 const ProductPage = lazy(() => import('../pages/users/product-mgt/Product'));
+const ProductPageEnd = lazy(() => import('../pages/users/product-mgt-end/Product'));
 const ProductDetail = lazy(() => import('../pages/ProductDetail'));
 
 const HistoryBidBidder = lazy(() => import('../pages/users/bidder/HistoryBid'));
@@ -79,6 +80,13 @@ export const routes = [
     protected: true,
     exact: true,
     component: ProductPage,
+    roles: [Role.Seller],
+  },
+  {
+    path: '/product-mgt-end',
+    protected: true,
+    exact: true,
+    component: ProductPageEnd,
     roles: [Role.Seller],
   },
   {

@@ -97,7 +97,7 @@ router.post('/forgot-password', authenticationValidate.forgotPassword, async(req
     const { email } = req.body
 
     let dateOb = new Date()
-    const result = await accountModel.findByEmail(email)
+    const result = await accountModel.findByEmailNotFirst(email)
 
     if (result.length === 0) {
         return res.status(400).json({
