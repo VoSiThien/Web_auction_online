@@ -33,6 +33,7 @@ import ModalSubCategory from './ModalSubCategory'
 import TableError from '../../../components/Table/TableError';
 import Pagination from '@material-ui/lab/Pagination';
 import ModalConfirmDelete from '../../../components/Modal/ModalConfirmDelete';
+import Footer from '../../../components/Layout/Footer';
 
 const BootstrapInput = withStyles((theme) => ({
   root: {
@@ -286,6 +287,7 @@ const CategoryManager = (props) => {//the first character of function always in 
       //delete selected sub cat
       await dispatch(deleteCategory({ catID: selectedId })).unwrap();
       //load data again
+      getListChildCategoryHandler(selectedParentCat, page, limit);
       reloadData()
       setText('Xoá thành công!!!');
       setShowSuccess(true);
@@ -324,6 +326,19 @@ const CategoryManager = (props) => {//the first character of function always in 
     setOpenDeleteModal(false);
 
   };
+
+  const handleVisible = useCallback(() => {
+    if (showSuccess === true) {
+      setTimeout(() => {
+        setShowSuccess(false)
+        setShowFailed(false)
+      }, 3000);
+    }
+  }, [showSuccess, showFailed]);
+
+  useEffect(() => {
+    handleVisible();
+  }, [handleVisible]);
   return (
     <>
       <div className={classes.root}>
@@ -457,9 +472,10 @@ const CategoryManager = (props) => {//the first character of function always in 
                   )}
               </Table>
             </TableContainer>
-          </div>
-          <div className={`${classes.pagination} ${classes.section}`}>
-            <Pagination count={totalPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+            <div className={`${classes.pagination} ${classes.section}`}>
+                <Pagination count={totalPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+              </div>
+            <div style={{ marginTop: 100 }}><Footer /></div>
           </div>
         </div>
 

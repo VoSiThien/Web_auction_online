@@ -26,7 +26,7 @@ export const deleteAuctionProduct = createAsyncThunk(
   'product/deleteAuctionProductList',
   async (productId, { rejectWithValue }) => {
     try {
-      return (await API.deleteAuctionProduct({productId})).data;
+      return (await API.deleteAuctionProduct({prodId: productId})).data;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }

@@ -35,6 +35,7 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 		numberOfPage = Math.ceil(numberOfProduct / limit)
 	}
 	var whereClause = `where pr.prod_category_id = ${catID} and pr.prod_status != 2`
+
 	var result = await knex.raw(`
 	select count(h.his_id) number_bid, pr.*
 	from ((tbl_product pr left join tbl_categories cat on pr.prod_category_id = cat.cate_id)
@@ -345,8 +346,8 @@ router.post('/getAuctionProductList', prodValidation.getAuctionProductList, asyn
 
 	var result = await knex.raw(`select * from tbl_product p join tbl_categories c
                                 on c.cate_id = p.prod_category_id 
-                                where p.prod_status != 2
-								order by p.prod_status offset ${offset} limit ${limit}`)
+                                where p.prod_status != 1
+								order by p.prod_created_date DESC offset ${offset} limit ${limit}`)
 	result = result.rows
 
 	var prodList = []
@@ -401,7 +402,7 @@ router.post('/getAuctionProductList', prodValidation.getAuctionProductList, asyn
 router.post('/deleteAuctionProduct', prodValidation.deleteAuctionProduct, async(req, res) => {
     const { prodId } = req.body
     const now = new Date(Date.now())
-    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_status: 2, prod_updated_date: now })
+    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_status: 1, prod_updated_date: moment(now).format('YYYY-MM-DD HH:mm:ss') })
     return res.status(200).json({
         data: true,
         statusCode: successCode

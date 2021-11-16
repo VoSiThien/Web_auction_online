@@ -300,7 +300,7 @@ router.post('/add-comment', async (req, res) => {
 		})
 	}
 
-	const comment = await knex('tbl_account_comments').where('acom_product_id', prodId).andWhere('acom_receiver', id)
+	const comment = await knex('tbl_account_comments').where('acom_product_id', prodId).andWhere('acom_assessor', id)
 	if (comment.length !== 0) {
 		return res.status(400).json({
 			errorMessage: 'Sản phẩm đã được đánh giá, vui lòng không đánh giá lại',
@@ -311,8 +311,8 @@ router.post('/add-comment', async (req, res) => {
 	let dateCreate = new Date()
 	const Comments = {
 		acom_note: Comment,
-		acom_assessor: product[0].prod_seller_id,
-		acom_receiver: id,
+		acom_assessor: id,
+		acom_receiver: product[0].prod_seller_id,
 		acom_product_id: prodId,
 		acom_status_rating: Status,
 		acom_created_date: moment(dateCreate).format('YYYY-MM-DD HH:mm:ss')
@@ -321,7 +321,7 @@ router.post('/add-comment', async (req, res) => {
 	const newAccId = await knex('tbl_account_comments')
 		.returning('acom_id')
 		.insert(Comments)
-	const acc = await knex('tbl_account').where('acc_id', product[0].prod_id)
+	const acc = await knex('tbl_account').where('acc_id', product[0].prod_seller_id)
 	if(acc[0].acc_like_seller === null || acc[0].acc_dis_like_seller === null ){
 		await knex.raw(`update tbl_account set acc_like_seller = 0, acc_dis_like_seller = 0 where acc_id = ${product[0].prod_seller_id}`)
 	}

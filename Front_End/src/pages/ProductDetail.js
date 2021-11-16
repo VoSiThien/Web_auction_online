@@ -20,6 +20,7 @@ import HistoryProductSel from "../components/seller/historyProduct";
 import { Role } from '../config/role';
 import { invalid } from 'moment';
 import NumberFormat from 'react-number-format';
+import { Markup } from 'interweave';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -30,18 +31,9 @@ const useStyles = makeStyles((theme) => ({
         padding: '5vh 0',
     },
     display_image: {
-        // objectFit: "cover",
-        // display:"block",
-        // position:"relative",
-        // width: "100%",
-        // height:"100%",
-        // margin:"auto",
-        verticalAlign: "middle",
-        textAlign: "center",
-        position: "absolute",
-        top: "50%",
-        width: "100%"
-
+        width: "100%",
+        height: "14vw",
+        objectFit: "cover"
     },
     card: {
         width: "100%",
@@ -73,7 +65,6 @@ function Home() {
     const [isShowButtonWat, setisShowButtonWat] = useState(false);
     const user = useSelector((state) => state.auth.user);
     const Socket = useSelector((state) => state.unauthorizedProduct.SocketInProductDetail);
-    console.log(productDetails.prod_img)
     //3.create handler
     const getProductDetailHandler = useCallback(async () => {
         try {
@@ -189,9 +180,9 @@ function Home() {
                         <div className="container">
                             {productDetails.prod_name}
                         </div> */}
-                        <div className="row" >
-                            <div className="col-md-6 mb-4 mb-md-0" style={{ height: "100%", position: "relative" }}>
-                                <img className={classes.display_image} src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} alt="Product main image" />
+                        <div className="row">
+                            <div className="col-md-6 mb-4 mb-md-0" >
+                                <img className={classes.display_image} style={{ height: "100%" }} src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} alt="Product main image" />
                             </div>
                             <div className="col-md-6 mt-2">
                                 <h2>{productDetails.prod_name}</h2>
@@ -281,7 +272,7 @@ function Home() {
                                         <div className="row scroll">
                                             {productDetails.prod_img?.length > 0 &&
                                                 productDetails.prod_img.map((image, index) => (
-                                                   
+
                                                     <div className="col">
                                                         <div className="view overlay rounded z-depth-1 gallery-item">
                                                             <img src={image} className="img-fluid" />
@@ -296,23 +287,22 @@ function Home() {
                         </div>
 
 
-
+                        {/* Classic tabs */}
                         <div className="classic-tabs border rounded px-4 pt-1 mt-5" style={{ backgroundColor: "#d9d5d0" }}>
                             <ul className="nav nav-tabs" id="advancedTab" role="tablist">
                                 <li className="nav-item active">
                                     <a className="nav-link active show" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">Description</a>
                                 </li>
-                                {/* <li className="nav-item">
+                                <li className="nav-item">
                                     <a className="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Reviews (1)</a>
-                                </li> */}
+                                </li>
                             </ul>
                             <div className="tab-content p-5 mb-5" id="advancedTabContent" style={{ backgroundColor: "#ebe9e6" }}>
                                 <div className="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
                                     <h5>Mô tả sản phẩm</h5>
-                                    <p className="pt-1">{productDetails.prod_description}</p>
+                                    <Markup content={productDetails.prod_description} />
                                 </div>
-                                {/* Classic tabs
-                                <div className="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                                {/* <div className="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                                     <h5><span>1</span> review for <span>Fantasy T-shirt</span></h5>
                                     <div className="media mt-3 mb-4">
                                         <img className="d-flex mr-3 z-depth-1" src="https://mdbootstrap.com/img/Photos/Others/placeholder1.jpg" width={62} alt="Generic placeholder image" />
@@ -332,7 +322,7 @@ function Home() {
                                     <p>Your email address will not be published.</p>
 
                                     <div>
-                                  
+                                    
                                         <div className="md-form md-outline">
                                             <textarea id="form76" className="md-textarea form-control pr-6" rows={4} defaultValue={""} />
                                             <label htmlFor="form76">Your review</label>
@@ -342,7 +332,7 @@ function Home() {
                                             <input type="text" id="form75" className="form-control pr-6" />
                                             <label htmlFor="form75">Name</label>
                                         </div>
-                                       
+                                      
                                         <div className="md-form md-outline">
                                             <input type="email" id="form77" className="form-control pr-6" />
                                             <label htmlFor="form77">Email</label>
@@ -351,11 +341,10 @@ function Home() {
                                             <button type="button" className="btn btn-primary">Add a review</button>
                                         </div>
                                     </div>
-                                </div>
-                                 Classic tabs */}
-
+                                </div> */}
                             </div>
                         </div>
+                        {/* Classic tabs */}
 
 
 

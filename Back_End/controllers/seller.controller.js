@@ -53,8 +53,8 @@ router.post('/getAuctionProductList', validator.getAuctionProductList, async (re
 	var result = await knex.raw(`select * from tbl_product p join tbl_categories c
                                 on c.cate_id = p.prod_category_id 
                                 where p.prod_seller_id = ${accId}
-                                and p.prod_status != 2
-								order by p.prod_status offset ${offset} limit ${limit}`)
+                                and p.prod_status != 1
+								order by p.prod_created_date DESC offset ${offset} limit ${limit}`)
 	result = result.rows
 
 	var prodList = []
@@ -121,10 +121,9 @@ router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res)
     const now = new Date(Date.now())
 
     var dateEnd = prodEndDate+':00'
-    dateEnd = dateEnd.split('/')
+    dateEnd = dateEnd.split('T')
 
-    var getyear = dateEnd[2].split(' ')
-    var dateToEnd = getyear[0] + '-'+dateEnd[1]+'-'+dateEnd[0]+' '+ getyear[1]
+    var dateToEnd = dateEnd[0] + ' ' + dateEnd[1]
     
     let prodId = null;
     try {
@@ -199,7 +198,7 @@ router.post('/updateAuctionProductDescription', validator.updateAuctionProductDe
 router.post('/deleteAuctionProduct', validator.deleteAuctionProduct, async(req, res) => {
     const { prodId } = req.body
     const now = new Date(Date.now())
-    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_status: 2, prod_updated_date: now })
+    await knex('tbl_product').where({ prod_id: prodId }).update({ prod_status: 1, prod_updated_date: moment(now).format('YYYY-MM-DD HH:mm:ss') })
     return res.status(200).json({
         data: true,
         statusCode: successCode

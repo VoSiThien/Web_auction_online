@@ -113,8 +113,8 @@ function Home() {
                 <Col>
                   <Alert variant="success" style={{ marginBlock: "-3px" }}><FcDebt className="iconaler" /> 5 sản phẩm có nhiều lượt ra giá nhất!</Alert>
                   <div style={{ backgroundColor: '#e8e4da' }} className="p-3">
-                    {productHighestPrice?.length > 0 &&		//want to use function of react, need to add "?"
-                      productHighestPrice.map((prod, index) => (
+                    {productHighestBids?.length > 0 &&		//want to use function of react, need to add "?"
+                      productHighestBids.map((prod, index) => (
                         <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }} key={index}>
                           <Card.Body>
                             <ProductCard
@@ -138,8 +138,8 @@ function Home() {
                 <Col >
                   <Alert variant="primary" style={{ marginBlock: "-2px" }}><FcCurrencyExchange className="iconaler" /> 5 sản phẩm có giá cao nhất!</Alert>
                   <div style={{ backgroundColor: '#e8e4da' }} className="p-3">
-                    {productHighestBids?.length > 0 &&		//want to use function of react, need to add "?"
-                      productHighestBids.map((prod, index) => (
+                    {productHighestPrice?.length > 0 &&		//want to use function of react, need to add "?"
+                      productHighestPrice.map((prod, index) => (
 
                         <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }} key={index*2}>
                           <Card.Body>
