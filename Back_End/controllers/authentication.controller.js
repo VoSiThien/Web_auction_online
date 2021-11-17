@@ -95,10 +95,9 @@ router.post('/verification-email', authenticationValidate.confirmToken, async(re
 
 router.post('/forgot-password', authenticationValidate.forgotPassword, async(req, res) => {
     const { email } = req.body
-    console.log('aa0')
+
     let dateOb = new Date()
     const result = await accountModel.findByEmailNotFirst(email)
-    console.log('aa')
 
     if (result.length === 0) {
         return res.status(400).json({
@@ -106,7 +105,6 @@ router.post('/forgot-password', authenticationValidate.forgotPassword, async(req
             statusCode: errorCode
         })
     }
-    console.log('aa1')
 
     var token = 'f' + (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString()
 

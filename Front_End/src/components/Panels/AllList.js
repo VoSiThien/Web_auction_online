@@ -377,7 +377,7 @@ const AllList = () => {
 							<Pagination count={dataHighestPriceProduct.numberOfPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
 						</div>
 					</Tab>
-					<Tab eventKey="rating" title="Danh đánh giá">
+					<Tab eventKey="rating" title="Danh sách đánh giá">
 						<div>
 							{dataComment.rating?.length > 0 &&
 								dataComment.rating.map((row, index) => (
