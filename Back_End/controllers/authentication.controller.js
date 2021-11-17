@@ -95,9 +95,10 @@ router.post('/verification-email', authenticationValidate.confirmToken, async(re
 
 router.post('/forgot-password', authenticationValidate.forgotPassword, async(req, res) => {
     const { email } = req.body
-
+    console.log('aa0')
     let dateOb = new Date()
     const result = await accountModel.findByEmailNotFirst(email)
+    console.log('aa')
 
     if (result.length === 0) {
         return res.status(400).json({
@@ -105,10 +106,11 @@ router.post('/forgot-password', authenticationValidate.forgotPassword, async(req
             statusCode: errorCode
         })
     }
+    console.log('aa1')
 
     var token = 'f' + (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString()
 
-    const cusName = result.acc_full_name || 'quý khách'
+    const cusName = result[0].acc_full_name || 'quý khách'
     await mailService.sendMail(mailOptions.forgotPasswordOptions(email, cusName, token), req, res)    
     const hashToken = bcrypt.hashSync(token, 3)
 
@@ -117,11 +119,11 @@ router.post('/forgot-password', authenticationValidate.forgotPassword, async(req
         acc_updated_date: dateOb
     }
 
-    await knex('tbl_account').where('acc_id', result.acc_id).update(account)
+    await knex('tbl_account').where('acc_id', result[0].acc_id).update(account)
 
     return res.status(200).json({
         statusCode: successCode,
-        accId: result.acc_id
+        accId: result[0].acc_id
     })
 })
 
