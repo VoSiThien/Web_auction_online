@@ -235,7 +235,7 @@ const BasicProfilePanel = () => {
 					</FormHelperText>
 				)}
 			</FormControl>
-			{user != null && user.isUpgrade == 0 && user.role === Role.Bidder && (
+			{user != null && (user.isUpgrade == 0 || user.isUpgrade == null ) && user.role === Role.Bidder && (
 				<Button
 					variant="contained"
 					onClick = {upgradeHandler}

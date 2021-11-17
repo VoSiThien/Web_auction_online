@@ -38,7 +38,7 @@ router.post('/allowSell', validator.updateAllowSellIn7Date, async (req, res) => 
 		})
 	}
 
-	if (result[0].acc_is_upgrade !== 0) {
+	if (result[0].acc_is_upgrade === 1) {
 		return res.status(400).json({
 			errorMessage: 'User đang chờ để upgrade!',
 			statusCode: errorCode
