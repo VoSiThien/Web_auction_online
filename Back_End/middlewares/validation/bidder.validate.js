@@ -5,7 +5,7 @@ const updateAllowSellIn7Date = (req, res, next) => {
     const shema = {
         type: "object",
         properties: {
-            accIsUpgrade: { enum: ["0", "1"] },
+            accIsUpgrade: { enum: [0, 1] },
         },
         required: ["accIsUpgrade"],
         additionalProperties: true

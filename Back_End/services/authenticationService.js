@@ -18,7 +18,7 @@ const getRole = async (acc_id) => {
 }
 
 const getAccount = async (acc_id) => {
-	const acc = await knex('tbl_account').where({ acc_id: acc_id }).first('acc_role','acc_full_name','acc_avatar')
+	const acc = await knex('tbl_account').where({ acc_id: acc_id }).first('acc_role','acc_full_name','acc_avatar', 'acc_is_upgrade')
 	return acc
 }
 
@@ -44,7 +44,8 @@ const authenticate = async (email, password, callback, req, res) => {
 				accStatus: acc_status,
 				accId: acc_id,
 				accFullName: acc.acc_full_name,
-				accAvatar: acc.acc_avatar
+				accAvatar: acc.acc_avatar,
+				isUpgrade : acc.acc_is_upgrade
 			}
 		})
 	])

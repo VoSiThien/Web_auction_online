@@ -37,7 +37,7 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 	var whereClause = `where pr.prod_category_id = ${catID} and pr.prod_status != 2`
 
 	var result = await knex.raw(`
-	select count(h.his_id) number_bid, pr.*
+	select count(h.his_id) number_bid, pr.*, cat.cate_name
 	from ((tbl_product pr left join tbl_categories cat on pr.prod_category_id = cat.cate_id)
 	left join tbl_product_history h on h.his_product_id = pr.prod_id)
 	left join tbl_account ac on ac.acc_id = pr.prod_price_holder
@@ -50,6 +50,7 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 	limit ${limit}`)
 
 	result = result.rows
+	
 	//process return list
 	var prodList = []
 	var index = 0
@@ -64,6 +65,7 @@ router.post('/list-by-cat', prodValidation.listByCategory, async (req, res) => {
 		prodList.push(prodObj)
 		index++
 	}
+	
 
 	return res.status(200).json({
 		numberOfPage: numberOfPage,

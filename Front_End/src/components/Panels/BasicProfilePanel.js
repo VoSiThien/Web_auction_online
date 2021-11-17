@@ -12,8 +12,10 @@ import "react-phone-input-2/lib/style.css";
 import { Validate } from "../../helpers";
 import { useInput } from "../../hooks/use-input";
 import { getProfile } from '../../reducers/users/profile';
+import {requestUpgradeSeller} from '../../reducers/users/bidder'
 import { useDispatch, useSelector } from "react-redux";
 import { accUpdateprofiles } from '../../reducers/users/profile';
+import { Role } from '../../config/role';
 const useStyles = makeStyles((theme) => ({
 	form: {
 		width: "30rem",
@@ -43,15 +45,17 @@ const BasicProfilePanel = () => {
 	const data = useSelector((state) => state.profile.data);
 	const dispatch = useDispatch();
 	const [error, setError] = useState(null);
-  	const [success, setSuccess] = useState(null);
-
+	const [success, setSuccess] = useState(null);
+	const user = useSelector((state) => state.auth.user);//get current user role here
+	console.log(user)
 	const getProfileUser = useCallback(async () => {
-        try {
-            await dispatch(getProfile()).unwrap();
-        } catch (err) {
-            alert(err);
-        }
-    }, [dispatch]);
+		try {
+			await dispatch(getProfile()).unwrap();
+			
+		} catch (err) {
+			alert(err);
+		}
+	}, [dispatch]);
 
 
 	const [phoneNumber, setPhoneNumber] = useState("");
@@ -98,6 +102,17 @@ const BasicProfilePanel = () => {
 		setPhoneNumber(value);
 	};
 
+
+	const upgradeHandler = useCallback(async () => {
+		try {
+			await dispatch(requestUpgradeSeller(1)).unwrap();
+			setSuccess('Yêu cầu nâng cấp thành công, xin hãy đợi admin duyệt!')
+		} catch (err) {
+			setError(err)
+			setSuccess('')
+		}
+	});
+
 	const phoneNumberBlurHandler = () => {
 		setPhoneNumberIsTouched(true);
 	};
@@ -117,19 +132,19 @@ const BasicProfilePanel = () => {
 		try {
 			const result = await dispatch(
 				accUpdateprofiles({
-				email: enteredEmail,
-				fullName: enteredFullName,
-				birthday: enteredBirthDay,
-				phoneNumber: phoneNumber
-			  })
+					email: enteredEmail,
+					fullName: enteredFullName,
+					birthday: enteredBirthDay,
+					phoneNumber: phoneNumber
+				})
 			).unwrap();
 			setSuccess(result.message)
 			setError(null);
-	  
-		  } catch (e) {
+
+		} catch (e) {
 			setError(e);
 			setSuccess(null)
-		  }
+		}
 
 		// fullNameReset();
 		// emailReset();
@@ -139,12 +154,12 @@ const BasicProfilePanel = () => {
 	};
 
 	useEffect(() => {
-        getProfileUser();
-    }, [getProfileUser]);
-	useEffect(()=>{
+		getProfileUser();
+	}, [getProfileUser]);
+	useEffect(() => {
 		setPhoneNumber(data.acc_phone_number);
-	},[data])
-
+	}, [data])
+	
 	return (
 		<form
 			noValidate
@@ -152,6 +167,7 @@ const BasicProfilePanel = () => {
 			className={classes.form}
 			onSubmit={formSubmitHandler}
 		>
+
 			<FormControl className={classes.formControl}>
 				<TextField
 					error={fullNameHasError}
@@ -168,6 +184,7 @@ const BasicProfilePanel = () => {
 					onBlur={fullNameBlurHandler}
 				/>
 			</FormControl>
+
 			<FormControl className={classes.formControl}>
 				<TextField
 					error={emailHasError}
@@ -218,6 +235,27 @@ const BasicProfilePanel = () => {
 					</FormHelperText>
 				)}
 			</FormControl>
+			{user != null && user.isUpgrade == 0 && user.role === Role.Bidder && (
+				<Button
+					variant="contained"
+					onClick = {upgradeHandler}
+					style={{ background: "green", color: 'white', marginBottom: "5px" }}
+				>
+					Upgrade
+				</Button>
+			)}
+			{user != null && user.isUpgrade == 1 && user.role === Role.Bidder && (
+				<p>User hiện đang chờ upgrade thành seller...</p>
+			)}
+			<Button
+				variant="contained"
+				color="primary"
+				fullWidth
+				type="submit"
+			>
+				Lưu thay đổi
+			</Button>
+
 			{error?.length > 0 && (
 				<FormHelperText error style={{ marginBottom: 10 }}>
 					{error}
@@ -228,14 +266,6 @@ const BasicProfilePanel = () => {
 					{success}
 				</FormHelperText>
 			)}
-			<Button
-				variant="contained"
-				color="primary"
-				fullWidth
-				type="submit"
-			>
-				Lưu thay đổi
-			</Button>
 		</form>
 	);
 };

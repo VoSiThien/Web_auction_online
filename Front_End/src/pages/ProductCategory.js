@@ -47,6 +47,8 @@ function Home() {
 
     let { loading, listProduct, numberProduct, numberOfPage } = productCatInfo;
     const [page, setPage] = useState(1);
+    const [catName, setCatName] = useState('');
+    console.log(catName)
     const [error, setError] = useState('');
     const getProductByCategoryListHandler = useCallback(
         async (page = 1, catID) => {
@@ -57,6 +59,7 @@ function Home() {
                 const response = await dispatch(getProductByCategory({ page, limit, catID: +catID })).unwrap();
                 //process start date and end date here
                 setProductCatInfo(response);
+                setCatName(response.listProduct[0].cate_name)
             } catch (err) {
                 setError(err);
             }
@@ -84,7 +87,7 @@ function Home() {
                 <div className={classes.content}>
                     <Container>
                         <div className="container">
-                            
+                            <h2><p>{catName != '' ? "Danh sách sản phẩm cho chuyên mục '" + catName + "':" : 'Không tồn tại chuyên mục mà bạn đã chọn!'}</p></h2>
                             <section className="text-center mt-5" >
 
                                 {/* Grid row */}
@@ -106,9 +109,9 @@ function Home() {
                                                             holder={prod.prod_price_holder}
                                                             seller={prod.prod_seller_id}
                                                             numberBid={prod.number_bid}
-                                                            createdDate = {prod.created_date}
-                                                            priceHolder = {prod.prod_price_holder}
-                                                           
+                                                            createdDate={prod.created_date}
+                                                            priceHolder={prod.prod_price_holder}
+
                                                         />
                                                     </Card.Body>
 
