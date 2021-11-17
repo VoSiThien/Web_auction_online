@@ -166,9 +166,9 @@ const UserManager = (props) => {
   const [page, setPage] = useState(1);
   const [userInfo, setUserInfo] = useState({});
   let { loading, userList, numPage } = userInfo;
-  console.log(loading)
-  const filter = props.additional.filter;
 
+  const filter = props.additional.filter;
+  console.log(filter)
   const [showFailed, setShowFailed] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [text, setText] = useState('');
@@ -303,7 +303,7 @@ const UserManager = (props) => {
   }, [dispatch, getUserListHandler, page]);
 
   useEffect(() => {
-    document.title = 'Quản Lý Sản Phẩm';
+    document.title = 'Quản Lý Người Dùng';
   }, []);
 
   useLayoutEffect(() => {
@@ -328,7 +328,7 @@ const UserManager = (props) => {
   useEffect(() => {
       handleVisible();
   }, [handleVisible]);
-
+  console.log(filter === Role.Seller)
   return (
     <>
       <div className={classes.root}>
@@ -397,7 +397,7 @@ const UserManager = (props) => {
                     <TableCell align="center">STT</TableCell>
                     {/* <TableCell align="center">ID</TableCell> */}
                     <TableCell align="center">Họ & Tên</TableCell>
-                    <TableCell align="center">Ảnh đại diện</TableCell>
+                    {/* <TableCell align="center">Ảnh đại diện</TableCell> */}
                     <TableCell align="center">Email</TableCell>
                     <TableCell align="center">Điện thoại</TableCell>
                     {filter === Role.Bidder && (
@@ -430,14 +430,14 @@ const UserManager = (props) => {
                       <TableCell component="th" scope="row" align="center"> {index + 1 + (page - 1)*10} </TableCell>
                       {/* <TableCell align="center">{row?.accId}</TableCell> */}
                       <TableCell align="center">{row?.accFullName}</TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         <img
                           onError={(e)=>{e.target.onerror = null; e.target.src=errImg}}
                           src={row?.accAvatar}
                           alt={row?.accFullName}
                           style={{ width: 100, height: 80, objectFit: 'cover' }}
                         />
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="center">{row.accEmail}</TableCell>
                       <TableCell align="center">{row.accPhoneNumber}</TableCell>
                       {filter === Role.Bidder && (

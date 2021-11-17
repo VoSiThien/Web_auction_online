@@ -293,9 +293,9 @@ function Home() {
                                 <li className="nav-item active">
                                     <a className="nav-link active show" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">Description</a>
                                 </li>
-                                <li className="nav-item">
+                                {/* <li className="nav-item">
                                     <a className="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Reviews (1)</a>
-                                </li>
+                                </li> */}
                             </ul>
                             <div className="tab-content p-5 mb-5" id="advancedTabContent" style={{ backgroundColor: "#ebe9e6" }}>
                                 <div className="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">

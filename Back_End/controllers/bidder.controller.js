@@ -19,18 +19,34 @@ const errorCode = 1
 
 router.post('/allowSell', validator.updateAllowSellIn7Date, async (req, res) => {
 	const { accIsUpgrade } = req.body
+	const accId = req.account.accId;
 	const result = await accountModel.findById(accId)
 
-	const accId = req.account.accId;
+	if (req.account.accRole !== 'BID') {
+		return res.status(400).json({
+			errorMessage: 'User phải là Bidder mới có thể upgrade',
+			statusCode: errorCode
+		})
+	}
+
+
 
 	if (result.length === 0) {
 		return res.status(400).json({
-			errorMessage: 'id not exists',
+			errorMessage: 'Account ID không tồn tại',
+			statusCode: errorCode
+		})
+	}
+
+	if (result[0].acc_is_upgrade !== 0) {
+		return res.status(400).json({
+			errorMessage: 'User đang chờ để upgrade!',
 			statusCode: errorCode
 		})
 	}
 
 	await knex('tbl_account').where({ acc_id: accId }).update({ acc_is_upgrade: accIsUpgrade })
+
 	return res.status(200).json({
 		data: true,
 		statusCode: successCode
@@ -72,7 +88,7 @@ router.post('/update-info', validator.updateInfo, async (req, res) => {
 })
 
 router.post('/get-list-favorite-product', async (req, res) => {
-	const { page, limit} = req.body
+	const { page, limit } = req.body
 	const id = req.account['accId']
 
 	const offset = limit * (page - 1)
@@ -98,7 +114,7 @@ router.post('/get-list-favorite-product', async (req, res) => {
 								offset ${offset} limit ${limit}`)
 
 	result = result.rows
-	
+
 
 	var listFavorite = []
 	var index = 0
@@ -126,7 +142,7 @@ router.post('/get-list-favorite-product', async (req, res) => {
 })
 
 router.post('/get-list-joining-product', async (req, res) => {
-	const { page, limit} = req.body
+	const { page, limit } = req.body
 	const id = req.account['accId']
 
 	const offset = limit * (page - 1)
@@ -164,7 +180,7 @@ router.post('/get-list-joining-product', async (req, res) => {
 })
 
 router.post('/get-list-highestPrice-product-bidder', async (req, res) => {
-	const { page, limit} = req.body
+	const { page, limit } = req.body
 	const id = req.account['accId']
 
 	const offset = limit * (page - 1)
@@ -317,21 +333,21 @@ router.post('/add-comment', async (req, res) => {
 		acom_status_rating: Status,
 		acom_created_date: moment(dateCreate).format('YYYY-MM-DD HH:mm:ss')
 	}
-	
+
 	const newAccId = await knex('tbl_account_comments')
 		.returning('acom_id')
 		.insert(Comments)
 	const acc = await knex('tbl_account').where('acc_id', product[0].prod_seller_id)
-	if(acc[0].acc_like_seller === null || acc[0].acc_dis_like_seller === null ){
+	if (acc[0].acc_like_seller === null || acc[0].acc_dis_like_seller === null) {
 		await knex.raw(`update tbl_account set acc_like_seller = 0, acc_dis_like_seller = 0 where acc_id = ${product[0].prod_seller_id}`)
 	}
-	if(Status === 0){
+	if (Status === 0) {
 		await knex.raw(`update tbl_account set acc_like_seller = acc_like_seller + 1 where acc_id = ${product[0].prod_seller_id}`)
 	}
-	else{
+	else {
 		await knex.raw(`update tbl_account set acc_dis_like_seller = acc_dis_like_seller + 1 where acc_id = ${product[0].prod_seller_id}`)
 	}
-	
+
 
 	return res.status(200).json({
 		statusCode: successCode,
@@ -340,7 +356,7 @@ router.post('/add-comment', async (req, res) => {
 })
 
 router.post('/get-list-comment', async (req, res) => {
-	const { page, limit} = req.body
+	const { page, limit } = req.body
 	const id = req.account['accId']
 
 	const offset = limit * (page - 1)
@@ -371,10 +387,11 @@ router.post('/get-list-comment', async (req, res) => {
 
 	while (index < result.length) {
 		var status_rating = 'Like'
-		if(result[index].acom_status_rating === 1){
+
+		if (result[index].acom_status_rating === 1) {
 			status_rating = 'Dis Like'
 		}
-		if(result[index].acom_status_rating === 2){
+		if (result[index].acom_status_rating === 2) {
 			status_rating = 'Hủy giao dịch'
 		}
 		let item = {

@@ -57,7 +57,6 @@ function Home() {
     const [error, setError] = useState('');
     let { listProduct, numberProduct, numberOfPage } = searchProductInfo;//object destructuring from productInfo
     const [page, setPage] = useState(1);
-    console.log(listProduct);
     const getListProductSearchHandler = useCallback(
         async (page = 1, searchKey) => {
             try {
@@ -103,7 +102,7 @@ function Home() {
                 <div className={classes.content}>
                     <Container>
                         <div className="container">
-
+                            <h2><p>Từ khóa tìm kiếm : {searchKeyWord}</p></h2>
                             <section className="text-center mt-5" >
 
                                 {/* Grid row */}
@@ -137,7 +136,7 @@ function Home() {
 
                                         ))}
 
-
+                                        <h3>{listProduct?.length == 0 ? 'Không có kết quả': ''}</h3>
                                 </div>
                             </section>
 

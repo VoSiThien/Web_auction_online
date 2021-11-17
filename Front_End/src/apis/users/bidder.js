@@ -18,10 +18,15 @@ const bidDeleteWatchList = ({ favId }) => {
   return axios.post(query);
 };
 
+const requestUpgrade = (data) => {
+  return axios.post('/api/bidder/allowSell', {accIsUpgrade : 1});
+};
+
 const bidderApi = {
     bidProduct,
     bidAddWatchList,
-    bidDeleteWatchList
+    bidDeleteWatchList,
+    requestUpgrade
 };
 
 export default bidderApi;
