@@ -28,13 +28,18 @@ const deleteAuctionProduct = ({prodId}) => {
   return axios.post('/api/seller/deleteAuctionProduct', {prodId});
 };
 
+const getCommentByProduct = ({prodId}) => {
+  return axios.post('/api/seller/get-comment', {prodId});
+};
+
 const sellerProductApi = {
   getAuctionProductList,
   postAuctionProduct,
   updateAuctionProduct,
   deleteAuctionProduct,
   getAuctionProductEndList,
-  addComment
+  addComment,
+  getCommentByProduct
 };
 
 export default sellerProductApi;
