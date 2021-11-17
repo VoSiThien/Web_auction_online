@@ -304,6 +304,9 @@ function Header({ showMenu }) {
 										{(user.role === Role.Seller) && (
 											<NavDropdown.Item href={domain + '/product-mgt'} >Quản lý sản phẩm</NavDropdown.Item>
 										)}
+										{(user.role === Role.Seller)  &&(
+											<NavDropdown.Item href={domain + '/product-mgt-end'} >Quản lý sản phẩm kết thúc</NavDropdown.Item>
+										)}
 									</>
 								)}
 								{(user == null || !isAuthenticated) && (

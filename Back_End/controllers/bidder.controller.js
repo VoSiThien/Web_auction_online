@@ -387,8 +387,12 @@ router.post('/get-list-comment', async (req, res) => {
 
 	while (index < result.length) {
 		var status_rating = 'Like'
-		if (result[index].acc_status_rating === 1) {
+
+		if (result[index].acom_status_rating === 1) {
 			status_rating = 'Dis Like'
+		}
+		if (result[index].acom_status_rating === 2) {
+			status_rating = 'Hủy giao dịch'
 		}
 		let item = {
 			acom_id: result[index].acom_id,

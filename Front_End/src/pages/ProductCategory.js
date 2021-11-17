@@ -109,9 +109,8 @@ function Home() {
                                                             holder={prod.prod_price_holder}
                                                             seller={prod.prod_seller_id}
                                                             numberBid={prod.number_bid}
-                                                            createdDate={prod.created_date}
-                                                            priceHolder={prod.prod_price_holder}
-
+                                                            createdDate = {prod.prod_created_date}
+                                                            priceHolder = {prod.prod_price_holder}
                                                         />
                                                     </Card.Body>
 
