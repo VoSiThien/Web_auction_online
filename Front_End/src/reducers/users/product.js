@@ -60,6 +60,17 @@ export const deleteAuctionProduct = createAsyncThunk(
   }
 );
 
+export const getCommentByProducts = createAsyncThunk(
+  'product/getCommentByProducts',
+  async (productId, { rejectWithValue }) => {
+    try {
+      return (await API.getCommentByProduct({prodId: productId})).data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
 export const postAuctionProduct = createAsyncThunk(
   'product/postAuctionProduct',
   async (formData, { rejectWithValue }) => {

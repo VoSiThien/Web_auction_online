@@ -256,6 +256,42 @@ router.post('/add-comment', async (req, res) => {
 	})
 })
 
+router.post('/get-comment', async (req, res) => {
+	const { prodId} = req.body
+	const id = req.account['accId']
+
+    const product = await knex('tbl_product').where('prod_id', prodId)
+    if(product.length === 0){
+        return res.status(400).json({
+			errorMessage: 'sản phẩm không tồn tại',
+			statusCode: errorCode
+		})
+    }
+
+	var result = await knex.raw(`select * from tbl_account_comments c
+								join tbl_product p on c.acom_product_id = p.prod_id
+								join tbl_account a on a.acc_id = c.acom_assessor where c.acom_receiver = ${id}
+                                 and p.prod_id = ${prodId}
+								`)
+
+
+	result = result.rows
+
+    var status_rating = 'Like'
+    if (result[0].acom_status_rating === 1) {
+        status_rating = 'Dis Like'
+    }
+    if (result[0].acom_status_rating === 2) {
+        status_rating = 'Hủy giao dịch'
+    }
+    result[0].acom_status_rating = status_rating
+	return res.status(200).json({
+		commentList: result,
+		statusCode: successCode
+	})
+})
+
+
 router.post('/postAuctionProduct', validator.postAuctionProduct, async(req, res) => {
     const {
         prodName,

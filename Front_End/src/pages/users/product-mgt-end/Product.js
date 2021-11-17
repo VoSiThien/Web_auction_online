@@ -21,7 +21,7 @@ import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import { uiActions } from '../../../reducers/ui';
 import SearchInput from '../../../components/UI/SearchInput';
-import { Visibility, ThumbUp, ThumbDownAlt, Cancel} from '@material-ui/icons';
+import { Visibility, ThumbUp, ThumbDownAlt, Cancel, Forum} from '@material-ui/icons';
 import { getAuctionProductEndList } from '../../../reducers/users/product';
 import TableError from '../../../components/Table/TableError';
 import TableLoading from '../../../components/Table/TableLoading';
@@ -30,6 +30,8 @@ import Footer from '../../../components/Layout/Footer';
 import CommentModel from './Comment';
 import { addComments } from '../../../reducers/users/product';
 import NotifyModel from './Notify';
+import CommentProduct from './CommentProduct';
+import {getCommentByProducts} from '../../../reducers/users/product';
 const useStyles = makeStyles((theme) => ({
   root: {
     // padding: theme.spacing(2),
@@ -148,9 +150,13 @@ const ProductManager = (props) => {
   const [openModalComment, setOpenModalComment] = useState(false);
   const [statusRating, setStatusRating] = useState(0);
   const [productId, setProductId] = useState(0);
+  const [prodId, setProdId] = useState(0);
   const textComment = 'Người thắng không thanh toán';
   const [textNotify, setTextNotify] = useState('');
   const [openModalNotify, setOpenModalNotify] = useState(false);
+  const [openCommentModal, setOpenCommentModal] = useState(false);
+  const [resultComment, setResultComment] = useState([]);
+  
 
   const pageChangeHandler = (event, value) => {
     setPage(value);
@@ -175,7 +181,23 @@ const ProductManager = (props) => {
   };
   const handleCloseNotify = () => {
     setOpenModalNotify(false);
-};
+  };
+  const closeModalCommentHandler = () => {
+    setOpenCommentModal(false);
+  };
+  const openCommentModalHandler = (prod_id) => {
+    getComment(prod_id)
+    setOpenCommentModal(true);
+  };
+
+  const getComment = useCallback(async (itemInfo) => {
+    try {
+      const result = await dispatch(getCommentByProducts(itemInfo)).unwrap();
+      setResultComment(result.commentList)
+    } catch (err) {
+      console.log(err)
+    }
+  }, [dispatch]);
 
   const openModalHandlerBid = async (prod_id, statusRating) => {
 		  setProductId(prod_id);
@@ -240,6 +262,13 @@ const ProductManager = (props) => {
                 onClose={handleCloseNotify}
                 text={textNotify}
             />
+            <CommentProduct
+                itemInfo={resultComment}
+                isOpen={openCommentModal}
+                onClose={closeModalCommentHandler}
+                showSuccess={setShowSuccess}
+                textAlert={setTextss}
+              />
             <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
               <Alert.Heading style={{ textAlign: "center" }}>Thất bại</Alert.Heading>
             </Alert>
@@ -373,6 +402,17 @@ const ProductManager = (props) => {
                               fontSize="small"
                               onClick={()=>{openModalHandlerBid(row.prodId, 2)}}
                             >
+                            </Button>
+                            <Button 
+                              variant="outlined" 
+                              startIcon={<Forum
+                                fontSize="small"
+                                style={{ cursor: 'pointer', marginLeft: "10px" }}
+                              />}
+                              style={{ marginLeft: 5 }}
+                              fontSize="small"
+                              onClick={()=>{openCommentModalHandler(row.prodId)}}
+                              >
                             </Button>
                           </TableCell>
                         </TableRow>
