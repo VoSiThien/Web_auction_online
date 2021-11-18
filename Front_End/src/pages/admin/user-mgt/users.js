@@ -368,7 +368,7 @@ const UserManager = (props) => {
           <div className={classes.search}>
             <SearchInput />
           </div>
-        {filter === Role.Admin && (
+        {/* {filter === Role.Admin && (
           <div className={classes.addButton}>
             <Button
               startIcon={<Add />}
@@ -379,7 +379,7 @@ const UserManager = (props) => {
               Mới
             </Button>
           </div>
-        )}
+        )} */}
         </div>
       </div>
       
@@ -492,7 +492,7 @@ const UserManager = (props) => {
                     )}
                       <TableCell align="center">{row?.accUpdatedDate}</TableCell>
                       <TableCell align="center" style={{ minWidth: 150 }}>
-                        <Button 
+                        {/* <Button 
                           variant="outlined" 
                           startIcon={<EditIcon
                             fontSize="small"
@@ -502,7 +502,7 @@ const UserManager = (props) => {
                           fontSize="small"
                           onClick={() => openUpdateModalHandler(row)}
                           >
-                        </Button>
+                        </Button> */}
                         <Button 
                           variant="outlined" 
                           startIcon={<DeleteIcon

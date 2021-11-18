@@ -87,6 +87,38 @@ const updateProfile = (req, res, next) => {
 	next()
 }
 
+const veryfySellerComment = (req, res, next) => {
+
+	const shema = {
+  		type: 'object',
+  		properties: {
+			prodID : {type: 'number'}
+  		},
+		required: ['prodID'],
+		additionalProperties: true
+	}
+
+	const ajv = new ajvLib({
+		allErrors: true
+	})
+
+	const validator = ajv.compile(shema)
+
+	const valid = validator(req.body)
+
+	if (!valid) {
+		return res.status(400).json({
+			errorMessage: validator.errors[0].message,
+			statusCode: errorCode
+		})
+
+	}
+
+
+	next()
+}
+
+
 const updatePassword = (req, res, next) => {
 	const shema = {
   		type: 'object',
@@ -114,6 +146,7 @@ const updatePassword = (req, res, next) => {
 
 	next()
 }
+
 
 const addFavoriteProduct = (req, res, next) => {
 	const shema = {
@@ -147,5 +180,6 @@ module.exports = {
     updateInfo,
     addFavoriteProduct,
 	updateProfile,
-	updatePassword
+	updatePassword,
+	veryfySellerComment
 }

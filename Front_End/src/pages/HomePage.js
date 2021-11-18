@@ -73,6 +73,7 @@ function Home() {
                           className="d-block w-100 photo"
                           src={prod.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'}
                           alt="Fifth slide"
+                          style = {{objectFit:"fill"}}
                         />
                         <Carousel.Caption style={{ backgroundColor: 'rgba(30,30,30,.5)', borderRadius: 20, maxWidth:500, maxHeight: '70%'}} className="center">
                           <Link to={`/details/${prod.prod_id}`} style={{ textDecoration: "none", color: "white" }}>
