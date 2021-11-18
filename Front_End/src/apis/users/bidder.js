@@ -6,9 +6,20 @@ const bidProduct = ({ priceBid, prodId }) => {
   return axios.post(query, { priceBid, prodId });
 };
 
+const bidAllow = ({ accIsUpgrade }) => {
+
+  let query = `/api/bid/allowSell`;
+  return axios.post(query, { accIsUpgrade });
+};
 const bidAddWatchList = ({ prodId }) => {
 
   let query = `/api/bidder/favorite-product/add`;
+  return axios.post(query, { prodId });
+};
+
+const bidAddComment = ({ accSeller, accIsLike, accComment }) => {
+
+  let query = `/api/bidder/add-comment-seller`;
   return axios.post(query, { prodId });
 };
 
@@ -24,6 +35,7 @@ const requestUpgrade = (data) => {
 
 const bidderApi = {
     bidProduct,
+    bidAllow,
     bidAddWatchList,
     bidDeleteWatchList,
     requestUpgrade

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Validate } from '../../helpers';
 import { useInput } from '../../hooks/use-input';
-import { accNewPassword } from '../../reducers/users/profile';
+import { resetPassword as userResetPassword } from '../../reducers/auth';
 const useStyles = makeStyles((theme) => ({
   form: {
     width: '30rem',
@@ -30,8 +30,8 @@ const useStyles = makeStyles((theme) => ({
 const ChangePasswordPanel = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const user = useSelector((state) => state.auth.user);
   const {
     enteredInput: enteredCurrentPassword,
@@ -64,23 +64,18 @@ const ChangePasswordPanel = () => {
     if (!formIsValid) return;
 
     try {
-      const result = await dispatch(
-        accNewPassword({
+      await dispatch(
+        userResetPassword({
           userId: user.acc_id,
-          newpassword: enteredNewPassword,
-          oldpassword: enteredCurrentPassword
+          newPassword: enteredNewPassword,
         })
       ).unwrap();
-
-      setSuccess(result.message);
-      setError(null);
 
       currentPasswordReset();
       newPasswordReset();
       confirmPasswordReset();
     } catch (e) {
       setError(e);
-      setSuccess(null);
     }
   };
   return (
@@ -88,7 +83,7 @@ const ChangePasswordPanel = () => {
       <FormControl className={classes.formControl}>
         <TextField
           error={currentPasswordHasError}
-          label="Mật khẩu hiện tại"
+          label={t('profilepage.currentPassword')}
           type="password"
           fullWidth
           size="small"
@@ -101,7 +96,7 @@ const ChangePasswordPanel = () => {
       <FormControl className={classes.formControl}>
         <TextField
           error={newPasswordHasError}
-          label="Mật khẩu mới"
+          label={t('profilepage.newPassword')}
           type="password"
           fullWidth
           size="small"
@@ -114,9 +109,9 @@ const ChangePasswordPanel = () => {
       <FormControl className={classes.formControl}>
         <TextField
           error={confirmPasswordHasError}
-          label="Xác nhận mật khẩu"
+          label={t('profilepage.confirmNewPassword')}
           type="password"
-          helperText={confirmPasswordHasError && 'Xác nhận mật khẩu không chính xác'}
+          helperText={confirmPasswordHasError && 'Confirm password is not match'}
           fullWidth
           size="small"
           variant="outlined"
@@ -130,13 +125,8 @@ const ChangePasswordPanel = () => {
           {error}
         </FormHelperText>
       )}
-      {success?.length > 0 && (
-        <FormHelperText focused style={{ marginBottom: 10, color: "blue" }}>
-          {success}
-        </FormHelperText>
-      )}
       <Button variant="contained" color="primary" fullWidth type="submit" disabled={!formIsValid}>
-        Lưu thay đổi
+        {t('profilepage.buttonExecute')}
       </Button>
     </form>
   );
