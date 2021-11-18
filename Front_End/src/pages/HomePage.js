@@ -3,7 +3,7 @@ import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
 import ProductCard from '../components/ProductCard/ProductCard';
 //Library
-import { mainColor } from '../utils';
+// import { mainColor } from '../utils';
 import {
   Container,
   makeStyles,
@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { listProductAboutToEnd, listProductHighestPrice, listProductHighestBid } from '../reducers/unauthorizedProduct';
 import { Link, useHistory } from "react-router-dom";
 import NumberFormat from 'react-number-format';
+import {Avatar, Chip} from "@material-ui/core";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -67,15 +68,27 @@ function Home() {
                 <Carousel className="center">
                   {productAboutToEnd?.length > 0 &&		//want to use function of react, need to add "?"
                     productAboutToEnd.map((prod, index) => (
-                      <Carousel.Item>
+                      <Carousel.Item >
                         <img
                           className="d-block w-100 photo"
                           src={prod.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'}
                           alt="Fifth slide"
                         />
-                        <Carousel.Caption >
+                        <Carousel.Caption style={{ backgroundColor: 'rgba(30,30,30,.5)', borderRadius: 20, maxWidth:500, maxHeight: '70%'}} className="center">
                           <Link to={`/details/${prod.prod_id}`} style={{ textDecoration: "none", color: "white" }}>
                             <h3>{prod.prod_name}</h3>
+                            {(Math.floor((new Date() - new Date(prod.prod_created_date))/60000) < 10) && (
+                                <Chip
+                                style={{
+                                  background: 'linear-gradient(250deg, rgba(40,4,47,0.85) 5%, rgba(189,18,176,0.80) 45%, rgba(0,176,255,0.85) 80%)', 
+                                  color:"#fff", 
+                                  width: 100,
+                                  fontWeight: 'bold'}}
+                                variant={"default"}
+                                label="New"
+                                avatar={<Avatar alt="Natacha" src="/img/img_new.png" />}
+                              />
+                            )}
                             <p>Loại sản phẩm: <strong>{prod.cate_name}</strong></p>
                             <p style={{ color: "light" }}>Giá hiện tại: <strong>{prod.prod_price_current == null ? 'Chưa có thông tin' : ''}
                               <NumberFormat
@@ -129,6 +142,7 @@ function Home() {
                               startDate = {prod.prod_created_date}
                               numberBid = {prod.number_bid}
                               priceHolder = {prod.acc_full_name}
+                              createdDate = {prod.prod_created_date}
                             />
                           </Card.Body>
                         </Card>
@@ -140,7 +154,6 @@ function Home() {
                   <div style={{ backgroundColor: '#e8e4da' }} className="p-3">
                     {productHighestPrice?.length > 0 &&		//want to use function of react, need to add "?"
                       productHighestPrice.map((prod, index) => (
-
                         <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }} key={index*2}>
                           <Card.Body>
                           <ProductCard
@@ -155,10 +168,10 @@ function Home() {
                               startDate = {prod.prod_created_date}
                               numberBid = {prod.number_bid}
                               priceHolder = {prod.acc_full_name}
+                              createdDate = {prod.prod_created_date}
                             />
                           </Card.Body>
                         </Card>
-
                       ))}
                   </div>
                 </Col>
