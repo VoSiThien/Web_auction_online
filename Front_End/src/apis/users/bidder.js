@@ -33,12 +33,20 @@ const requestUpgrade = (data) => {
   return axios.post('/api/bidder/allowSell', {accIsUpgrade : 1});
 };
 
+const getSellerComment = ({ page, limit, prodID }) => {
+  // console.log(limit)
+  // console.log(page)
+  // console.log(prodID)
+  return axios.post('/api/bidder/get-seller-comment', {page, limit, prodID });
+};
+
 const bidderApi = {
     bidProduct,
     bidAllow,
     bidAddWatchList,
     bidDeleteWatchList,
-    requestUpgrade
+    requestUpgrade,
+    getSellerComment
 };
 
 export default bidderApi;

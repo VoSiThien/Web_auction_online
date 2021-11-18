@@ -121,13 +121,14 @@ const ProductCard = ({
   return (
     <div>
       <Card className={classes.card}>
-      {id}
+
         <Link to={`/details/${id}`} className={classes.link}>
           <div style={{ height: "100%" }}>
             <CardMedia
               className={classes.display_image}
               image={image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'}
               title={title}
+              style = {{objectFit:"fill"}}
             />
           </div>
           <CardContent className={classes.content}>
