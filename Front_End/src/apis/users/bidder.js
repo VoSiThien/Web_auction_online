@@ -17,11 +17,11 @@ const bidAddWatchList = ({ prodId }) => {
   return axios.post(query, { prodId });
 };
 
-const bidAddComment = ({ accSeller, accIsLike, accComment }) => {
-
-  let query = `/api/bidder/add-comment-seller`;
-  return axios.post(query, { prodId });
-};
+// const bidAddComment = ({ accSeller, accIsLike, accComment }) => {
+//
+//   let query = `/api/bidder/add-comment-seller`;
+//   return axios.post(query, { prodId });
+// };
 
 const bidDeleteWatchList = ({ favId }) => {
 
