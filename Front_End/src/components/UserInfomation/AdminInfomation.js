@@ -1,7 +1,7 @@
 import { makeStyles, Typography } from '@material-ui/core';
 import { Image, Button, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import { useState } from 'react';
-import UpdateProduct from '../../pages/admin/user-mgt/UpdateProduct';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,11 +37,11 @@ const AdminInfomation = ({ avatar, name, position, user }) => {
   return (
     <div className={classes.root}>
       {/* <img src={avatar} alt={name} className={classes.avatar} /> */}
-      <UpdateProduct
+      {/* <UpdateProduct
               itemInfo={selectedItem}
               isOpen={openUpdateModal}
               onClose={closeModalHandler}
-      />
+      /> */}
       <OverlayTrigger
         trigger={["click","hover"]}
         delay={{ show: 100, hide: 10000 }}
