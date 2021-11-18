@@ -9,6 +9,28 @@ const getProductDetail = (id) => {
   return axios.get(query);
 };
 
+const searchProduct = (searchKey, limit, page, orderBy, filterField, AndOrCondition) => {
+  let query = `/unauthorized-api/product/search`;
+  return axios.post(query, {
+    searchKey,
+    limit,
+    page,
+    orderBy,
+    filterField,
+    AndOrCondition
+  });
+}
+
+const getProductByCategory = (page, limit, catID, prodID) => {
+  let query = `unauthorized-api/product/list-same-cat`;
+  return axios.post(query, {
+    page,
+    limit,
+    catID,
+    prodID
+  });
+}
+
 const listProductAboutToEnd = (page = 1, limit = 5) => {
   let query = `unauthorized-api/home/top-product-about-to-end`;
   return axios.post(query, {
@@ -37,7 +59,9 @@ const unauthorizedProduct = {
   getProductDetail,
   listProductAboutToEnd,
   listProductHighestPrice,
-  listProductHighestBid
+  listProductHighestBid,
+  getProductByCategory,
+  searchProduct
 };
 
 export default unauthorizedProduct;

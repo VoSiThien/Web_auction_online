@@ -1,4 +1,5 @@
 require('dotenv').config()
+require('cloudinary').v2;
 
 const env = {
 	portServer: 3000,

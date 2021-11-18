@@ -40,6 +40,18 @@ export const bidDeleteWatchList = createAsyncThunk(
   }
 });
 
+export const requestUpgradeSeller = createAsyncThunk(
+  'upgrageSeller',
+  async ({accIsUpgrade = 1}, { rejectWithValue }) => {
+    console.log('test')
+  try {
+      const result = (await bidderApi.requestUpgrade({accIsUpgrade}));
+      return result.data;
+  } catch (error) {
+    return rejectWithValue(getResponseError(error));
+  }
+});
+
 const bidderSlice = createSlice({
   name: 'bidProduct',
   initialState,

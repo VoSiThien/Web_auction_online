@@ -4,6 +4,7 @@ const productModel = require('../../models/product.model')
 
 const errorCode = 1
 
+
 const newParent = async (req, res, next) => {
     const { catName } = req.body
 
@@ -31,7 +32,7 @@ const newParent = async (req, res, next) => {
     }
 
 
-    const listCat = await catModel.getAll()
+    const listCat = await catModel.getAllParent()
     
     const existCat = listCat.find((cat) => cat.cate_name.toLowerCase() === catName.toLowerCase())
     if (existCat) {
@@ -72,7 +73,7 @@ const newChild = async (req, res, next) => {
         })
     }
 
-    const listCategory = await catModel.getAll()
+    const listCategory = await catModel.getAllChild()
 
     const checkExist = listCategory.find((item) => item.cate_name.toLowerCase() === catName.toLowerCase())
 

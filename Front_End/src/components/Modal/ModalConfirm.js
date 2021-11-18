@@ -1,6 +1,6 @@
 import { Box, Button } from '@material-ui/core';
 import { makeStyles, Modal, Typography } from '@material-ui/core';
-import { Close, Delete } from '@material-ui/icons';
+import { Close, Delete, CheckBox } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -30,19 +30,20 @@ const ModalConfirm = ({ title, isOpen, onClose, onConfirm }) => {
           <Typography variant="h6" component="p" style={{ textAlign: 'center', marginBottom: 16 }}>
             {title}
           </Typography>
-          <Typography variant="body2" component="p" style={{ textAlign: 'center' }}>
+          {/* <Typography variant="body2" component="p" style={{ textAlign: 'center' }}>
             Bạn có muốn xoá?
-          </Typography>
+          </Typography> */}
         </Box>
         <Box display="flex" className={classes.actions}>
           <Button
             onClick={onConfirm}
-            startIcon={<Delete style={{ color: '#B51200' }} />}
+            startIcon={<CheckBox  />} //style={{ color: '#4FA139' }}
             variant="outlined"
+            color="primary"
             style={{
               marginRight: 16,
-              border: '1px solid #B51200',
-              color: '#B51200',
+              // border: '1px solid #4FA139',
+              // color: '#4FA139',
               fontWeight: 'bold',
             }}>
             Xác nhận

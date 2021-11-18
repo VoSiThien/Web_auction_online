@@ -1,9 +1,9 @@
 import axios from '../axios/index';
 
-const getListHistory = ({ page, limit, prodId, status }) => {
+const getListHistory = ({ page, limit, prodId, status, sortByPrice }) => {
 
   let query = `/api/bid/history-product`;
-  return axios.post(query, { page, limit, prodId, status });
+  return axios.post(query, { page, limit, prodId, status, sortByPrice });
 };
 
 const confirmHistory = ({ hisId }) => {

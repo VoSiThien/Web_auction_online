@@ -22,11 +22,49 @@ export const getAuctionProductList = createAsyncThunk(
   }
 );
 
+export const getAuctionProductEndList = createAsyncThunk(
+  'product/getAuctionProductEndList',
+  async ({page, limit}, { rejectWithValue }) => {
+    try {
+      return (await API.getAuctionProductEndList({page, limit})).data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
+export const addComments = createAsyncThunk(
+  'product/addComments',
+  async ({ textComment, status, prodId }, { rejectWithValue }) => {
+      try {
+          const response = await API.addComment({
+            Comment: textComment,
+            Status: status,
+            prodId
+          });
+          return response.data;
+      } catch (error) {
+          return rejectWithValue(getResponseError(error));
+      }
+  }
+);
+
 export const deleteAuctionProduct = createAsyncThunk(
   'product/deleteAuctionProductList',
   async (productId, { rejectWithValue }) => {
     try {
-      return (await API.deleteAuctionProduct({productId})).data;
+      return (await API.deleteAuctionProduct({prodId: productId})).data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
+export const getCommentByProducts = createAsyncThunk(
+  'product/getCommentByProducts',
+  async (productId, { rejectWithValue }) => {
+    try {
+      return (await API.getCommentByProduct({prodId: productId})).data;
     } catch (error) {
       return rejectWithValue(getResponseError(error));
     }

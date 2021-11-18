@@ -6,6 +6,7 @@ const HomePage = lazy(() => import('../pages/HomePage'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const ProfilePage = lazy(() => import('../pages/users/Profile'));
 const ProductPage = lazy(() => import('../pages/users/product-mgt/Product'));
+const ProductPageEnd = lazy(() => import('../pages/users/product-mgt-end/Product'));
 const ProductDetail = lazy(() => import('../pages/ProductDetail'));
 
 const HistoryBidBidder = lazy(() => import('../pages/users/bidder/HistoryBid'));
@@ -15,6 +16,15 @@ const ProductCategory = lazy(() => import('../pages/ProductCategory'));
 
 const DashbroadPage = lazy(() => import('../pages/admin/DashbroadPage'));
 const UserPage = lazy(() => import('../pages/admin/user-mgt/users'));
+const AdminProductPage = lazy(() => import('../pages/admin/product-mgt/Product'));
+const AdminCategoryPage = lazy(() => import('../pages/admin/category-mgt/Category'));
+const AdminSubCategoryPage = lazy(() => import('../pages/admin/subCategory-mgt/SubCategory'));
+
+const ForgotPasswordPage = lazy(() => import('../pages/ForgotPassword'));
+const RecoveryPasswordPage = lazy(() => import('../pages/RecoveryPassword'));
+
+const AccountActivationPage = lazy(() => import('../pages/AccountActivation'));
+const RegisterPage = lazy(() => import('../pages/RegisterPage'));
 export const routes = [
   {
     path: '/',
@@ -47,6 +57,18 @@ export const routes = [
     component: LoginPage,
   },
   {
+    path: '/register',
+    protected: false,
+    exact: true,
+    component: RegisterPage,
+  },
+  {
+    path: '/profile/:slug',
+    protected: true,
+    exact: true,
+    component: ProfilePage,
+  },
+  {
     path: '/profile',
     protected: true,
     exact: true,
@@ -76,6 +98,13 @@ export const routes = [
     roles: [Role.Seller],
   },
   {
+    path: '/product-mgt-end',
+    protected: true,
+    exact: true,
+    component: ProductPageEnd,
+    roles: [Role.Seller],
+  },
+  {
     path: '/seller/history-bid',
     protected: false,
     exact: true,
@@ -88,6 +117,24 @@ export const routes = [
     exact: true,
     component: HistoryBidBidder,
     roles: [Role.Bidder],
+  },
+  {
+    path: '/forgot-password',
+    protected: false,
+    exact: true,
+    component: ForgotPasswordPage,
+  },
+  {
+    path: '/recovery-password',
+    protected: false,
+    exact: true,
+    component: RecoveryPasswordPage,
+  },
+  {
+    path: '/account-activation',
+    protected: false,
+    exact: true,
+    component: AccountActivationPage,
   },
 ];
 
@@ -136,4 +183,31 @@ export const adminRoutes = [
       filter: Role.Bidder,
     }
   },
+  {
+    path: '/admin/products',
+    protected: true,
+    exact: true,
+    component: AdminProductPage,
+    roles: [Role.Admin],
+  },
+  {
+    path: '/admin/categories',
+    protected: true,
+    exact: true,
+    component: AdminCategoryPage,
+    roles: [Role.Admin],
+    additional: {
+      filter: Role.Bidder,
+    }
+  },
+  {
+    path: '/admin/sub-categories',
+    protected: true,
+    exact: true,
+    component: AdminSubCategoryPage,
+    roles: [Role.Admin],
+    additional: {
+      filter: Role.Bidder,
+    }
+  }
 ];

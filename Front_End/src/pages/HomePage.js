@@ -15,6 +15,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { listProductAboutToEnd, listProductHighestPrice, listProductHighestBid } from '../reducers/unauthorizedProduct';
 import { Link, useHistory } from "react-router-dom";
+import NumberFormat from 'react-number-format';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -33,6 +34,7 @@ function Home() {
   const [productAboutToEnd, setProductAboutToEnd] = useState({});//{} is the initial value
   const [productHighestPrice, setProductHighestPrice] = useState({});//{} is the initial value
   const [productHighestBids, setProductHighestBids] = useState({});//{} is the initial value
+  const SocketProductHome = useSelector((state) => state.unauthorizedProduct.SocketInProductHome);
 
   const getHomePageProductHandler = useCallback(async () => {
     try {
@@ -50,7 +52,7 @@ function Home() {
 
   useEffect(() => {//this function always run first
     getHomePageProductHandler();
-  }, [getHomePageProductHandler]);//followed value, when data's changed, this function defined here will be called again
+  }, [getHomePageProductHandler, SocketProductHome]);//followed value, when data's changed, this function defined here will be called again
 
   return (
     <>
@@ -68,15 +70,35 @@ function Home() {
                       <Carousel.Item>
                         <img
                           className="d-block w-100 photo"
-                          src={prod.prod_main_image || 'https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg'}
-                          alt="Third slide"
+                          src={prod.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'}
+                          alt="Fifth slide"
                         />
                         <Carousel.Caption >
                           <Link to={`/details/${prod.prod_id}`} style={{ textDecoration: "none", color: "white" }}>
                             <h3>{prod.prod_name}</h3>
                             <p>Loại sản phẩm: <strong>{prod.cate_name}</strong></p>
+                            <p style={{ color: "light" }}>Giá hiện tại: <strong>{prod.prod_price_current == null ? 'Chưa có thông tin' : ''}
+                              <NumberFormat
+                                value={prod.prod_price_current}
+                                variant="standard"
+                                thousandSeparator={true}
+                                suffix={' VND'}
+                                displayType={'text'}
+                              />
+                            </strong> </p>
+                            <p style={{ color: "light" }}>Người giữ giá: <strong>{prod.acc_full_name == null ? 'Chưa có thông tin' : prod.acc_full_name} </strong> </p>
+                            <p style={{ color: "light" }}>Giá mua ngay: <strong>{prod.prod_price == null ? 'Chưa có thông tin' : ''}
+                            <NumberFormat
+                                value={prod.prod_price}
+                                variant="standard"
+                                thousandSeparator={true}
+                                suffix={' VND'}
+                                displayType={'text'}
+                              />
+                               </strong> </p>
+                            <p style={{ color: "light" }}>Ngày đăng: <strong>{prod.prod_created_date}</strong> </p>
                             <p style={{ color: "light" }}>Ngày hết hạn: <strong>{prod.prod_end_date}</strong> </p>
-                            <p style={{ color: "light" }}>Giá hiện tại: <strong>{prod.prod_price_current == null ? 'Chưa có thông tin' : prod.prod_price_current + 'VNĐ'} </strong> </p>
+                            <p style={{ color: "light" }}>Số lượt ra giá: <strong>{prod.number_bid == null ? 'Chưa có thông tin' : prod.number_bid + ' lượt'} </strong> </p>
                           </Link>
                         </Carousel.Caption>
                       </Carousel.Item>
@@ -91,9 +113,9 @@ function Home() {
                 <Col>
                   <Alert variant="success" style={{ marginBlock: "-3px" }}><FcDebt className="iconaler" /> 5 sản phẩm có nhiều lượt ra giá nhất!</Alert>
                   <div style={{ backgroundColor: '#e8e4da' }} className="p-3">
-                    {productHighestPrice?.length > 0 &&		//want to use function of react, need to add "?"
-                      productHighestPrice.map((prod, index) => (
-                        <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }}>
+                    {productHighestBids?.length > 0 &&		//want to use function of react, need to add "?"
+                      productHighestBids.map((prod, index) => (
+                        <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }} key={index}>
                           <Card.Body>
                             <ProductCard
                               id={prod.prod_id}
@@ -104,6 +126,9 @@ function Home() {
                               endDate = {prod.prod_end_date}
                               currentPrice = {prod.prod_price_current}
                               catName = {prod.cate_name}
+                              startDate = {prod.prod_created_date}
+                              numberBid = {prod.number_bid}
+                              priceHolder = {prod.acc_full_name}
                             />
                           </Card.Body>
                         </Card>
@@ -113,10 +138,10 @@ function Home() {
                 <Col >
                   <Alert variant="primary" style={{ marginBlock: "-2px" }}><FcCurrencyExchange className="iconaler" /> 5 sản phẩm có giá cao nhất!</Alert>
                   <div style={{ backgroundColor: '#e8e4da' }} className="p-3">
-                    {productHighestBids?.length > 0 &&		//want to use function of react, need to add "?"
-                      productHighestBids.map((prod, index) => (
+                    {productHighestPrice?.length > 0 &&		//want to use function of react, need to add "?"
+                      productHighestPrice.map((prod, index) => (
 
-                        <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }}>
+                        <Card className="mt-2" style={{ backgroundColor: '#e8e4da', border: "0" }} key={index*2}>
                           <Card.Body>
                           <ProductCard
                               id={prod.prod_id}
@@ -127,6 +152,9 @@ function Home() {
                               endDate = {prod.prod_end_date}
                               currentPrice = {prod.prod_price_current}
                               catName = {prod.cate_name}
+                              startDate = {prod.prod_created_date}
+                              numberBid = {prod.number_bid}
+                              priceHolder = {prod.acc_full_name}
                             />
                           </Card.Body>
                         </Card>

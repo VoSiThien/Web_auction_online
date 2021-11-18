@@ -18,23 +18,23 @@ export const login = createAsyncThunk( 'user/Login', async({ email, password }, 
         }
     }
 );
-// export const register = createAsyncThunk(
-//   'user/Register',
-//   async ({ username, password, email, fullName, phoneNumber }, { rejectWithValue }) => {
-//     try {
-//       const response = await authApi.register({
-//         username,
-//         password,
-//         email,
-//         fullName,
-//         phoneNumber,
-//       });
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(getResponseError(error));
-//     }
-//   }
-// );
+export const register = createAsyncThunk(
+  'user/Register',
+  async ({ username, password, email, fullName, phoneNumber }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.register({
+        username,
+        password,
+        email,
+        fullName,
+        phoneNumber,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
 export const resetPassword = createAsyncThunk(
   'user/NewPassword',
   async ({ userId, newPassword, code }, { rejectWithValue }) => {
@@ -50,27 +50,27 @@ export const resetPassword = createAsyncThunk(
     }
   }
 );
-// export const verifyEmail = createAsyncThunk(
-//   'user/VerifyEmail',
-//   async ({ userId, accessToken }, { rejectWithValue }) => {
-//     try {
-//       const response = await authApi.verifyEmail({ userId, accessToken });
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(getResponseError(error));
-//     }
-//   }
-// );
-// export const forgotPassword = createAsyncThunk(
-//   'user/ForgotPassword',
-//   async (email, { rejectWithValue }) => {
-//     try {
-//       return (await authApi.forgotPassword(email)).data;
-//     } catch (error) {
-//       return rejectWithValue(getResponseError(error));
-//     }
-//   }
-// );
+export const verifyEmail = createAsyncThunk(
+  'user/VerifyEmail',
+  async ({ userId, accessToken }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.verifyEmail({ userId, accessToken });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+export const forgotPassword = createAsyncThunk(
+  'user/ForgotPassword',
+  async (email, { rejectWithValue }) => {
+    try {
+      return (await authApi.forgotPassword(email)).data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
 
 const authSlice = createSlice({
     name: 'auth',
@@ -82,6 +82,7 @@ const authSlice = createSlice({
             state.user = null;
             localStorage.removeItem('accessToken');
             localStorage.removeItem('user');
+            localStorage.removeItem('TextNotifyBid');
         },
         loginVerified(state, action) {
             const { accessToken, user } = action.payload;
@@ -111,24 +112,24 @@ const authSlice = createSlice({
                 localStorage.setItem('user', JSON.stringify(user));
             }
         },
-        // [register.pending]: (state) => {
-        //   state.loading = true;
-        // },
-        // [register.rejected]: (state) => {
-        //   state.loading = false;
-        // },
-        // [register.fulfilled]: (state) => {
-        //   state.loading = false;
-        // },
-        // [forgotPassword.pending]: (state) => {
-        //   state.loading = true;
-        // },
-        // [forgotPassword.rejected]: (state) => {
-        //   state.loading = false;
-        // },
-        // [forgotPassword.fulfilled]: (state) => {
-        //   state.loading = false;
-        // },
+        [register.pending]: (state) => {
+          state.loading = true;
+        },
+        [register.rejected]: (state) => {
+          state.loading = false;
+        },
+        [register.fulfilled]: (state) => {
+          state.loading = false;
+        },
+        [forgotPassword.pending]: (state) => {
+          state.loading = true;
+        },
+        [forgotPassword.rejected]: (state) => {
+          state.loading = false;
+        },
+        [forgotPassword.fulfilled]: (state) => {
+          state.loading = false;
+        },
     },
 });
 

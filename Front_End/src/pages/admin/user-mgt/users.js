@@ -22,14 +22,16 @@ import EditIcon from '@material-ui/icons/Edit';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { Add } from '@material-ui/icons';
-import { getUserList, deleteUser } from '../../../reducers/admin/user';
+import { getUserList, deleteUser, acceptSel, rejectSel } from '../../../reducers/admin/user';
 import AddProduct from './AddProduct';
 import UpdateProduct from './UpdateProduct';
 import TableError from '../../../components/Table/TableError';
 import TableLoading from '../../../components/Table/TableLoading';
+import ModalConfirmDelete from '../../../components/Modal/ModalConfirmDelete';
 import ModalConfirm from '../../../components/Modal/ModalConfirm';
 import Pagination from '@material-ui/lab/Pagination';
 import { Role } from '../../../config/role';
+import Footer from '../../../components/Layout/Footer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -156,14 +158,17 @@ const UserManager = (props) => {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openAcceptModal, setOpenAcceptModal] = useState(false);
+  const [openRejectModal, setOpenRejectModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [userInfo, setUserInfo] = useState({});
   let { loading, userList, numPage } = userInfo;
-  const filter = props.additional.filter;
 
+  const filter = props.additional.filter;
+  console.log(filter)
   const [showFailed, setShowFailed] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [text, setText] = useState('');
@@ -172,26 +177,52 @@ const UserManager = (props) => {
     setOpenAddModal(true);
     setOpenUpdateModal(false);
     setOpenDeleteModal(false);
+    setOpenAcceptModal(false);
+    setOpenRejectModal(false);
   };
 
   const openUpdateModalHandler = (item) => {
     setSelectedItem(item);
-    setOpenUpdateModal(true);
     setOpenAddModal(false);
+    setOpenUpdateModal(true);
     setOpenDeleteModal(false);
+    setOpenAcceptModal(false);
+    setOpenRejectModal(false);
   };
 
   const openDeleteModalHandler = (id) => {
     setSelectedId(id);
-    setOpenUpdateModal(false);
     setOpenAddModal(false);
+    setOpenUpdateModal(false);
     setOpenDeleteModal(true);
+    setOpenAcceptModal(false);
+    setOpenRejectModal(false);
+  };
+
+  const openAcceptSelModalHandler = (id) => {
+    setSelectedId(id);
+    setOpenAddModal(false);
+    setOpenUpdateModal(false);
+    setOpenDeleteModal(false);
+    setOpenAcceptModal(true);
+    setOpenRejectModal(false);
+  };
+
+  const openRejectSelModalHandler = (id) => {
+    setSelectedId(id);
+    setOpenAddModal(false);
+    setOpenUpdateModal(false);
+    setOpenDeleteModal(false);
+    setOpenAcceptModal(false);
+    setOpenRejectModal(true);
   };
 
   const closeModalHandler = () => {
-    setOpenUpdateModal(false);
     setOpenAddModal(false);
+    setOpenUpdateModal(false);
     setOpenDeleteModal(false);
+    setOpenAcceptModal(false);
+    setOpenRejectModal(false);
   };
 
   const pageChangeHandler = (event, value) => {
@@ -206,9 +237,9 @@ const UserManager = (props) => {
       const role  = filter;
       const response = await dispatch(getUserList({page, limit, role})).unwrap();
       setUserInfo(response);
-      // userList = userList.filter(
-      //   (user) => user.userId !== selectedId
-      // );
+      userList = userList.filter(
+        (user) => user.userId !== selectedId
+      );
       setText('Xoá thành công!!!');
       setShowSuccess(true);
     } catch (err) {
@@ -217,6 +248,40 @@ const UserManager = (props) => {
     }
     closeModalHandler();
   };
+
+  const acceptSelModalHandler = async () =>{
+    if (!selectedId) return;
+    try {
+      await dispatch(acceptSel(selectedId)).unwrap();
+      const limit = 10;
+      const role  = filter;
+      const response = await dispatch(getUserList({page, limit, role})).unwrap();
+      setUserInfo(response);
+      setText('Cập nhật thành công!!!');
+      setShowSuccess(true);
+    } catch (err) {
+      setText(err);
+      setShowFailed(true);
+    }
+    closeModalHandler();
+  }
+
+  const rejectSelModalHandler = async () =>{
+    if (!selectedId) return;
+    try {
+      await dispatch(rejectSel(selectedId)).unwrap();
+      const limit = 10;
+      const role  = filter;
+      const response = await dispatch(getUserList({page, limit, role})).unwrap();
+      setUserInfo(response);
+      setText('Cập nhật thành công!!!');
+      setShowSuccess(true);
+    } catch (err) {
+      setText(err);
+      setShowFailed(true);
+    }
+    closeModalHandler();
+  }
 
   const getUserListHandler = useCallback(
     async (page = 1) => {
@@ -238,7 +303,7 @@ const UserManager = (props) => {
   }, [dispatch, getUserListHandler, page]);
 
   useEffect(() => {
-    document.title = 'Quản Lý Sản Phẩm';
+    document.title = 'Quản Lý Người Dùng';
   }, []);
 
   useLayoutEffect(() => {
@@ -263,7 +328,7 @@ const UserManager = (props) => {
   useEffect(() => {
       handleVisible();
   }, [handleVisible]);
-
+  console.log(filter === Role.Seller)
   return (
     <>
       <div className={classes.root}>
@@ -274,11 +339,23 @@ const UserManager = (props) => {
               isOpen={openUpdateModal}
               onClose={closeModalHandler}
             />
-            <ModalConfirm
+            <ModalConfirmDelete
               title="Xoá người dùng"
               isOpen={openDeleteModal}
               onClose={closeModalHandler}
               onConfirm={deleteUserHandler}
+            />
+            <ModalConfirm
+              title="Đồng ý yêu cầu nâng cấp Seller?"
+              isOpen={openAcceptModal}
+              onClose={closeModalHandler}
+              onConfirm={acceptSelModalHandler}
+            />
+            <ModalConfirm
+              title="Huỷ yêu cầu nâng cấp/ hạ cấp Seller?"
+              isOpen={openRejectModal}
+              onClose={closeModalHandler}
+              onConfirm={rejectSelModalHandler}
             />
         </Container>
       </div>
@@ -320,7 +397,7 @@ const UserManager = (props) => {
                     <TableCell align="center">STT</TableCell>
                     {/* <TableCell align="center">ID</TableCell> */}
                     <TableCell align="center">Họ & Tên</TableCell>
-                    <TableCell align="center">Ảnh đại diện</TableCell>
+                    {/* <TableCell align="center">Ảnh đại diện</TableCell> */}
                     <TableCell align="center">Email</TableCell>
                     <TableCell align="center">Điện thoại</TableCell>
                     {filter === Role.Bidder && (
@@ -335,6 +412,7 @@ const UserManager = (props) => {
                         <TableCell align="center">Hết hạn Seller</TableCell>
                         <TableCell align="center">Số lượt thích</TableCell>
                         <TableCell align="center">Số lượt Không thích</TableCell>
+                        <TableCell align="center">Hạ cấp Seller</TableCell>
                       </>
                     )}
                     <TableCell align="center">Last Modified</TableCell>
@@ -352,40 +430,43 @@ const UserManager = (props) => {
                       <TableCell component="th" scope="row" align="center"> {index + 1 + (page - 1)*10} </TableCell>
                       {/* <TableCell align="center">{row?.accId}</TableCell> */}
                       <TableCell align="center">{row?.accFullName}</TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         <img
                           onError={(e)=>{e.target.onerror = null; e.target.src=errImg}}
                           src={row?.accAvatar}
                           alt={row?.accFullName}
                           style={{ width: 100, height: 80, objectFit: 'cover' }}
                         />
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="center">{row.accEmail}</TableCell>
                       <TableCell align="center">{row.accPhoneNumber}</TableCell>
                       {filter === Role.Bidder && (
                       <>
                         <TableCell align="center">{row?.accLikeBidder || 0}</TableCell>
                         <TableCell align="center">{row?.accDisLikeBidder || 0}</TableCell>
-                        <TableCell>
+                        <TableCell align="center">
                           { row?.accIsUpgrade === 1 && (
                             <>
                               <Button 
-                                variant="outlined" 
-                                startIcon={<CheckBoxIcon />}
-                                // onClick={() => openUpdateModalHandler(row)}
+                                variant="outlined"
+                                startIcon={<CheckBoxIcon style={{ align:"center", marginLeft: 10 }}/>}  
+                                onClick={() => openAcceptSelModalHandler(row.accId)}
                                 fontSize="small"
-                                style={{ marginRight: 5, cursor: 'pointer', color: 'green', borderColor: 'green' }}
+                                style={{ width: '40px', marginLeft: 5, cursor: 'pointer', color: 'green', borderColor: 'green', "& :hover": {backgroundColor: "red"} }}
+                                // marginBottom={1}
                                 >
-                                Xác nhận
+                                {/* Xác nhận */}
                               </Button>
+                              {/* <br></br> */}
                               <Button 
                                 variant="outlined" 
-                                startIcon={<CancelIcon />}
-                                // onClick={() => openUpdateModalHandler(row)}
+                                startIcon={<CancelIcon style={{ align:"center", marginLeft: 10 }} />}
+                                onClick={() => openRejectSelModalHandler(row.accId)}
                                 fontSize="small"
-                                style={{ marginRight: 5, cursor: 'pointer', color: 'red', borderColor: 'red', hoverColor: 'blue' }}
+                                style={{width: '40px', marginLeft: 5, cursor: 'pointer', color: 'red', borderColor: 'red', hoverColor: 'blue' }}
+                                // marginTop={1}
                                 >
-                                Huỷ
+                                {/* Huỷ */}
                               </Button>
                             </>
                           ) }
@@ -397,6 +478,16 @@ const UserManager = (props) => {
                         <TableCell align="center">{row?.accExpUpgrade || 'None'}</TableCell>
                         <TableCell align="center">{row?.accLikeSeller || 0}</TableCell>
                         <TableCell align="center">{row?.accDisLikeSeller || 0}</TableCell>
+                        <TableCell align="center">
+                              <Button 
+                                variant="outlined" 
+                                startIcon={<CancelIcon style={{ align:"center", marginLeft: 10 }} />}
+                                onClick={() => openRejectSelModalHandler(row.accId)}
+                                fontSize="small"
+                                style={{width: '40px', marginLeft: 5, cursor: 'pointer', color: 'red', borderColor: 'red', hoverColor: 'blue' }}
+                                >
+                              </Button>
+                        </TableCell>
                       </>
                     )}
                       <TableCell align="center">{row?.accUpdatedDate}</TableCell>
@@ -430,14 +521,14 @@ const UserManager = (props) => {
                 </TableBody>
           </>
           ) : (
-            <TableError message="No data in database" onTryAgain={getUserListHandler} />
+            <TableError message="Không có dữ liệu" onTryAgain={getUserListHandler} />
           )}
           </Table>
         </TableContainer>
-      </div>
-
-      <div className={`${classes.pagination} ${classes.section}`}>
-        <Pagination count={numPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+          <div className={`${classes.pagination} ${classes.section}`}>
+            <Pagination count={numPage} color="primary" variant="outlined" shape="rounded" page={page} onChange={pageChangeHandler} />
+          </div>
+        <div style={{ marginTop: 100 }}><Footer /></div>
       </div>
     </>
   );

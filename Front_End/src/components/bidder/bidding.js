@@ -1,20 +1,23 @@
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 // import { useDispatch } from 'react-redux';
 // import { bidProduct } from '../../reducers/users/bidder';
 import ConfirmModel from './confirm';
+import NumberFormat from 'react-number-format';
 
 
-function Bidding({ isOpen, onClose, prod_id, getList }) {
+function Bidding({ isOpen, onClose, prod_id }) {
     var [priceBid, setPriceBid] = useState(0);
     var prodId = prod_id;
     const [openModal, setOpenModal] = useState(false);
+    const priceBids = useRef(0);
 
-    const onChangeHandler = (value) => {
-        setPriceBid(value);
-    };
+    // const onChangeHandler = (value) => {
+    //     setPriceBid(value);
+    // };
 
     const openModalHandler = () => {
+        setPriceBid(priceBids.current.state.numAsString);
         setOpenModal(true);
         onClose();
     };
@@ -28,7 +31,7 @@ function Bidding({ isOpen, onClose, prod_id, getList }) {
             isOpen={openModal}
             onClose={handleClose}
             prod_id={prodId}
-            getList={() => { getList() }}
+            
             price_bid = {priceBid}
             />
 
@@ -46,7 +49,14 @@ function Bidding({ isOpen, onClose, prod_id, getList }) {
                     <Modal.Body>
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Giá mới</Form.Label>
-                            <Form.Control value={priceBid} onChange={(e) => { onChangeHandler(e.target.value) }} type="number" placeholder="vd: 20000" onKeyDown={(evt) => (evt.key === 'e' || evt.key === '-' || evt.key === '+' || evt.key === '.' || evt.key === ',') && evt.preventDefault()} />
+                            {/* <Form.Control value={priceBid} onChange={(e) => { onChangeHandler(e.target.value) }} type="number" placeholder="vd: 20000" onKeyDown={(evt) => (evt.key === 'e' || evt.key === '-' || evt.key === '+' || evt.key === '.' || evt.key === ',') && evt.preventDefault()} /> */}
+                            <NumberFormat
+                                variant="standard"
+                                thousandSeparator={true}
+                                suffix={' VND'}
+                                customInput={Form.Control}
+                                ref={priceBids}
+                            />
                             <Form.Text className="text-muted">
                                 Giá của bạn sẽ được bảo mật, người khác sẽ không thể thấy.
                             </Form.Text>

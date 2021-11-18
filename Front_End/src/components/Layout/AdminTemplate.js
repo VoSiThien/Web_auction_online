@@ -20,10 +20,10 @@ const options = [
         title: 'Categories',
         link: '/admin/categories',
       },
-      // {
-      //   title: 'Sub Categories',
-      //   link: '/admin/sub-categories',
-      // },
+      {
+        title: 'Sub Categories',
+        link: '/admin/sub-categories',
+      },
       {
         title: 'Products',
         link: '/admin/products',
@@ -57,11 +57,11 @@ const options = [
 ];
 
 const useStyles = makeStyles((theme) => ({
-  navBar:{
+  navBar: {
 
   },
   main: {
-    background: '#ddd',
+    background: '#FFF',
     minHeight: '80vh',
     maxHeight: 'calc(100% - 129px)',
     paddingTop: 64,
@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const user = JSON.parse(localStorage.getItem('user'));
-export const AdminTemplate = ({children}) => {
+export const AdminTemplate = ({ children }) => {
   const classes = useStyles();
   return (
     <>
@@ -96,7 +96,7 @@ export const AdminTemplate = ({children}) => {
         <AdminMenu options={options} />
       </SideBar>
       <main className={classes.main}>{children}</main>
-      <Footer hasSideBar/>
+      {/* <Footer hasSideBar /> */}
     </>
   );
 };

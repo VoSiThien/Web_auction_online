@@ -101,7 +101,65 @@ const productSearching = (req, res, next) => {
 	next()
 }
 
+const getAuctionProductList = (req, res, next) => {
+	const shema = {
+		type: 'object',
+		properties: {
+			page: { type: 'integer' },
+			limit: { type: 'integer' }
+		},
+		required: ["page", "limit"],
+		additionalProperties: true
+	}
+
+	const ajv = new ajvLib({
+		allErrors: true
+	})
+
+	const validator = ajv.compile(shema)
+	const valid = validator(req.body)
+
+	if (!valid) {
+		return res.status(400).json({
+			errorMessage: validator.errors[0].message,
+			statusCode: errorCode
+		})
+	}
+
+	next()
+}
+
+const deleteAuctionProduct = (req, res, next) => {
+    const shema = {
+        type: "object",
+        properties: {
+            prodId: { type: "integer" },
+        },
+        required: ["prodId"],
+        additionalProperties: true
+    }
+
+    const ajv = new ajvLib({
+        allErrors: true
+    })
+
+    const validator = ajv.compile(shema)
+    const valid = validator(req.body)
+
+    if (!valid) {
+        return res.status(400).json({
+            errorMessage: validator.errors[0].message,
+            statusCode: errorCode
+        })
+    }
+
+    next()
+}
+
+
 module.exports = {
 	listByCategory,
-	productSearching
+	productSearching,
+	getAuctionProductList,
+	deleteAuctionProduct
 }

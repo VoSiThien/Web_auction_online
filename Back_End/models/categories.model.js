@@ -21,15 +21,6 @@ const getAllChild = async () => {
 	return data
 }
 
-const getFatherWithLimit = async () => {
-	const data = await knex('tbl_categories')
-		.distinctOn('cate_father')
-		.whereNot({ cate_father: null })
-		.limit(10)
-
-	return data
-}
-
 const getAllParent = async () => {
 	const data = await knex('tbl_categories')
 		.where({ cate_father: null })
@@ -117,6 +108,5 @@ module.exports = {
 	getAllChild,
 	getAll,
 	getListParentWithoutChild,
-	getFatherWithLimit,
 	getHomePageList
 }

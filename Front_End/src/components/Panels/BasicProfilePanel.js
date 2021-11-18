@@ -5,12 +5,17 @@ import {
 	makeStyles,
 	TextField,
 } from "@material-ui/core";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { Validate } from "../../helpers";
 import { useInput } from "../../hooks/use-input";
+import { getProfile } from '../../reducers/users/profile';
+import {requestUpgradeSeller} from '../../reducers/users/bidder'
+import { useDispatch, useSelector } from "react-redux";
+import { accUpdateprofiles } from '../../reducers/users/profile';
+import { Role } from '../../config/role';
 const useStyles = makeStyles((theme) => ({
 	form: {
 		width: "30rem",
@@ -37,6 +42,21 @@ const useStyles = makeStyles((theme) => ({
 const BasicProfilePanel = () => {
 	const { t } = useTranslation();
 	const classes = useStyles();
+	const data = useSelector((state) => state.profile.data);
+	const dispatch = useDispatch();
+	const [error, setError] = useState(null);
+	const [success, setSuccess] = useState(null);
+	const user = useSelector((state) => state.auth.user);//get current user role here
+	console.log(user)
+	const getProfileUser = useCallback(async () => {
+		try {
+			await dispatch(getProfile()).unwrap();
+			
+		} catch (err) {
+			alert(err);
+		}
+	}, [dispatch]);
+
 
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [phoneNumberIsTouched, setPhoneNumberIsTouched] = useState(false);
@@ -45,7 +65,9 @@ const BasicProfilePanel = () => {
 		(Validate.isNotEmpty(phoneNumber) &&
 			Validate.isPhoneNumber(phoneNumber)) ||
 		phoneNumber === "";
+
 	const phoneNumberHasError = !phoneNumberIsValid && phoneNumberIsTouched;
+
 	const {
 		enteredInput: enteredFullName,
 		hasError: fullNameHasError,
@@ -53,7 +75,8 @@ const BasicProfilePanel = () => {
 		inputChangeHandler: fullNameChangeHandler,
 		inputIsValid: fullNameIsValid,
 		inputReset: fullNameReset,
-	} = useInput(Validate.isNotEmpty, "Nguyễn Văn A");
+	} = useInput(Validate.isNotEmpty, data.acc_full_name);
+
 	const {
 		enteredInput: enteredEmail,
 		hasError: emailHasError,
@@ -63,20 +86,32 @@ const BasicProfilePanel = () => {
 		inputReset: emailReset,
 	} = useInput(
 		(value) => Validate.isNotEmpty(value) && Validate.isEmail(value),
-		"Email@gmail.com"
+		data.acc_email
 	);
+
 	const {
-		enteredInput: enteredAddress,
-		hasError: addressHasError,
-		inputBlurHandler: addressBlurHandler,
-		inputChangeHandler: addressChangeHandler,
-		inputIsValid: addressIsValid,
-		inputReset: addressReset,
-	} = useInput(Validate.isNotEmpty, "Thu Duc City");
+		enteredInput: enteredBirthDay,
+		hasError: birthDayHasError,
+		inputBlurHandler: birthDayBlurHandler,
+		inputChangeHandler: birthDayChangeHandler,
+		inputIsValid: birthDayIsValid,
+		inputReset: birthDayReset,
+	} = useInput(Validate.isNotEmpty, data.acc_birthday);
+
 	const phoneNumberChangeHandler = (value) => {
 		setPhoneNumber(value);
-		console.log(value);
 	};
+
+
+	const upgradeHandler = useCallback(async () => {
+		try {
+			await dispatch(requestUpgradeSeller(1)).unwrap();
+			setSuccess('Yêu cầu nâng cấp thành công, xin hãy đợi admin duyệt!')
+		} catch (err) {
+			setError(err)
+			setSuccess('')
+		}
+	});
 
 	const phoneNumberBlurHandler = () => {
 		setPhoneNumberIsTouched(true);
@@ -88,17 +123,43 @@ const BasicProfilePanel = () => {
 	};
 
 	const formIsValid =
-		fullNameIsValid && emailIsValid && addressIsValid && phoneNumberIsValid;
+		fullNameIsValid && emailIsValid && birthDayIsValid && phoneNumberIsValid;
+
 	const formSubmitHandler = async (e) => {
 		e.preventDefault();
-		if (!formIsValid) return;
+		//if (!formIsValid) return;
 
-		fullNameReset();
-		emailReset();
-		addressReset();
-		phoneNumberReset();
+		try {
+			const result = await dispatch(
+				accUpdateprofiles({
+					email: enteredEmail,
+					fullName: enteredFullName,
+					birthday: enteredBirthDay,
+					phoneNumber: phoneNumber
+				})
+			).unwrap();
+			setSuccess(result.message)
+			setError(null);
+
+		} catch (e) {
+			setError(e);
+			setSuccess(null)
+		}
+
+		// fullNameReset();
+		// emailReset();
+		// addressReset();
+		// phoneNumberReset();
 		// xử lí logic ở đây
 	};
+
+	useEffect(() => {
+		getProfileUser();
+	}, [getProfileUser]);
+	useEffect(() => {
+		setPhoneNumber(data.acc_phone_number);
+	}, [data])
+	
 	return (
 		<form
 			noValidate
@@ -106,13 +167,14 @@ const BasicProfilePanel = () => {
 			className={classes.form}
 			onSubmit={formSubmitHandler}
 		>
+
 			<FormControl className={classes.formControl}>
 				<TextField
 					error={fullNameHasError}
-					label={t("profilepage.fullName")}
+					label="Họ tên"
 					type="text"
 					helperText={
-						fullNameHasError && "Please enter a valid name."
+						fullNameHasError && "Tên không được để rỗng."
 					}
 					fullWidth
 					size="small"
@@ -122,18 +184,32 @@ const BasicProfilePanel = () => {
 					onBlur={fullNameBlurHandler}
 				/>
 			</FormControl>
+
 			<FormControl className={classes.formControl}>
 				<TextField
 					error={emailHasError}
-					label={t("profilepage.email")}
+					label="Email"
 					type="email"
-					helperText={emailHasError && "Please enter a valid email."}
+					helperText={emailHasError && "Làm ơn nhập email hợp lệ."}
 					fullWidth
 					size="small"
 					variant="standard"
 					value={enteredEmail}
 					onChange={emailChangeHandler}
 					onBlur={emailBlurHandler}
+				/>
+			</FormControl>
+			<FormControl className={classes.formControl}>
+				<TextField
+					error={birthDayHasError}
+					type="date"
+					helperText={birthDayHasError && "Làm ơn nhập ngày sinh hợp lệ."}
+					fullWidth
+					size="small"
+					variant="standard"
+					value={enteredBirthDay}
+					onChange={birthDayChangeHandler}
+					onBlur={birthDayBlurHandler}
 				/>
 			</FormControl>
 			<FormControl className={classes.formControl}>
@@ -144,8 +220,8 @@ const BasicProfilePanel = () => {
 					}}
 					inputClass={phoneNumberHasError && classes.inputInvalid}
 					country={"vn"}
-					label="Phone Number"
-					placeholder="Enter phone number"
+					label="Số điện thoại"
+					placeholder="Nhập số điện thoại"
 					value={phoneNumber}
 					onChange={phoneNumberChangeHandler}
 					onBlur={phoneNumberBlurHandler}
@@ -159,32 +235,37 @@ const BasicProfilePanel = () => {
 					</FormHelperText>
 				)}
 			</FormControl>
-			<FormControl className={classes.formControl}>
-				<TextField
-					error={addressHasError}
-					label={t("profilepage.address")}
-					helperText={
-						addressHasError && "Please enter a valid address."
-					}
-					fullWidth
-					size="small"
-					variant="standard"
-					multiline
-					rows={4}
-					value={enteredAddress}
-					onChange={addressChangeHandler}
-					onBlur={addressBlurHandler}
-				/>
-			</FormControl>
+			{user != null && (user.isUpgrade == 0 || user.isUpgrade == null ) && user.role === Role.Bidder && (
+				<Button
+					variant="contained"
+					onClick = {upgradeHandler}
+					style={{ background: "green", color: 'white', marginBottom: "5px" }}
+				>
+					Upgrade
+				</Button>
+			)}
+			{user != null && user.isUpgrade == 1 && user.role === Role.Bidder && (
+				<p>User hiện đang chờ upgrade thành seller...</p>
+			)}
 			<Button
 				variant="contained"
 				color="primary"
 				fullWidth
 				type="submit"
-				disabled={!formIsValid}
 			>
-				{t("profilepage.buttonExecute")}
+				Lưu thay đổi
 			</Button>
+
+			{error?.length > 0 && (
+				<FormHelperText error style={{ marginBottom: 10 }}>
+					{error}
+				</FormHelperText>
+			)}
+			{success?.length > 0 && (
+				<FormHelperText focused style={{ marginBottom: 10, color: "blue" }}>
+					{success}
+				</FormHelperText>
+			)}
 		</form>
 	);
 };

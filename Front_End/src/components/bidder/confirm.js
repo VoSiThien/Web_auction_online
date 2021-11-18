@@ -2,9 +2,10 @@ import { Modal, Button, Alert } from 'react-bootstrap';
 import { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { bidProduct } from '../../reducers/users/bidder';
+import NumberFormat from 'react-number-format';
 
 
-function ConfirmModel({ isOpen, onClose, prod_id, getList, price_bid }) {
+function ConfirmModel({ isOpen, onClose, prod_id, price_bid }) {
     var priceBid = price_bid;
     var prodId = prod_id;
     const dispatch = useDispatch();
@@ -27,13 +28,12 @@ function ConfirmModel({ isOpen, onClose, prod_id, getList, price_bid }) {
             const check = await dispatch(bidProduct({ priceBid, prodId })).unwrap();
             setText(check.message)
             onClose();
-            getList();
             setShowSuccess(true);
         } catch (error) {
             setText(error)
             setShowFailed(true);
             onClose();
-            getList();
+            
         }
     };
 
@@ -62,7 +62,14 @@ function ConfirmModel({ isOpen, onClose, prod_id, getList, price_bid }) {
                     <Modal.Title>Xác nhận</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Bạn có chắc chắn đấu với mức giá này: {priceBid} VNĐ
+                    Bạn có chắc chắn đấu với mức giá này:
+                    <NumberFormat
+                        value={priceBid}
+                        variant="standard"
+                        thousandSeparator={true}
+                        suffix={' VND'}
+                        displayType={'text'}
+                    />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="danger" onClick={onClose}>

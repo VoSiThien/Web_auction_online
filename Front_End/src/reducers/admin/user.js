@@ -31,6 +31,28 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
+export const acceptSel = createAsyncThunk(
+  'user/acceptSel',
+  async (accId, { rejectWithValue }) => {
+    try {
+      return (await API.acceptSel({accId})).data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
+export const rejectSel = createAsyncThunk(
+  'user/rejectSel',
+  async (accId, { rejectWithValue }) => {
+    try {
+      return (await API.rejectSel({accId})).data;
+    } catch (error) {
+      return rejectWithValue(getResponseError(error));
+    }
+  }
+);
+
 // export const postAuctionProduct = createAsyncThunk(
 //   'product/postAuctionProduct',
 //   async (formData, { rejectWithValue }) => {
