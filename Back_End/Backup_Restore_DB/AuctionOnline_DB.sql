@@ -39,27 +39,27 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.tbl_account (
-    acc_id integer DEFAULT nextval('public.tbl_account_id_seq'::regclass) NOT NULL,
-    acc_password character varying(100),
-    acc_token character varying(100),
-    acc_email character varying(100),
-    acc_phone_number character varying(15),
-    acc_full_name character varying(100),
-    acc_role character varying(5),
-    acc_avatar text,
-    acc_status integer DEFAULT 2,
-    acc_created_date character varying(100),
-    acc_updated_date character varying(100),
-    acc_token_forgot character varying(100),
-    acc_refresh_token character varying(100),
-    acc_rating_score integer,
-    acc_is_upgrade integer,
-    acc_exp_upgrade character varying(100),
-    acc_birthday character varying(100),
-    acc_like_bidder integer DEFAULT 0,
-    acc_dis_like_bidder integer DEFAULT 0,
-    acc_like_seller integer DEFAULT 0,
-    acc_dis_like_seller integer DEFAULT 0
+                                    acc_id integer DEFAULT nextval('public.tbl_account_id_seq'::regclass) NOT NULL,
+                                    acc_password character varying(100),
+                                    acc_token character varying(100),
+                                    acc_email character varying(100),
+                                    acc_phone_number character varying(15),
+                                    acc_full_name character varying(100),
+                                    acc_role character varying(5),
+                                    acc_avatar text,
+                                    acc_status integer DEFAULT 2,
+                                    acc_created_date character varying(100),
+                                    acc_updated_date character varying(100),
+                                    acc_token_forgot character varying(100),
+                                    acc_refresh_token character varying(100),
+                                    acc_rating_score integer,
+                                    acc_is_upgrade integer,
+                                    acc_exp_upgrade character varying(100),
+                                    acc_birthday character varying(100),
+                                    acc_like_bidder integer DEFAULT 0,
+                                    acc_dis_like_bidder integer DEFAULT 0,
+                                    acc_like_seller integer DEFAULT 0,
+                                    acc_dis_like_seller integer DEFAULT 0
 );
 
 
@@ -84,14 +84,14 @@ ALTER TABLE public.tbl_account_comments_id_seq OWNER TO postgres;
 --
 
 CREATE TABLE public.tbl_account_comments (
-    acom_id integer DEFAULT nextval('public.tbl_account_comments_id_seq'::regclass) NOT NULL,
-    acom_note character varying(1500),
-    acom_assessor integer,
-    acom_receiver integer,
-    acom_product_id integer,
-    acom_status_rating integer,
-    acom_created_date character varying(100),
-    acom_updated_date character varying(100)
+                                             acom_id integer DEFAULT nextval('public.tbl_account_comments_id_seq'::regclass) NOT NULL,
+                                             acom_note character varying(1500),
+                                             acom_assessor integer,
+                                             acom_receiver integer,
+                                             acom_product_id integer,
+                                             acom_status_rating integer,
+                                             acom_created_date character varying(100),
+                                             acom_updated_date character varying(100)
 );
 
 
@@ -102,12 +102,12 @@ ALTER TABLE public.tbl_account_comments OWNER TO postgres;
 --
 
 CREATE TABLE public.tbl_account_request (
-    are_acc_id integer NOT NULL,
-    are_verifier integer,
-    are_request integer,
-    are_status integer,
-    are_created_date character varying(100),
-    are_updated_date character varying(100)
+                                            are_acc_id integer NOT NULL,
+                                            are_verifier integer,
+                                            are_request integer,
+                                            are_status integer,
+                                            are_created_date character varying(100),
+                                            are_updated_date character varying(100)
 );
 
 
@@ -132,13 +132,13 @@ ALTER TABLE public.tbl_categories_id_seq OWNER TO postgres;
 --
 
 CREATE TABLE public.tbl_categories (
-    cate_id integer DEFAULT nextval('public.tbl_categories_id_seq'::regclass) NOT NULL,
-    cate_name character varying(100),
-    cate_status integer DEFAULT 0,
-    cate_father integer,
-    cate_created_date character varying(100),
-    cate_updated_date character varying(100),
-    ts tsvector GENERATED ALWAYS AS (setweight(to_tsvector('english'::regconfig, (COALESCE(cate_name, ''::character varying))::text), 'A'::"char")) STORED
+                                       cate_id integer DEFAULT nextval('public.tbl_categories_id_seq'::regclass) NOT NULL,
+                                       cate_name character varying(100),
+                                       cate_status integer DEFAULT 0,
+                                       cate_father integer,
+                                       cate_created_date character varying(100),
+                                       cate_updated_date character varying(100),
+                                       ts tsvector GENERATED ALWAYS AS (setweight(to_tsvector('english'::regconfig, (COALESCE(cate_name, ''::character varying))::text), 'A'::"char")) STORED
 );
 
 
@@ -163,9 +163,9 @@ ALTER TABLE public.tbl_favorite_product_id_seq OWNER TO postgres;
 --
 
 CREATE TABLE public.tbl_favorite_product (
-    fav_id integer DEFAULT nextval('public.tbl_favorite_product_id_seq'::regclass) NOT NULL,
-    fav_product_id integer,
-    fav_account_id integer
+                                             fav_id integer DEFAULT nextval('public.tbl_favorite_product_id_seq'::regclass) NOT NULL,
+                                             fav_product_id integer,
+                                             fav_account_id integer
 );
 
 
@@ -190,25 +190,25 @@ ALTER TABLE public.tbl_product_id_seq OWNER TO postgres;
 --
 
 CREATE TABLE public.tbl_product (
-    prod_id integer DEFAULT nextval('public.tbl_product_id_seq'::regclass) NOT NULL,
-    prod_name character varying(60),
-    prod_category_id integer,
-    prod_amount integer,
-    prod_price character varying(100),
-    prod_price_current character varying(100),
-    prod_price_starting character varying(100),
-    prod_price_highest character varying(100),
-    prod_price_step character varying(100),
-    prod_price_holder integer,
-    prod_seller_id integer,
-    prod_description text,
-    prod_status integer DEFAULT 0,
-    prod_created_date character varying(100),
-    prod_updated_date character varying(100),
-    prod_end_date character varying(100),
-    prod_auto_extend integer,
-    prod_main_image text,
-    ts tsvector GENERATED ALWAYS AS (setweight(to_tsvector('english'::regconfig, (COALESCE(prod_name, ''::character varying))::text), 'A'::"char")) STORED
+                                    prod_id integer DEFAULT nextval('public.tbl_product_id_seq'::regclass) NOT NULL,
+                                    prod_name character varying(60),
+                                    prod_category_id integer,
+                                    prod_amount integer,
+                                    prod_price character varying(100),
+                                    prod_price_current character varying(100),
+                                    prod_price_starting character varying(100),
+                                    prod_price_highest character varying(100),
+                                    prod_price_step character varying(100),
+                                    prod_price_holder integer,
+                                    prod_seller_id integer,
+                                    prod_description text,
+                                    prod_status integer DEFAULT 0,
+                                    prod_created_date character varying(100),
+                                    prod_updated_date character varying(100),
+                                    prod_end_date character varying(100),
+                                    prod_auto_extend integer,
+                                    prod_main_image text,
+                                    ts tsvector GENERATED ALWAYS AS (setweight(to_tsvector('english'::regconfig, (COALESCE(prod_name, ''::character varying))::text), 'A'::"char")) STORED
 );
 
 
@@ -233,13 +233,13 @@ ALTER TABLE public.tbl_product_history_id_seq OWNER TO postgres;
 --
 
 CREATE TABLE public.tbl_product_history (
-    his_id integer DEFAULT nextval('public.tbl_product_history_id_seq'::regclass) NOT NULL,
-    his_product_id integer NOT NULL,
-    his_account_id integer,
-    his_price character varying(100),
-    his_status integer DEFAULT 0,
-    his_created_date character varying(100),
-    his_updated_date character varying(100)
+                                            his_id integer DEFAULT nextval('public.tbl_product_history_id_seq'::regclass) NOT NULL,
+                                            his_product_id integer NOT NULL,
+                                            his_account_id integer,
+                                            his_price character varying(100),
+                                            his_status integer DEFAULT 0,
+                                            his_created_date character varying(100),
+                                            his_updated_date character varying(100)
 );
 
 
@@ -264,10 +264,10 @@ ALTER TABLE public.tbl_product_image_id_seq OWNER TO postgres;
 --
 
 CREATE TABLE public.tbl_product_images (
-    prod_img_id integer DEFAULT nextval('public.tbl_product_image_id_seq'::regclass) NOT NULL,
-    prod_img_product_id integer NOT NULL,
-    prod_img_data text,
-    prod_img_status integer DEFAULT 0
+                                           prod_img_id integer DEFAULT nextval('public.tbl_product_image_id_seq'::regclass) NOT NULL,
+                                           prod_img_product_id integer NOT NULL,
+                                           prod_img_data text,
+                                           prod_img_status integer DEFAULT 0
 );
 
 
@@ -278,11 +278,11 @@ ALTER TABLE public.tbl_product_images OWNER TO postgres;
 --
 
 CREATE TABLE public.tbl_roles (
-    rol_id character varying(5) NOT NULL,
-    rol_name character varying(50),
-    rol_status integer DEFAULT 0,
-    rol_create_date date,
-    rol_update_date date
+                                  rol_id character varying(5) NOT NULL,
+                                  rol_name character varying(50),
+                                  rol_status integer DEFAULT 0,
+                                  rol_create_date date,
+                                  rol_update_date date
 );
 
 
@@ -292,14 +292,14 @@ ALTER TABLE public.tbl_roles OWNER TO postgres;
 -- Data for Name: tbl_account; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tbl_account (acc_id, acc_password, acc_token, acc_email, acc_phone_number, acc_full_name, acc_role, acc_avatar, acc_status, acc_created_date, acc_updated_date, acc_token_forgot, acc_refresh_token, acc_rating_score, acc_is_upgrade, acc_birthday, acc_like_bidder, acc_dis_like_bidder, acc_like_seller, acc_dis_like_seller) FROM stdin;
+COPY public.tbl_account (acc_id, acc_password, acc_token, acc_email, acc_phone_number, acc_full_name, acc_role, acc_avatar, acc_status, acc_created_date, acc_updated_date, acc_token_forgot, acc_refresh_token, acc_rating_score, acc_is_upgrade, acc_exp_upgrade, acc_birthday, acc_like_bidder, acc_dis_like_bidder, acc_like_seller, acc_dis_like_seller) FROM stdin;
+3	$2b$04$hivdEPMJKZT9nDcYOIR4ne.NImgBehfOpFbez4nrCyQ79LSKfVEt2		vsthien1212@gmail.com	0123456789	Lê Thanh Bình	SEL	\N	0	2021-10-09 12:00:00	2021-11-15 08:54:43	\N	lKKzvFeCMnEC7Uufc83e3xXeqeEu7QO1FE6KBXuGgr4OXkXCtOwP3xBNUpzT7HtUoe5QIJZyCWRztmecsy0MmtRgm5uJTLN2f42W	0	\N	\N	1999-01-10	8	2	2	0
 1	$2b$04$1xLCWvMndShcC7Dx2A3jDe.N41klZTK.eHqt9QICi87nG5PVDcrm.		vosithien12345@gmail.com	012345678	Trần Minh Chủ	ADM	\N	0	2021-10-09 12:00:00	\N	\N	Q1pSlyrHzApcmyDv9CLNKF0Gpq7v9DpmQVTWf6mG2qkxvwHeOtM5JCtzFgxoxv9IM1qQq8RGpQLpxGxVYgDfOLl9YHp1S1c7erad	0	\N	\N	1999-01-02	8	2	1	0
 2	$2b$04$1xLCWvMndShcC7Dx2A3jDe.N41klZTK.eHqt9QICi87nG5PVDcrm.		vosithien1551999@gmail.com	012345678	Lên Văn Tính	BID	\N	0	2021-10-09 12:00:00	\N	\N	nYJE9H5kC9eT8aF8TYuLTnC6GLVaDxHo5TVQKMf574qrh9vkauNXUUBvZKIzeOXMpYRppq1Q4JvQI9kW5wvj8FtedqFpHpiOvPYv	0	\N	\N	1999-01-02	8	2	\N	\N
-3	$2b$04$hivdEPMJKZT9nDcYOIR4ne.NImgBehfOpFbez4nrCyQ79LSKfVEt2		vsthien1212@gmail.com	0123456789	Lê Thanh Bình	SEL	\N	0	2021-10-09 12:00:00	2021-11-15 08:54:43	\N	lKKzvFeCMnEC7Uufc83e3xXeqeEu7QO1FE6KBXuGgr4OXkXCtOwP3xBNUpzT7HtUoe5QIJZyCWRztmecsy0MmtRgm5uJTLN2f42W	0	\N	\N	1999-01-10	8	2	2	0
-4	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		mennguyenbid@gmail.com	0123456789	Lên Văn Toàn	BID	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
-5	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		mennguyensel@gmail.com	0123456789	Lên Văn Toàn	SEL	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
-6	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		mennguyenadm@gmail.com	0123456789	Lên Văn Toàn	ADM	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
-7	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		giaovienAdm@gmail.com	0123456789	Ngô Ngọc Đăng Khoa	ADM	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
+4	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		mennguyenbid@gmail.com	012345678	Lên Văn Tính	BID	\N	0	2021-10-09 12:00:00	\N	\N	nYJE9H5kC9eT8aF8TYuLTnC6GLVaDxHo5TVQKMf574qrh9vkauNXUUBvZKIzeOXMpYRppq1Q4JvQI9kW5wvj8FtedqFpHpiOvPYv	0	\N	\N	1999-01-02	8	2	\N	\N
+5	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		mennguyensel@gmail.com	012345678	Lên Văn Tính	SEL	\N	0	2021-10-09 12:00:00	\N	\N	nYJE9H5kC9eT8aF8TYuLTnC6GLVaDxHo5TVQKMf574qrh9vkauNXUUBvZKIzeOXMpYRppq1Q4JvQI9kW5wvj8FtedqFpHpiOvPYv	0	\N	\N	1999-01-02	8	2	\N	\N
+6	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		mennguyenadm@gmail.com	012345678	Lên Văn Tính	ADM	\N	0	2021-10-09 12:00:00	\N	\N	nYJE9H5kC9eT8aF8TYuLTnC6GLVaDxHo5TVQKMf574qrh9vkauNXUUBvZKIzeOXMpYRppq1Q4JvQI9kW5wvj8FtedqFpHpiOvPYv	0	\N	\N	1999-01-02	8	2	\N	\N
+7	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		giaovienAdm@gmail.com	012345678	Ngô Ngọc Đăng Khoa	ADM	\N	0	2021-10-09 12:00:00	\N	\N	nYJE9H5kC9eT8aF8TYuLTnC6GLVaDxHo5TVQKMf574qrh9vkauNXUUBvZKIzeOXMpYRppq1Q4JvQI9kW5wvj8FtedqFpHpiOvPYv	0	\N	\N	1999-01-02	8	2	\N	\N
 \.
 
 
