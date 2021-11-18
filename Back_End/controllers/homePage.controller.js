@@ -66,6 +66,7 @@ router.post('/top-product-about-to-end', async (req, res) => {
 
 router.post('/top-product-have-highest-price', async (req, res) => {
 	const { limit, page } = req.body
+	
 	const offset = limit * (page - 1)
 	
 	var whereClause = 'where h.his_status != 2'
@@ -83,6 +84,7 @@ router.post('/top-product-have-highest-price', async (req, res) => {
 	from ((tbl_product pr left join tbl_categories cat on pr.prod_category_id = cat.cate_id)
 	left join tbl_product_history h on h.his_product_id = pr.prod_id)
 	left join tbl_account ac on ac.acc_id = pr.prod_price_holder
+	where to_timestamp(pr.prod_end_date, 'YYYY/MM/DD HH24:MI:SS') > CURRENT_TIMESTAMP
 	group by ac.acc_full_name, pr.prod_id, pr.prod_name, pr.prod_description,
 	pr.prod_main_image, pr.prod_price, pr.prod_end_date,
 	pr.prod_price_current, pr.prod_created_date, cat.cate_name
@@ -98,6 +100,7 @@ router.post('/top-product-have-highest-price', async (req, res) => {
 
 router.post('/top-product-have-highest-bids', async (req, res) => {
 	const { limit, page } = req.body
+
 	const offset = limit * (page - 1)
 	
 	var whereClause = 'where h.his_status != 2'

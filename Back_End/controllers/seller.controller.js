@@ -7,6 +7,8 @@ const moment = require('moment');
 const router = express.Router()
 const successCode = 0
 const errorCode = 1
+const mailService = require('../services/mailService')
+const mailOptions = require('../template/mailOptions')
 
 // *
 // Seller(Nguyên) -
@@ -367,7 +369,14 @@ router.post('/updateAuctionProductDescription', validator.updateAuctionProductDe
     const { prodId, prodDescription } = req.body
     const now = new Date(Date.now())
     try{
-        await knex('tbl_product').where({ prod_id: prodId }).update({ prod_description: prodDescription, prod_updated_date: now })
+        const product = await knex('tbl_product').where({ prod_id: prodId }).update({ prod_description: prodDescription, prod_updated_date: now }).returning('*')
+        var account = await knex.raw(`select distinct h.his_account_id, a.*
+                                        from tbl_product_history h join tbl_account a on h.his_account_id = a.acc_id
+                                        where h.his_product_id = ${prodId}`)
+        account = account.rows
+        for(var i = 0; i< account.length; i++){
+            await mailService.sendMail(mailOptions.notifyUpdateDesciptionToBidder(account[i], product))
+        }
     }catch(e){
         console.log(e);
         return res.status(400).json({

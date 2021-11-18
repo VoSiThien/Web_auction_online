@@ -181,8 +181,14 @@ function Home() {
                             {productDetails.prod_name}
                         </div> */}
                         <div className="row">
-                            <div className="col-md-6 mb-4 mb-md-0" >
-                                <img className={classes.display_image} style={{ height: "100%" }} src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} alt="Product main image" />
+                            <div
+                                className="col-md-6 mb-4 mb-md-0"
+                                // style={{ width: "100%" }}
+                            >
+                                <img className={classes.display_image} 
+                                style={{objectFit: 'fill', height:"100%" }} 
+                                src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} alt="Product main image" 
+                                />
                             </div>
                             <div className="col-md-6 mt-2">
                                 <h2>{productDetails.prod_name}</h2>
@@ -268,20 +274,54 @@ function Home() {
                                 </div>
                                 <hr />
                                 <div className="table-responsive mb-2">
+
                                     <div className="col-12">
                                         <div className="row scroll">
-                                            {productDetails.prod_img?.length > 0 &&
-                                                productDetails.prod_img.map((image, index) => (
 
-                                                    <div className="col">
-                                                        <div className="view overlay rounded z-depth-1 gallery-item">
-                                                            <img src={image} className="img-fluid" />
-                                                            <div className="mask rgba-white-slight" />
-                                                        </div>
-                                                    </div>
-                                                ))}
+
+                                            <div className="view overlay rounded z-depth-1 gallery-item" style={{ width: "100%", height: "200px" }}>
+                                                <Carousel className="center" style={{ width: "100%", height: "200px", objectFit:"fill"}}>
+                                                    {productDetails.prod_img?.length > 0 &&
+                                                        productDetails.prod_img.map((image, index) => (
+                                                            <Carousel.Item>
+                                                                <img
+                                                                    style={{ width: "100%", height: "300px" }}
+                                                                    className="d-block w-100 photo"
+                                                                    src={image}
+                                                                    alt="Fifth slide"
+                                                                />
+                                                                <Carousel.Caption >
+
+                                                                </Carousel.Caption>
+                                                            </Carousel.Item>
+                                                        ))}
+                                                </Carousel>
+                                            </div>
+
+
                                         </div>
                                     </div>
+
+
+                                    {/* <div className="table-responsive mb-2">
+                                        <div className="col-12">
+                                            <div className="row scroll">
+                                                {productDetails.prod_img?.length > 0 &&
+                                                    productDetails.prod_img.map((image, index) => (
+
+                                                        <div className="col">
+                                                            <div className="view overlay rounded z-depth-1 gallery-item">
+
+                                                                <img src={image} className="img-fluid" />
+
+                                                                <div className="mask rgba-white-slight" />
+                                                            </div>
+
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
