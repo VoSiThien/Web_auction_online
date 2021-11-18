@@ -1,6 +1,7 @@
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
 import ChildProductCard from '../components/ProductCard/ChildProductCard';
+import moment from 'moment';
 import {
     Container,
     makeStyles,
@@ -22,6 +23,7 @@ import { Role } from '../config/role';
 import { invalid } from 'moment';
 import NumberFormat from 'react-number-format';
 import { Markup } from 'interweave';
+import {Avatar, Chip} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -264,6 +266,7 @@ function Home() {
                             {productDetails.prod_name}
                         </div> */}
                         <div className="row">
+
                             <div
                                 className="col-md-6 mb-4 mb-md-0"
                                 // style={{ width: "100%" }}
@@ -272,9 +275,28 @@ function Home() {
                                 style={{objectFit: 'contain', height:"100%", backgroundColor:"#e8e7e3"}} 
                                 src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} alt="Product main image" 
                                 />
+
+                            {/* <div className="col-md-6 mb-4 mb-md-0" >
+                                <img className={classes.display_image} 
+                                style={{ height: "100%" }} 
+                                src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} 
+                                alt="" /> */}
+
                             </div>
                             <div className="col-md-6 mt-2">
                                 <h2>{productDetails.prod_name}</h2>
+                                {(Math.floor((new Date() - new Date(moment(productDetails.prod_created_date, "DD/MM/YYYY HH:mm:ss").format("YYYY-MM-DD HH:mm:ss")))/60000) < 10) && (
+                                    <Chip
+                                    style={{
+                                        background: 'linear-gradient(250deg, rgba(40,4,47,0.85) 5%, rgba(189,18,176,0.80) 45%, rgba(0,176,255,0.85) 80%)', 
+                                        color:"#fff", 
+                                        width: 100,
+                                        fontWeight: 'bold'}}
+                                    variant={"default"}
+                                    label="New"
+                                    avatar={<Avatar alt="Natacha" src="/img/img_new.png" />}
+                                    />
+                                )}
                                 <p className="mb-2 text-muted text-uppercase small">Loại sản phẩm : <b>{productDetails.prod_categoryName}</b></p>
                                 <ul className="rating">
                                     <li>
