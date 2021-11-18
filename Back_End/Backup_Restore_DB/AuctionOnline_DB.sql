@@ -293,6 +293,10 @@ ALTER TABLE public.tbl_roles OWNER TO postgres;
 COPY public.tbl_account (acc_id, acc_password, acc_token, acc_email, acc_phone_number, acc_full_name, acc_role, acc_avatar, acc_status, acc_created_date, acc_updated_date, acc_token_forgot, acc_refresh_token, acc_rating_score, acc_is_upgrade, acc_birthday, acc_like_bidder, acc_dis_like_bidder, acc_like_seller, acc_dis_like_seller) FROM stdin;
 1	$2b$04$fAkkyELf9a./G2jjbKqO.e9u8p9G5hvtpBaSRymPvuT1Mnp9nLbVK		vosithien1234@gmail.com	012345678	Lên Văn Toàn	ADM	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
 2	$2b$04$fAkkyELf9a./G2jjbKqO.e9u8p9G5hvtpBaSRymPvuT1Mnp9nLbVK		vosithien1551999@gmail.com	012345678	Lên Văn Tính	BID	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
+4	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		mennguyenbid@gmail.com	0123456789	Lên Văn Toàn	BID	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
+5	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		mennguyensel@gmail.com	0123456789	Lên Văn Toàn	SEL	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
+6	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		mennguyenadm@gmail.com	0123456789	Lên Văn Toàn	ADM	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
+7	$2a$12$x0129Q5nr6.VBmti1lpFMe6eTJoGfwt4Er/5tYCmEJOMOE.nldMSe		giaovienAdm@gmail.com	0123456789	Ngô Ngọc Đăng Khoa	ADM	\N	0	2021-10-09 12:00:00	\N	\N	\N	0	\N	\N	\N	\N	\N	\N
 \.
 
 
