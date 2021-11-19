@@ -52,6 +52,7 @@ function Home() {
     const classes = useStyles()
     const location = useLocation();
     const dispatch = useDispatch();
+    const sortKey = "";
     const searchKeyWord = location.search.slice(15);//get search keyword
     const [searchProductInfo, setSearchProductInfo] = useState({});
     const [error, setError] = useState('');
@@ -95,6 +96,22 @@ function Home() {
         getListProductSearchHandler(page, searchKeyWord)
     }, [dispatch, getListProductSearchHandler, page, searchKeyWord]);//when page change, get the new list
 
+    // //searching
+    // const searchSubmitHandler = async (e) => {
+    //     e.preventDefault();
+    //     if (searchKey.trim().length == '0') {
+    //         alert('Từ khóa tìm kiếm không được phép rỗng!');
+    //         return;
+    //     }
+    //
+    //     history.push(`/search?searchKeyWord=${searchKeyWord}?sortKey=${sortKey}`);
+    //     return true;
+    // };
+    // change: function(event){
+    //     this.setState({value: event.target.value});
+    //     //searchSubmitHandler;
+    // },
+
     return (
         <>
             <div className={classes.root}>
@@ -103,8 +120,40 @@ function Home() {
                     <Container>
                         <div className="container">
                             <h2><p>Từ khóa tìm kiếm : {searchKeyWord}</p></h2>
+                            {/* Sort item in grid */}
+                            {/*<div className="dropdown">*/}
+                            {/*    <button*/}
+                            {/*        className="btn btn-secondary dropdown-toggle"*/}
+                            {/*        type="button"*/}
+                            {/*        id="dropdownMenuButton"*/}
+                            {/*        data-toggle="dropdown"*/}
+                            {/*        aria-haspopup="true"*/}
+                            {/*    >*/}
+                            {/*        Sắp xếp*/}
+                            {/*    </button>*/}
+                            {/*    <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">*/}
+                            {/*        <a className="dropdown-item">*/}
+                            {/*            Giá giảm dần*/}
+                            {/*        </a>*/}
+                            {/*        <a className="dropdown-item">*/}
+                            {/*            Giá tăng dần*/}
+                            {/*        </a>*/}
+                            {/*        <a className="dropdown-item">*/}
+                            {/*            Thời gian kết thúc giảm dần*/}
+                            {/*        </a>*/}
+                            {/*        <a className="dropdown-item">*/}
+                            {/*            Thời gian kết thúc tăng dần*/}
+                            {/*        </a>*/}
+                            {/*    </div>*/}
+                            {/*</div>*/}
+                            {/*onChange={this.change}>*/}
+                            <select id="sortList" >
+                                <option value="price">Giá tăng dần</option>
+                                <option value="pricedesc">Giá giảm dần</option>
+                                <option value="time">Thời gian kết thúc tăng dần</option>
+                                <option value="timedesc">Thời gian kết thúc giảm dần</option>
+                            </select>
                             <section className="text-center mt-5" >
-
                                 {/* Grid row */}
                                 <div className="row justify-content-center flex-fill">
                                     {listProduct?.length > 0 &&

@@ -576,4 +576,131 @@ router.post('/update-password', validator.updatePassword, async (req, res) => {
 	})
 })
 
+router.post('/get-seller-comment', validator.veryfySellerComment, async (req, res) => {
+	const { prodID } = req.body
+	// const accId = req.account['accId']
+	// let dateUpdate = new Date()
+
+	// // check unique email
+	// const result = await accountModel.findById(req.account.accId)
+
+	// if (!bcrypt.compareSync(oldPassword, result[0].acc_password)) {
+	// 	return res.status(400).json({
+	// 		errorMessage: 'Mật khẩu cũ không chính xác',
+	// 		statusCode: errorCode
+	// 	})
+	// }
+
+	// const hashPassword = bcrypt.hashSync(newPassword, 3)
+
+	// // add account
+	// const account = {
+	// 	acc_password: hashPassword,
+	// 	acc_updated_date: moment(dateUpdate).format('YYYY-MM-DD HH:mm:ss')
+	// }
+
+	// await knex('tbl_account')
+	// 	.where("acc_id", accId)
+	// 	.returning('acc_id')
+	// 	.update(account)
+
+
+	const { page, limit } = req.body
+	const id = req.account['accId']
+
+	const offset = limit * (page - 1)
+
+	var numberPage = await knex.raw(`select  count(acBid.acc_id)
+	from tbl_account_comments cmt join tbl_product pr on cmt.acom_product_id = pr.prod_id, tbl_account acBid
+	where acBid.acc_id = acom_receiver 
+	and acBid.acc_role = 'BID'
+	and pr.prod_id = ${prodID}
+	group by acBid.acc_id`)
+
+	console.log(`select  count(acBid.acc_id)
+	from tbl_account_comments cmt join tbl_product pr on cmt.acom_product_id = pr.prod_id, tbl_account acBid
+	where acBid.acc_id = acom_receiver 
+	and acBid.acc_role = 'BID'
+	and pr.prod_id = ${prodID}
+	group by acBid.acc_id`)
+
+	numberPage = Number(numberPage.rows[0].count)
+	if (numberPage > limit) {
+		numberPage = Math.ceil(numberPage / limit)
+	}
+	else {
+		numberPage = 1
+	}
+
+	console.log(`
+	select  acBid.acc_full_name, acom_note
+	from tbl_account_comments cmt join tbl_product pr on cmt.acom_product_id = pr.prod_id, tbl_account acBid
+	where acBid.acc_id = acom_receiver 
+	and acBid.acc_role = 'BID'
+	and pr.prod_id = ${prodID}
+	offset ${offset} limit ${limit}
+	`)
+
+
+	//get all comment of seller
+	var result = await knex.raw(`
+	select  acBid.acc_full_name, acom_note
+	from tbl_account_comments cmt join tbl_product pr on cmt.acom_product_id = pr.prod_id, tbl_account acBid
+	where acBid.acc_id = acom_receiver 
+	and acBid.acc_role = 'BID'
+	and pr.prod_id = ${prodID}
+	offset ${offset} limit ${limit}
+	`)
+
+
+
+	// var rating = await knex('tbl_account').where("acc_id", id)
+
+	// result = result.rows
+
+	// var listComment = []
+	// var index = 0
+
+
+
+
+	// while (index < result.length) {
+	// 	var status_rating = 'Like'
+
+	// 	if (result[index].acom_status_rating === 1) {
+	// 		status_rating = 'Dis Like'
+	// 	}
+	// 	if (result[index].acom_status_rating === 2) {
+	// 		status_rating = 'Hủy giao dịch'
+	// 	}
+	// 	let item = {
+	// 		acom_id: result[index].acom_id,
+	// 		acc_full_name: result[index].acc_full_name,
+	// 		prod_name: result[index].prod_name,
+	// 		acom_note: result[index].acom_note,
+	// 		acc_status_rating: status_rating,
+	// 		acom_created_date: result[index].acom_created_date,
+	// 		acom_updated_date: result[index].acom_updated_date
+	// 	}
+	// 	listComment.push(item)
+	// 	index++
+	// }
+
+
+
+
+
+
+
+
+	console.log(result.rows[0])
+
+	return res.status(200).json({
+		statusCode: successCode,
+		commentList: result.rows,
+		numberOfPage: numberPage
+	})
+})
+
+
 module.exports = router;

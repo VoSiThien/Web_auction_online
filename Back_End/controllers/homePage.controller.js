@@ -66,6 +66,7 @@ router.post('/top-product-about-to-end', async (req, res) => {
 
 router.post('/top-product-have-highest-price', async (req, res) => {
 	const { limit, page } = req.body
+	
 	const offset = limit * (page - 1)
 	
 	var whereClause = 'where h.his_status != 2'
@@ -99,6 +100,7 @@ router.post('/top-product-have-highest-price', async (req, res) => {
 
 router.post('/top-product-have-highest-bids', async (req, res) => {
 	const { limit, page } = req.body
+
 	const offset = limit * (page - 1)
 	
 	var whereClause = 'where h.his_status != 2'

@@ -52,6 +52,7 @@ const bidding = async (priceBid, product, prodId, account) => {
 
 		product[0].prod_price_current = priceSS.toString()
 
+		
 		var checkmailBid = await mailService.sendMail(mailOptions.notifyBidSuccessToBidder(account, product, priceBid))
 		var checkmailSeller = await mailService.sendMail(mailOptions.notifyBidSuccessToSeller(account, product, priceBid))
 		var checkmailBidOld = true
@@ -60,6 +61,7 @@ const bidding = async (priceBid, product, prodId, account) => {
 			var accountHolder = await knex('tbl_account').where("acc_id", product[0].prod_price_holder)
 			checkmailBidOld = await mailService.sendMail(mailOptions.notifyBidSuccessToOldBidder(account, product, accountHolder))
 		}
+
 
 		if (checkmailBid === false || checkmailSeller === false || checkmailBidOld === false){
 			return {
@@ -84,6 +86,7 @@ const bidding = async (priceBid, product, prodId, account) => {
 	Number(priceBid) <= Number(product[0].prod_price_highest)){
 		await knex('tbl_product').where("prod_id", prodId).update({ prod_price_current: priceBid })
 
+		//notify all other people
 		let msgBroadCast = prodId + '|' + priceBid + '|' + product[0].prod_name
 		msgBroadCast += ConverListToString([])
 		ws.broadCastAll(msgBroadCast)

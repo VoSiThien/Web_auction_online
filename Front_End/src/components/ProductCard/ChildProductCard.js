@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   display_image: {
     height: "100%",
     padding: '56.25%',
-    width:"100%"
+    width: "100%"
   },
   title: {
     display: '-webkit-box',
@@ -112,7 +112,7 @@ const ProductCard = ({
   }, [show])
 
   useEffect(() => {
-    if(!isAuthenticated){
+    if (!isAuthenticated) {
       setIsButtonWat(true);
     }
     handleVisible();
@@ -121,17 +121,18 @@ const ProductCard = ({
   return (
     <div>
       <Card className={classes.card}>
-        
+
         <Link to={`/details/${id}`} className={classes.link}>
-          <div style = {{height:"100%"}}>
-          <CardMedia
-            className={classes.display_image}
-            image={image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'}
-            title={title}
-          />
+          <div style={{ height: "100%" }}>
+            <CardMedia
+              className={classes.display_image}
+              image={image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'}
+              title={title}
+              style = {{objectFit:"fill"}}
+            />
           </div>
           <CardContent className={classes.content}>
-          <Typography className={classes.title} variant="body1">
+            <Typography className={classes.title} variant="body1">
               {title}
             </Typography>
             <Typography className={classes.subInfomation}
@@ -145,15 +146,15 @@ const ProductCard = ({
               variant="body2"
               color="textSecondary"
               component="p">
-              Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : ''} 
-              <NumberFormat
-                              value={currentPrice}
-                              variant="standard"
-                              thousandSeparator={true}
-                              suffix={' VND'}
-                              displayType={'text'}
-                            /> 
-                            </strong>
+              Giá hiện tại: <strong>{currentPrice == null ? 'Chưa có thông tin' : ''}
+                <NumberFormat
+                  value={currentPrice}
+                  variant="standard"
+                  thousandSeparator={true}
+                  suffix={' VND'}
+                  displayType={'text'}
+                />
+              </strong>
             </Typography>
 
           </CardContent>
@@ -168,7 +169,7 @@ const ProductCard = ({
               </Toast.Header>
               <Toast.Body className="text-white">{text}</Toast.Body>
             </Toast>
-            </ToastContainer>
+          </ToastContainer>
         </Typography>
       </Card>
     </div>

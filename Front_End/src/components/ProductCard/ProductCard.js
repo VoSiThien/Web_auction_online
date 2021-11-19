@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { bidAddWatchList } from '../../reducers/users/bidder';
 import { FcLike } from "react-icons/fc";
 import NumberFormat from 'react-number-format';
+import {Avatar, Chip} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -87,6 +88,7 @@ const ProductCard = ({
   startDate,
   numberBid,
   priceHolder,
+  createdDate,
   size = 'normal'
 }) => {
   const classes = useStyles({ size });
@@ -140,7 +142,18 @@ const ProductCard = ({
             <Typography className={classes.title} variant="body1">
               {title}
             </Typography>
-            
+            {(Math.floor((new Date() - new Date(createdDate))/60000) < 10) && (
+                  <Chip
+                  style={{
+                    background: 'linear-gradient(250deg, rgba(40,4,47,0.85) 5%, rgba(189,18,176,0.80) 45%, rgba(0,176,255,0.85) 80%)', 
+                    color:"#fff", 
+                    width: 100,
+                    fontWeight: 'bold'}}
+                  variant={"default"}
+                  label="New"
+                  avatar={<Avatar alt="Natacha" src="/img/img_new.png" />}
+                />
+              )}
             <Typography className={classes.subInfomation}
               variant="body2"
               color="textSecondary"

@@ -231,7 +231,7 @@ router.post('/search', prodValidation.productSearching, async (req, res) => {
 		}
 		//get holder & seller information
 		if (prodObj.prod_price_holder)
-			prodObj.prod_price_holder = accountList.find((priceHolder) => priceHolder.acc_id == prodObj.prod_price_holder).acc_full_name
+			prodObj.prod_price_holder = encodeName(accountList.find((priceHolder) => priceHolder.acc_id == prodObj.prod_price_holder).acc_full_name)
 		if (prodObj.prod_seller_id)
 			prodObj.prod_seller_id = accountList.find((seller) => seller.acc_id == prodObj.prod_seller_id).acc_full_name
 		prodList.push(prodObj)
@@ -411,5 +411,18 @@ router.post('/deleteAuctionProduct', prodValidation.deleteAuctionProduct, async(
         statusCode: successCode
     })
 })
+
+function encodeName(str) {
+	strValue = "";
+	for (let i = 0; i < str.length; i += 1) {
+		if (i%2 == 0) {
+			strValue += str[i];
+		}
+		else {
+			 strValue += "*";
+		}
+	}
+	return strValue;
+}
 
 module.exports = router
