@@ -56,7 +56,8 @@ router.post('/bid-product', validator.bidProduct, async (req, res) => {
     const sumLike = account[0].acc_like_bidder + account[0].acc_dis_like_bidder
     const result = (100 / sumLike) * account[0].acc_like_bidder
 
-    if ((account[0].acc_like_bidder === null) || (account[0].acc_dis_like_bidder === null)) {
+    if (((account[0].acc_like_bidder === null) && (account[0].acc_dis_like_bidder === null)) || ((account[0].acc_like_bidder === 0) && (account[0].acc_dis_like_bidder === 0))) {
+        
         await knex('tbl_product_history').insert({
             his_product_id: prodId,
             his_account_id: accId,
@@ -66,7 +67,7 @@ router.post('/bid-product', validator.bidProduct, async (req, res) => {
         })
 
         return res.status(400).json({
-            message: "Bạn cần được xác nhận bởi người bán !",
+            errorMessage: "Bạn cần được xác nhận bởi người bán !",
             statusCode: errorCode
         })
     }

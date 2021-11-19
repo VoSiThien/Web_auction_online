@@ -335,7 +335,7 @@ function Home() {
                                     <div>
                                         <Button className="ml-2" size="sm" hidden={isShowButtonBid} variant="outline-primary" onClick={() => openModalHandlerBid()}>Đấu giá</Button>
                                         <Button className="ml-2" size="sm" hidden={isShowButtonHis} variant="outline-info" onClick={() => openModalHandlerHis()}>Xem lịch sử</Button>
-                                        <Button className="ml-2" size="sm" hidden={isShowButtonSellerComment} variant="outline-success" onClick={() => openModalCommentSellerHandler()}>Xem đánh giá seller</Button>
+                                        {/* <Button className="ml-2" size="sm" hidden={isShowButtonSellerComment} variant="outline-success" onClick={() => openModalCommentSellerHandler()}>Xem đánh giá seller</Button> */}
                                         {/* <Button hidden={isShowButtonWat}  className="ml-2" size="sm" variant="outline-light" onClick={() => addWatchList({ prodId: productDetails.prod_id })}>Xem đánh giá seller</Button> */}
                                         <button hidden={isShowButtonWat} onClick={() => addWatchList({ prodId: productDetails.prod_id })} type="button" className="btn btn-danger btn-sm px-3 mb-0.5 ml-2 material-tooltip-main" data-toggle="tooltip" data-placement="top" title="Add to wishlist"><i className="far fa-heart" /></button>
                                         <Toast show={show} onClose={toggleShowA} className="d-inline-block m-1" bg="primary">

@@ -47,7 +47,7 @@ const BasicProfilePanel = () => {
 	const [error, setError] = useState(null);
 	const [success, setSuccess] = useState(null);
 	const user = useSelector((state) => state.auth.user);//get current user role here
-	console.log(user)
+	
 	const getProfileUser = useCallback(async () => {
 		try {
 			await dispatch(getProfile()).unwrap();
