@@ -8,7 +8,6 @@ import selProductRedu from '../reducers/users/product';
 import admCatoryRedu from '../reducers/admin/category';
 import admUserRedu from '../reducers/admin/user';
 import admSubCategoryRedu from '../reducers/admin/subCategory'
-import cartSlice from '../reducers/cart';
 import langSlice from '../reducers/lang';
 import uiSlice from '../reducers/ui';
 import bidderRedu from '../reducers/users/bidder';
@@ -29,7 +28,6 @@ const store = configureStore({
     admUser: admUserRedu.reducer,
     admSubcategory: admSubCategoryRedu.reducer,
     ui: uiSlice.reducer,
-    cart: cartSlice.reducer,
     lang: langSlice.reducer,
   },
 });
