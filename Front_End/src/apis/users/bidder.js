@@ -34,9 +34,6 @@ const requestUpgrade = (data) => {
 };
 
 const getSellerComment = ({ page, limit, prodID }) => {
-  // console.log(limit)
-  // console.log(page)
-  // console.log(prodID)
   return axios.post('/api/bidder/get-seller-comment', {page, limit, prodID });
 };
 

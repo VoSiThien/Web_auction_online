@@ -4,13 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getListHistory, cancelHistory, confirmHistory } from '../../reducers/historyBid';
 import Pagination from '@material-ui/lab/Pagination';
 import { BsCheckLg, BsXLg } from 'react-icons/bs';
+import {getBidderComment} from '../../reducers/users/seller'
 import '../../index.css';
 import NumberFormat from 'react-number-format';
-
+import ListCommentBidder from "../../components/seller/listCommentBidder";//export a function
 import {
     makeStyles
 } from '@material-ui/core';
-
+import { Role } from '../../config/role';
 const useStyles = makeStyles((theme) => ({
     section: {
         borderRadius: theme.shape.borderRadius,
@@ -46,7 +47,10 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
     const [hiddenText, setHiddenText] = useState(false);
     const [hiddenText2, setHiddenText2] = useState(false);
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-    
+    const [selectedBidderID, setSelectedBidderID] = useState(false);
+    const [selectedBidderName, setSelectedBidderName] = useState(false);
+    const [openModalCommentBidder, setOpenModalCommentBidder] = useState(false);
+    const user = useSelector((state) => state.auth.user);
     const pageChangeHandler = (event, value) => {
         setPage(value);
     };
@@ -54,11 +58,11 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
     const getListHistoryHandler = useCallback(async ({ page, limit, prodId, status, sortByPrice }) => {
         try {
             var result = await dispatch(getListHistory({ page, limit, prodId, status, sortByPrice })).unwrap();
-            
-            if(result.statusCode === 3){
+
+            if (result.statusCode === 3) {
                 setHiddenText(true);
             }
-            else if(result.statusCode === 4){
+            else if (result.statusCode === 4) {
                 setHiddenText2(true);
                 setHiddenText(true);
             }
@@ -103,32 +107,34 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
         }
     };
 
-    const ShowHistoryCommentHandler = async (hisId, { page, limit, prodId, status, sortByPrice }) => {
-        try {
-            await dispatch(cancelHistory({ hisId })).unwrap();
-            getListHistoryHandler({ page, limit, prodId, status: 0, sortByPrice });
-            setText('Từ chối lượt đấu giá thành công!!!');
-            setShowSuccess(true);
-        } catch (err) {
-            setText(err);
-            setShowFailed(true);
+ 
+
+    const openModalCommentBidderHandler = (bidderID, fullName) => {
+        if (isAuthenticated) {
+            if (user.role === Role.Seller) {
+                setSelectedBidderID(bidderID)
+                setSelectedBidderName(fullName);
+                setOpenModalCommentBidder(true);
+                
+            }
         }
     };
 
-    const handleSelectSort = (event, eventKey) =>{
-        if(Number(event) === 1){
+
+    const handleSelectSort = (event, eventKey) => {
+        if (Number(event) === 1) {
             setSortByPrice('ASC');
             setIsActiveSort1(true);
             setIsActiveSort2(false);
             setIsActiveSort3(false);
         }
-        else if(Number(event) === 2){
+        else if (Number(event) === 2) {
             setSortByPrice('DESC');
             setIsActiveSort1(false);
             setIsActiveSort2(true);
             setIsActiveSort3(false);
         }
-        else{
+        else {
             setSortByPrice('NON');
             setIsActiveSort1(false);
             setIsActiveSort2(false);
@@ -149,8 +155,12 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
         if (prodId !== undefined && isAuthenticated) {
             getListHistoryHandler({ page, limit, prodId, status, sortByPrice });
         }
-        
+
     }, [getListHistoryHandler, page, limit, prodId, status, sortByPrice, keys, isOpen]);
+
+    const handleCloseCommentList = () => {
+        setOpenModalCommentBidder(false);
+    };
 
     const handleVisible = useCallback(() => {
         if (showFailed === true || showSuccess === true) {
@@ -167,6 +177,14 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
 
     return (
         <div className="modalHis">
+
+            <ListCommentBidder
+                isOpen={openModalCommentBidder}
+                onClose={handleCloseCommentList}
+                bidder_id={selectedBidderID}
+                bid_full_name = {selectedBidderName}
+            />
+
             <Modal
                 show={isOpen}
                 onHide={onClose}
@@ -180,7 +198,7 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
-                         <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
+                        <Alert variant="danger" show={showFailed} onClose={() => setShowFailed(false)} dismissible>
                             <Alert.Heading>{text}</Alert.Heading>
                         </Alert>
                         <Alert variant="success" show={showSuccess} onClose={() => setShowSuccess(false)} dismissible>
@@ -196,10 +214,10 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                             title={"Sắp xếp"}
                             size="sm"
                             onSelect={handleSelectSort}
-                            style={{marginLeft: '80%', marginBottom:'-2%'}}
+                            style={{ marginLeft: '80%', marginBottom: '-2%' }}
                         >
-                            <Dropdown.Item eventKey="1"active={isActiveSort1}>Giá tăng dần</Dropdown.Item>
-                            <Dropdown.Item eventKey="2"active={isActiveSort2}>Giá giảm dần</Dropdown.Item>
+                            <Dropdown.Item eventKey="1" active={isActiveSort1}>Giá tăng dần</Dropdown.Item>
+                            <Dropdown.Item eventKey="2" active={isActiveSort2}>Giá giảm dần</Dropdown.Item>
                             <Dropdown.Item eventKey="3" active={isActiveSort3}>Mặt định</Dropdown.Item>
                         </DropdownButton>
                         <Tabs id="controlled-tab-example"
@@ -234,8 +252,9 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                                                                 displayType={'text'}
                                                             />
                                                         </td>
+                                                        
                                                         <td>
-                                                            <Button size="sm" variant="primary" disabled={hiddenText} onClick={() => ShowHistoryCommentHandler(row.his_id, { page, limit, prodId, status, sortByPrice })}><BsCheckLg /> Xem lịch sử</Button>
+                                                            <Button size="sm" variant="success" disabled={hiddenText} onClick={() => openModalCommentBidderHandler(row.acc_id, row.acc_full_name)}><BsCheckLg /> Xem đánh giá</Button>
                                                             <Button size="sm" variant="danger" disabled={hiddenText} onClick={() => CancelStatus0Handler(row.his_id, { page, limit, prodId, status, sortByPrice })}><BsXLg /> Từ chối</Button>
                                                         </td>
                                                     </tr>
@@ -268,12 +287,13 @@ function HistoryProudctSel({ isOpen, onClose, prod_id }) {
                                                         <td>{row.acc_full_name}</td>
                                                         <td>{row.his_price} VNĐ</td>
                                                         <td>
+                                                            <Button size="sm" variant="success" disabled={hiddenText} onClick={() => openModalCommentBidderHandler(row.acc_id)}><BsCheckLg /> Xem đánh giá</Button>
                                                             <Button size="sm" variant="primary" onClick={() => ConfirmHandler(row.his_id, { page, limit, prodId, status, sortByPrice })}><BsCheckLg /> Xác nhận</Button>
                                                             <Button size="sm" className="ml-1" variant="danger" onClick={() => CancelStatus2Handler(row.his_id, { page, limit, prodId, status, sortByPrice })}><BsXLg /> Từ chối</Button>
-                                                           
+
                                                         </td>
                                                         <td>
-                                                        <Button size="sm" className="ml-1" variant="danger" > Xem lịch sử</Button>{/*add icon here*/}
+                                                            <Button size="sm" className="ml-1" variant="danger" > Xem lịch sử</Button>{/*add icon here*/}
                                                         </td>
                                                     </tr>
                                                 ))}
