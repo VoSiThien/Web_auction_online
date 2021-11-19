@@ -9,3 +9,7 @@ Lưu ý trước khi start phải có database:
 1: Tạo một database tên AuctionOnline_db trong postgre.
 2: Mở file restore_local.bat sửa link pg_env cho phù hợp.
 3: Sau đó tiến hành chạy file restore_local.bat.
+
+Tài khoản mặc định (Admin):
+user: giaovienAdm@gmail.com
+pass: 123
