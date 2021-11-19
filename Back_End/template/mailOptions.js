@@ -490,6 +490,7 @@ const notifyUpdateDesciptionToBidder = (account, product) => {
                 `
     }
 }
+
 module.exports = {
     notifyBidSuccessToBidder,
     notifyBidSuccessToSeller,

@@ -56,7 +56,7 @@ function ListCommentSeller({ isOpen, onClose, prod_id }) {
             //     setHiddenText(true);
             // }
             setCommentList(result)
-            console.log(result)
+           
         } catch (err) {
             alert(err);
         }
