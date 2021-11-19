@@ -19,11 +19,12 @@ import { FcLike } from "react-icons/fc";
 import HistoryProductBid from "../components/bidder/historyProduct";
 import HistoryProductSel from "../components/seller/historyProduct";
 import ListCommentSeller from "../components/bidder/listCommentSeller";//export a function
+
 import { Role } from '../config/role';
 import { invalid } from 'moment';
 import NumberFormat from 'react-number-format';
 import { Markup } from 'interweave';
-import {Avatar, Chip} from "@material-ui/core";
+import { Avatar, Chip } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -68,23 +69,13 @@ function Home() {
     const [isShowButtonHis, setisShowButtonHis] = useState(false);
     const [isShowButtonWat, setisShowButtonWat] = useState(false);
     const [isShowButtonSellerComment, setisShowButtonSellerComment] = useState(false);
-
+    
+  
     const user = useSelector((state) => state.auth.user);
     const Socket = useSelector((state) => state.unauthorizedProduct.SocketInProductDetail);
     //3.create handler
 
 
-    // const addWatchList = useCallback(async ({ prodId }) => {
-    //     try {
-    //         await dispatch(bidAddWatchList({ prodId })).unwrap();
-    //         setText('Thêm sản phẩm vào danh sách yêu thích thành công! ')
-    //         setShow(true)
-    //     } catch (err) {
-    //         setText(err)
-    //         setShow(true)
-
-    //     }
-    // }, [dispatch]);
 
     const getProductDetailHandler = useCallback(async () => {
         try {
@@ -137,52 +128,23 @@ function Home() {
         }
     };
 
-    /*const openModalHandlerHis = () => {
-        if (isAuthenticated) {
-            if (user.role === Role.Bidder) {
-                setOpenModalHisBid(true);
-            }
-            else {
-                setOpenModalHisSel(true);
-            }
-        }
-    };*/
-
-    // const getProductDetailHandler = useCallback(async () => {
-    //     try {
-    //         //use reducer function to get data and put it into local store
-    //         var response = await dispatch(getProductDetail({ id: +productId })).unwrap();
-    //         setProductDetails(response.productDetail);//set new state for productDetail with the returned data from BE when user change value
-    //         setRatingAccount(response.rating);
-    //         //get 5 product in the same category
-    //         const payload = {
-    //             catID: response.productDetail.prod_category_id,
-    //             page: 1,
-    //             limit: 5,
-    //             prodID: response.productDetail.prod_id
-    //         }
-    //         if (payload.catID && payload.prodID) {
-    //             response = await dispatch(getProductByCategory(payload)).unwrap();
-    //             setProductCategory(response.listProduct);
-    //         }
-    //     } catch (err) {
-    //         alert(err);
-    //     }
-    // }, [dispatch]);
 
     const openModalCommentSellerHandler = () => {
         if (isAuthenticated) {
             if (user.role === Role.Bidder) {
                 setOpenModalCommentSeller(true);
-        
+
             }
             // else {
             //     setOpenModalHisSel(true);
             // }
-            
+
         }
     };
 
+    
+
+   
 
 
     const addWatchList = useCallback(async ({ prodId }) => {
@@ -219,15 +181,12 @@ function Home() {
                 setisShowButtonBid(true);
                 setisShowButtonSellerComment(true)
             }
-            
-            
-
         }
         else {
             setisShowButtonWat(true);
             setisShowButtonBid(true);
             setisShowButtonHis(true);
-            
+            setisShowButtonSellerComment(true)
         }
     }, [productId, Socket]);//when product ID change, use effect will catch it and set new data for product detail, productID must define here
 
@@ -254,10 +213,15 @@ function Home() {
                 />
 
                 <ListCommentSeller
-                    isOpen={openModalCommentSeller}
+                    isOpen={openModalCommentSeller }
                     onClose={handleCloseCommentList}
                     prod_id={productDetails.prod_id}
                 />
+
+
+               
+ 
+
 
                 <div className={classes.content} >
                     <Container>
@@ -269,14 +233,14 @@ function Home() {
 
                             <div
                                 className="col-md-6 mb-4 mb-md-0"
-                                // style={{ width: "100%" }}
+                            // style={{ width: "100%" }}
                             >
-                                <img className={classes.display_image} 
-                                style={{objectFit: 'contain', height:"100%", backgroundColor:"#e8e7e3"}} 
-                                src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} alt="Product main image" 
+                                <img className={classes.display_image}
+                                    style={{ objectFit: 'contain', height: "100%", backgroundColor: "#e8e7e3" }}
+                                    src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} alt="Product main image"
                                 />
 
-                            {/* <div className="col-md-6 mb-4 mb-md-0" >
+                                {/* <div className="col-md-6 mb-4 mb-md-0" >
                                 <img className={classes.display_image} 
                                 style={{ height: "100%" }} 
                                 src={productDetails.prod_main_image || 'https://giaoducthuydien.vn/wp-content/themes/consultix/images/no-image-found-360x250.png'} 
@@ -285,16 +249,17 @@ function Home() {
                             </div>
                             <div className="col-md-6 mt-2">
                                 <h2>{productDetails.prod_name}</h2>
-                                {(Math.floor((new Date() - new Date(moment(productDetails.prod_created_date, "DD/MM/YYYY HH:mm:ss").format("YYYY-MM-DD HH:mm:ss")))/60000) < 10) && (
+                                {(Math.floor((new Date() - new Date(moment(productDetails.prod_created_date, "DD/MM/YYYY HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"))) / 60000) < 10) && (
                                     <Chip
-                                    style={{
-                                        background: 'linear-gradient(250deg, rgba(40,4,47,0.85) 5%, rgba(189,18,176,0.80) 45%, rgba(0,176,255,0.85) 80%)', 
-                                        color:"#fff", 
-                                        width: 100,
-                                        fontWeight: 'bold'}}
-                                    variant={"default"}
-                                    label="New"
-                                    avatar={<Avatar alt="Natacha" src="/img/img_new.png" />}
+                                        style={{
+                                            background: 'linear-gradient(250deg, rgba(40,4,47,0.85) 5%, rgba(189,18,176,0.80) 45%, rgba(0,176,255,0.85) 80%)',
+                                            color: "#fff",
+                                            width: 100,
+                                            fontWeight: 'bold'
+                                        }}
+                                        variant={"default"}
+                                        label="New"
+                                        avatar={<Avatar alt="Natacha" src="/img/img_new.png" />}
                                     />
                                 )}
                                 <p className="mb-2 text-muted text-uppercase small">Loại sản phẩm : <b>{productDetails.prod_categoryName}</b></p>
@@ -367,7 +332,7 @@ function Home() {
                                     <div>
                                         <Button className="ml-2" size="sm" hidden={isShowButtonBid} variant="outline-primary" onClick={() => openModalHandlerBid()}>Đấu giá</Button>
                                         <Button className="ml-2" size="sm" hidden={isShowButtonHis} variant="outline-info" onClick={() => openModalHandlerHis()}>Xem lịch sử</Button>
-                                        {/* <Button className="ml-2" size="sm" hidden={isShowButtonSellerComment} variant="outline-success" onClick={() => openModalCommentSellerHandler()}>Xem đánh giá seller</Button> */}
+                                        <Button className="ml-2" size="sm" hidden={isShowButtonSellerComment} variant="outline-success" onClick={() => openModalCommentSellerHandler()}>Xem đánh giá seller</Button>
                                         {/* <Button hidden={isShowButtonWat}  className="ml-2" size="sm" variant="outline-light" onClick={() => addWatchList({ prodId: productDetails.prod_id })}>Xem đánh giá seller</Button> */}
                                         <button hidden={isShowButtonWat} onClick={() => addWatchList({ prodId: productDetails.prod_id })} type="button" className="btn btn-danger btn-sm px-3 mb-0.5 ml-2 material-tooltip-main" data-toggle="tooltip" data-placement="top" title="Add to wishlist"><i className="far fa-heart" /></button>
                                         <Toast show={show} onClose={toggleShowA} className="d-inline-block m-1" bg="primary">
@@ -386,7 +351,7 @@ function Home() {
 
 
                                             <div className="view overlay rounded z-depth-1 gallery-item" style={{ width: "100%", height: "200px" }}>
-                                                <Carousel className="center" style={{ width: "100%", height: "200px", objectFit:"fill"}}>
+                                                <Carousel className="center" style={{ width: "100%", height: "200px", objectFit: "fill" }}>
                                                     {productDetails.prod_img?.length > 0 &&
                                                         productDetails.prod_img.map((image, index) => (
                                                             <Carousel.Item>

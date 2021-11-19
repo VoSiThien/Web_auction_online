@@ -1,6 +1,37 @@
 const ajvLib = require('ajv')
 const errorCode = 1
 
+
+
+const getBidderComment = (req, res, next) => {
+	const shema = {
+		type: 'object',
+		properties: {
+            bidderID: {type : 'integer'},
+			page: { type: 'integer' },
+			limit: { type: 'integer' }
+		},
+		required: ["page", "limit", "bidderID"],
+		additionalProperties: true
+	}
+
+	const ajv = new ajvLib({
+		allErrors: true
+	})
+
+	const validator = ajv.compile(shema)
+	const valid = validator(req.body)
+
+	if (!valid) {
+		return res.status(400).json({
+			errorMessage: validator.errors[0].message,
+			statusCode: errorCode
+		})
+	}
+
+	next()
+}
+
 const getAuctionProductList = (req, res, next) => {
 	const shema = {
 		type: 'object',
@@ -112,23 +143,54 @@ const deleteAuctionProduct = (req, res, next) => {
     const ajv = new ajvLib({
         allErrors: true
     })
-
     const validator = ajv.compile(shema)
     const valid = validator(req.body)
-
     if (!valid) {
         return res.status(400).json({
             errorMessage: validator.errors[0].message,
             statusCode: errorCode
         })
     }
-
     next()
+}
+
+
+const verifyBidderComment = (req, res, next) => {
+
+	const shema = {
+  		type: 'object',
+  		properties: {
+			bidderID : {type: 'number'}
+  		},
+		required: ['bidderID'],
+		additionalProperties: true
+	}
+
+	const ajv = new ajvLib({
+		allErrors: true
+	})
+
+	const validator = ajv.compile(shema)
+
+	const valid = validator(req.body)
+
+	if (!valid) {
+		return res.status(400).json({
+			errorMessage: validator.errors[0].message,
+			statusCode: errorCode
+		})
+
+	}
+
+
+	next()
 }
 
 module.exports = {
     postAuctionProduct,
     updateAuctionProductDescription,
     deleteAuctionProduct,
-    getAuctionProductList
+    getAuctionProductList,
+    getBidderComment,
+    verifyBidderComment
 }

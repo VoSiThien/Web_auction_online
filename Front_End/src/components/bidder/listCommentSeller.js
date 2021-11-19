@@ -56,7 +56,7 @@ function ListCommentSeller({ isOpen, onClose, prod_id }) {
             //     setHiddenText(true);
             // }
             setCommentList(result)
-            console.log(result)
+           
         } catch (err) {
             alert(err);
         }
@@ -85,7 +85,7 @@ function ListCommentSeller({ isOpen, onClose, prod_id }) {
 
     useEffect(() => {
         if (prodID !== undefined && isAuthenticated) {
-            //getListCommentSellerHandler({ page, limit, prodID });
+            getListCommentSellerHandler({ page, limit, prodID });
         }
     }, [getListCommentSellerHandler, page, limit, prodID]);
     // alert(JSON.stringify(commentList))
