@@ -491,22 +491,6 @@ const notifyUpdateDesciptionToBidder = (account, product) => {
     }
 }
 
-const notifyUpdateDesciptionToBidder = (account, product) => {
-    return {
-        from: {
-            name: 'Auction online',
-            email: `${environment.mailConfig.user}`
-        },
-        to: `${account.acc_email}`,
-        subject: 'Thông tin sản phẩm thay đổi',
-        html: ` <h1>Chào ${account.acc_full_name} thân mến! </h1>
-                <h3>Sản phẩm bạn đang tham gia đấu giá được cập nhât.</h3>
-                <h3>Thông tin thay đổi: </h3>
-                <h3>Mô tả sản phẩm</h3>
-                <p>${product[0].prod_description}</p>
-                `
-    }
-}
 module.exports = {
     notifyBidSuccessToBidder,
     notifyBidSuccessToSeller,
