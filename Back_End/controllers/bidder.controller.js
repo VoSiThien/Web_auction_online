@@ -163,14 +163,15 @@ router.post('/get-list-joining-product', async (req, res) => {
 		}
 	}
 
-	var result = await knex.raw(`select distinct h.his_product_id, p.prod_name, a.acc_full_name from tbl_product_history h
+	var result = await knex.raw(`select distinct h.his_product_id, p.prod_name, a.acc_full_name, p.prod_price_holder
+								from tbl_product_history h
 								join tbl_product p on p.prod_id = h.his_product_id
 								left join tbl_account a on a.acc_id = p.prod_price_holder
-								where his_status != 3 and h.his_account_id = ${id}
+								where his_status != 3 and h.his_account_id = ${id} 
+								and to_timestamp(p.prod_end_date, 'YYYY/MM/DD HH24:MI:SS') > CURRENT_TIMESTAMP
 								offset ${offset} limit ${limit}`)
 
 	result = result.rows
-
 
 	return res.status(200).json({
 		numberOfPage: numberPage,

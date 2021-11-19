@@ -78,6 +78,8 @@ const AllList = () => {
 	const [openModalComment, setOpenModalComment] = useState(false);
 	const [productId, setProductId] = useState(0);
 	const [statusRating, setStatusRating] = useState(0);
+	const user = useSelector((state) => state.auth.user);//get current user role here
+	console.log(user)
 
 	const pageChangeHandler = (event, value) => {
 		setPage(value);
@@ -237,7 +239,7 @@ const AllList = () => {
 						<div>
 							<Table responsive="sm">
 								<thead>
-									<tr>
+									<tr style={{ backgroundColor: "lightblue"}}>
 										<th>#</th>
 										<th>Tên</th>
 										<th>Giá mua ngay</th>
@@ -297,7 +299,7 @@ const AllList = () => {
 						<div>
 							<Table responsive="sm">
 								<thead>
-									<tr>
+									<tr style={{ backgroundColor: "lightblue"}}>
 										<th>#</th>
 										<th>Tên sản phẩm</th>
 										<th>Người giữ giá</th>
@@ -307,9 +309,24 @@ const AllList = () => {
 									{dataJoiningProduct.joiningList?.length > 0 &&
 										dataJoiningProduct.joiningList.map((row, index) => (
 											<tr key={index * 2}>
-												<td>{index + 1 + ((page - 1) * limit)}</td>
-												<td>{row.prod_name}</td>
-												<td>{row.acc_full_name}</td>
+												{row.prod_price_holder === user.accId && (
+													<td style={{ backgroundColor: "lightgray" }}>{index + 1 + ((page - 1) * limit)}</td>
+												)}
+												{row.prod_price_holder !== user.accId && (
+													<td >{index + 1 + ((page - 1) * limit)}</td>
+												)}
+												{row.prod_price_holder === user.accId && (
+													<td style={{ backgroundColor: "lightgray" }}><Link to={`/details/${row.his_product_id}`} className={classes.link}>{row.prod_name}</Link></td>
+												)}
+												{row.prod_price_holder !== user.accId && (
+													<td><Link to={`/details/${row.his_product_id}`} className={classes.link}>{row.prod_name}</Link></td>
+												)}
+												{row.prod_price_holder === user.accId && (
+													<td style={{ backgroundColor: "lightgray" }}>{row.acc_full_name}</td>
+												)}
+												{row.prod_price_holder !== user.accId && (
+													<td>{row.acc_full_name}</td>
+												)}
 											</tr>
 										))}
 								</tbody>
@@ -323,7 +340,7 @@ const AllList = () => {
 						<div>
 							<Table responsive="sm">
 								<thead>
-									<tr>
+									<tr style={{ backgroundColor: "lightblue"}}>
 										<th>#</th>
 										<th>Tên sản phẩm</th>
 										<th>Giá mua ngay</th>
@@ -338,7 +355,7 @@ const AllList = () => {
 										dataHighestPriceProduct.highestPrice.map((row, index) => (
 											<tr key={index * 3}>
 												<td>{index + 1 + ((page - 1) * limit)}</td>
-												<td>{row.prod_name}</td>
+												<td><Link to={`/details/${row.prod_id}`} className={classes.link}>{row.prod_name}</Link></td>
 												<td>
 													<NumberFormat
 														value={row.prod_price}
@@ -387,7 +404,7 @@ const AllList = () => {
 								))}
 							<Table responsive="sm">
 								<thead>
-									<tr>
+									<tr style={{ backgroundColor: "lightblue"}}>
 										<th>#</th>
 										<th>Nhận xét</th>
 										<th>Người gửi</th>

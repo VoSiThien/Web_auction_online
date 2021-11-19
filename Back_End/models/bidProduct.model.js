@@ -96,8 +96,9 @@ const bidding = async (priceBid, product, prodId, account) => {
 
     // bidder bidPrice < prod_price_current + prod_price_step
 	else{
+		var priceMin = Number(product[0].prod_price_current) + Number(product[0].prod_price_step)
 		return{
-			message: `Đấu giá không thành công !`,
+			message: `Đấu giá không thành công, giá tối thiểu cho sản phẩm này là: ${priceMin} VND!`,
 			statusCode: 1
 		}
 	}

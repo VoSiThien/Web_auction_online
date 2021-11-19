@@ -116,6 +116,7 @@ const notifyBidSuccessToOldBidder = (account, product, accountHolder) => {
         subject: 'Đấu giá đã bị rớt',
         html: ` <h1>Chào ${accountHolder[0].acc_full_name} thân mến! </h1>
                 <h3>Đã có người ra giá cao hơn bạn, để sở hữu sản phẩm bạn vui lòng đấu giá mới.</h3>
+                <h3><a href="http://localhost:4000/details/${product[0].prod_id}">Đi đến sản phẩm</a></h3>
                 <h3>Thông tin người ra giá: </h3>
                 <h3>Tên: ${account[0].acc_full_name}</h3>
                 <h3>Số điện thoại: ${account[0].acc_phone_number}</h3>
@@ -450,6 +451,23 @@ const notifyToSellerWhenProductEndExistsBid = (infor) => {
                 </div>`
     }
 }
+
+const notifyUpdateDesciptionToBidder = (account, product) => {
+    return {
+        from: {
+            name: 'Auction online',
+            email: `${environment.mailConfig.user}`
+        },
+        to: `${account.acc_email}`,
+        subject: 'Thông tin sản phẩm thay đổi',
+        html: ` <h1>Chào ${account.acc_full_name} thân mến! </h1>
+                <h3>Sản phẩm bạn đang tham gia đấu giá được cập nhât.</h3>
+                <h3>Thông tin thay đổi: </h3>
+                <h3>Mô tả sản phẩm</h3>
+                <p>${product[0].prod_description}</p>
+                `
+    }
+}
 module.exports = {
     notifyBidSuccessToBidder,
     notifyBidSuccessToSeller,
@@ -460,5 +478,6 @@ module.exports = {
     forgotPasswordOptions,
     notifyToBidderWhenProductEnd,
     notifyToSellerWhenProductEndNotBid,
-    notifyToSellerWhenProductEndExistsBid
+    notifyToSellerWhenProductEndExistsBid,
+    notifyUpdateDesciptionToBidder
 }
