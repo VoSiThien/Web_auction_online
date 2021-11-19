@@ -40,18 +40,16 @@ function ListCommentSeller({ isOpen, onClose, bidder_id, bid_full_name }) {
     const pageChangeHandler = (event, value) => {
         setPage(value);
     };
-
+ 
     const getListCommentBidderHandler = useCallback(async ({ page, limit, bidderID }) => {
         try {
             //alert(page)
-            //alert(bidderID)
             const result = await dispatch(getBidderComment({ page, limit, bidderID })).unwrap();
+            console.log(JSON.stringify(result))
 
-            // if (result.statusCode === 4) {
-            //     setHiddenText(true);
-            // }
+            
             setCommentList(result)
-            console.log(result)
+            
         } catch (err) {
            
             alert(err);
@@ -61,12 +59,12 @@ function ListCommentSeller({ isOpen, onClose, bidder_id, bid_full_name }) {
 
     useEffect(() => {
        
-        if (bidderID !== undefined && isAuthenticated && user.role == Role.Bidder) {
+        if (bidderID !== false && isAuthenticated && user.role == Role.Seller) {
             getListCommentBidderHandler({ page, limit, bidderID });
         }
 
     }, [getListCommentBidderHandler, page, limit, bidderID]);
-    // alert(JSON.stringify(commentList))
+    console.log(commentList)
     return (
         <div>
             <Modal

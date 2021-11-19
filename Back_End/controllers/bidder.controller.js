@@ -588,13 +588,13 @@ router.post('/get-seller-comment', validator.veryfySellerComment, async (req, re
 	//when have free time,change from acBid to acSel - the correct one
 	var numberPage = await knex.raw(`select  count(acBid.acc_id)
 	from tbl_account_comments cmt join tbl_product pr on cmt.acom_product_id = pr.prod_id, tbl_account acBid
-	where acBid.acc_id = acom_receiver 
+	where acBid.acc_id = acom_assessor 
 	and acBid.acc_role = 'BID'
 	and pr.prod_id = ${prodID}
 	group by acBid.acc_id`)
 	console.log(`select  count(acBid.acc_id)
 	from tbl_account_comments cmt join tbl_product pr on cmt.acom_product_id = pr.prod_id, tbl_account acBid
-	where acBid.acc_id = acom_receiver 
+	where acBid.acc_id = acom_assessor 
 	and acBid.acc_role = 'BID'
 	and pr.prod_id = ${prodID}
 	group by acBid.acc_id`)
@@ -611,8 +611,8 @@ router.post('/get-seller-comment', validator.veryfySellerComment, async (req, re
 	console.log(`
 	select  acBid.acc_full_name, acom_note
 	from tbl_account_comments cmt join tbl_product pr on cmt.acom_product_id = pr.prod_id, tbl_account acBid
-	where acBid.acc_id = acom_receiver 
-	and acBid.acc_role = 'SEL'
+	where acBid.acc_id = acom_assessor 
+	and acBid.acc_role = 'BID'
 	and pr.prod_id = ${prodID}
 	offset ${offset} limit ${limit}
 	`)
@@ -622,8 +622,8 @@ router.post('/get-seller-comment', validator.veryfySellerComment, async (req, re
 	var result = await knex.raw(`
 	select  acBid.acc_full_name, acom_note
 	from tbl_account_comments cmt join tbl_product pr on cmt.acom_product_id = pr.prod_id, tbl_account acBid
-	where acBid.acc_id = acom_receiver 
-	and acBid.acc_role = 'SEL'
+	where acBid.acc_id = acom_assessor 
+	and acBid.acc_role = 'BID'
 	and pr.prod_id = ${prodID}
 	offset ${offset} limit ${limit}
 	`)

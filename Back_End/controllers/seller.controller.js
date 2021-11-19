@@ -414,19 +414,19 @@ router.post('/get-bidder-comment', validator.verifyBidderComment, async (req, re
    
 
     const offset = limit * (page - 1)
-
-    var numberPage = await knex.raw(`select  count(acBid.acc_id)
-	from tbl_account_comments, tbl_account acBid
-	where acBid.acc_id = acom_receiver 
-	and acBid.acc_role = 'BID'
-	and acBid.acc_id = ${bidderID}
-	group by acBid.acc_id`)
-    console.log(`select  count(acBid.acc_id)
-	from tbl_account_comments, tbl_account acBid
-	where acBid.acc_id = acom_receiver 
-	and acBid.acc_role = 'BID'
-	and acBid.acc_id = ${bidderID}
-	group by acBid.acc_id`)
+    console.log(`select  count(acSel.acc_id)
+	from tbl_account_comments, tbl_account acSel
+	where acSel.acc_id = acom_assessor 
+	and acSel.acc_role = 'SEL'
+	and acom_receiver = ${bidderID}
+	group by acSel.acc_id`)
+    var numberPage = await knex.raw(`select  count(acSel.acc_id)
+	from tbl_account_comments, tbl_account acSel
+	where acSel.acc_id = acom_assessor 
+	and acSel.acc_role = 'SEL'
+	and acom_receiver = ${bidderID}
+	group by acSel.acc_id`)
+   
 
     numberPage = Number(numberPage.rowCount)
 
@@ -438,22 +438,22 @@ router.post('/get-bidder-comment', validator.verifyBidderComment, async (req, re
     }
 
     console.log(`
-	select  acBid.acc_full_name, acom_note
-	from tbl_account_comments, tbl_account acBid
-	where acBid.acc_id = acom_receiver 
-	and acBid.acc_role = 'BID'
-    and acBid.acc_id = ${bidderID}
+	select  acSel.acc_full_name, acom_note
+	from tbl_account_comments, tbl_account acSel
+	where acSel.acc_id = acom_assessor 
+	and acSel.acc_role = 'SEL'
+    and acom_receiver = ${bidderID}
 	offset ${offset} limit ${limit}
 	`)
 
 
     //get all comment of seller
     var result = await knex.raw(`
-	select  acBid.acc_full_name, acom_note
-	from tbl_account_comments, tbl_account acBid
-	where acBid.acc_id = acom_receiver 
-	and acBid.acc_role = 'BID'
-    and acBid.acc_id = ${bidderID}
+	select  acSel.acc_full_name, acom_note
+	from tbl_account_comments, tbl_account acSel
+	where acSel.acc_id = acom_assessor 
+	and acSel.acc_role = 'SEL'
+    and acom_receiver = ${bidderID}
 	offset ${offset} limit ${limit}
 	`)
 
